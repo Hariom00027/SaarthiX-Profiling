@@ -1,0 +1,152 @@
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  animation: fadeIn 0.3s ease-out;
+  backdrop-filter: blur(8px);
+}
+
+.loading-content {
+  background: white;
+  border-radius: 20px;
+  padding: 48px 60px;
+  text-align: center;
+  animation: slideUp 0.4s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  width: 90%;
+}
+
+.loading-spinner {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+}
+
+.spinner-ring {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 6px solid transparent;
+  border-radius: 50%;
+  animation: spinner-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  border-top-color: #3b82f6;
+  animation-delay: -0.45s;
+}
+
+.spinner-ring:nth-child(2) {
+  border-top-color: #8b5cf6;
+  animation-delay: -0.3s;
+}
+
+.spinner-ring:nth-child(3) {
+  border-top-color: #10b981;
+  animation-delay: -0.15s;
+}
+
+.spinner-ring:nth-child(4) {
+  border-top-color: #f59e0b;
+}
+
+.loading-message {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0b132b;
+  margin: 0 0 12px 0;
+  animation: fadeInUp 0.5s ease-out 0.2s backwards;
+}
+
+.loading-submessage {
+  font-size: 15px;
+  color: #52606d;
+  line-height: 1.5;
+  margin: 0;
+  animation: fadeInUp 0.5s ease-out 0.3s backwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spinner-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .loading-content {
+    padding: 36px 40px;
+    width: 90%;
+  }
+
+  .loading-message {
+    font-size: 20px;
+  }
+
+  .loading-submessage {
+    font-size: 14px;
+  }
+
+  .loading-spinner {
+    width: 64px;
+    height: 64px;
+  }
+
+  .spinner-ring {
+    width: 52px;
+    height: 52px;
+    border-width: 5px;
+  }
+}
+
+
+
+

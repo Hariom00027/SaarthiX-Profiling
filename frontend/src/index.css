@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+@layer components {
+  .template-card-enter {
+    animation: fade-in 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Profile Actions Container */
+  .profile-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+    padding: 16px 0 !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+    z-index: 10 !important;
+    clear: both !important;
+  }
+
+  /* Base Profile Button Styles */
+  .profile-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 20px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    min-height: 40px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+    text-decoration: none !important;
+    vertical-align: middle !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .profile-btn:hover:not(:disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .profile-btn:active:not(:disabled) {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .profile-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
+  .profile-btn:focus {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* PDF Button */
+  .profile-btn.btn-pdf {
+    background-color: #dc2626 !important;
+    color: white !important;
+  }
+
+  .profile-btn.btn-pdf:hover:not(:disabled) {
+    background-color: #b91c1c !important;
+  }
+
+  /* Edit Button */
+  .profile-btn.btn-edit {
+    background-color: #6366f1 !important;
+    color: white !important;
+  }
+
+  .profile-btn.btn-edit:hover:not(:disabled) {
+    background-color: #4f46e5 !important;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .profile-actions {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+
+    .profile-btn {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+  }
+
+  /* Ensure buttons are not affected by template styles */
+  .profile-container .profile-actions {
+    isolation: isolate;
+  }
+
+  .profile-container .profile-actions .profile-btn {
+    position: relative;
+    z-index: 1;
+  }
+}
+

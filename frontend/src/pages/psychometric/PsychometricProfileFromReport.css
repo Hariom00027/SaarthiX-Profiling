@@ -1,0 +1,278 @@
+.psy-profile-page {
+  min-height: 100vh;
+  background: #f3f4f6;
+  padding: 24px 16px 48px;
+  overflow-x: auto;
+}
+
+.psy-profile-shell {
+  max-width: 980px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.psy-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.psy-btn {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.psy-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.psy-btn-primary {
+  background: #6b4a4d; /* warm maroon */
+  border-color: #6b4a4d;
+  color: #ffffff;
+}
+
+.psy-btn-secondary {
+  background: #ffffff;
+}
+
+.psy-a4-outer {
+  display: flex;
+  justify-content: center;
+  min-width: fit-content;
+}
+
+/* A4 portrait in CSS pixels (roughly at 96dpi) */
+.psy-a4-page {
+  width: 794px;
+  min-height: 1123px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.psy-page-heading {
+  margin: 26px 0 10px;
+  text-align: center;
+  color: #111827;
+  font-weight: 700;
+  font-size: 20px; /* H3-like, but explicit for consistency */
+}
+
+.psy-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 28px;
+  background: #6b4a4d;
+  color: #ffffff;
+  padding: 56px 56px 38px;
+}
+
+.psy-summary p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 14px 0;
+  opacity: 0.95;
+}
+
+.psy-hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.psy-photo-frame {
+  width: 280px;
+  height: 280px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.psy-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.psy-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.psy-title-block {
+  text-align: center;
+}
+
+.psy-title-name {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+.psy-skills-card {
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+}
+
+.psy-skills-title {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+
+.psy-skills-bullets {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.psy-skills-bullets li {
+  margin: 6px 0;
+}
+
+.psy-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  padding: 34px 56px 56px;
+}
+
+.psy-section-title {
+  color: #6b4a4d;
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.psy-bullets {
+  margin: 0;
+  padding-left: 22px;
+  color: #111827;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.psy-bullets li {
+  margin: 6px 0;
+}
+
+.psy-profile-loading,
+.psy-profile-error {
+  max-width: 980px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+/* Modal */
+.psy-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.psy-modal {
+  width: 100%;
+  max-width: 560px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  padding: 18px 18px 16px;
+}
+
+.psy-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.psy-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.psy-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.psy-modal-desc {
+  margin: 0 0 14px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.psy-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.psy-file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Print/PDF */
+@media print {
+  body {
+    background: #ffffff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .psy-profile-page {
+    padding: 0;
+    background: #ffffff;
+  }
+  .psy-a4-page {
+    box-shadow: none;
+  }
+}
+
+
