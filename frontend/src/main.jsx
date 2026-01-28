@@ -18,13 +18,13 @@ window.addEventListener('load', () => {
 });
 
 const path = window.location.pathname;
-const isAdminRoute = path.startsWith('/admin')
-const isPsychometricRoute = path.startsWith('/psychometric')
+const isAdminRoute = path.startsWith('/admin') || path.includes('/profiling/admin')
+const isPsychometricRoute = path.startsWith('/psychometric') || path.includes('/profiling/psychometric')
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ToastContainer />
-    <BrowserRouter>
+    <BrowserRouter basename="/profiling">
       {isAdminRoute ? (
         <AdminApp />
       ) : isPsychometricRoute ? (

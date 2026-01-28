@@ -20,11 +20,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(frontendUrl)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedOrigins(
+                    frontendUrl,
+                    "http://localhost:4001",  // Direct frontend access
+                    "http://localhost:8090",  // Gateway access
+                    "http://localhost:3000"    // SomethingX frontend (for SSO)
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true)
-                .exposedHeaders("Authorization");
+                .exposedHeaders("Authorization")
+                .maxAge(3600);
     }
 
     @Override

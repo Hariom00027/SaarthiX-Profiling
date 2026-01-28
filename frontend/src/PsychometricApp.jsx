@@ -15,12 +15,12 @@ import './styles/psychometric.css'
 function PsychometricApp() {
   const location = useLocation()
   const navigate = useNavigate()
-  
+
   // Hide navbar during the actual assessment test
   const isAssessmentPage = location.pathname.includes('/psychometric/assessment/')
-  
+
   const handleNavigateToStart = () => {
-    window.location.href = '/start'
+    window.location.href = '/profiling/start'
   }
 
   return (
@@ -29,7 +29,7 @@ function PsychometricApp() {
       {!isAssessmentPage && (
         <Header onNavigateToStart={handleNavigateToStart} />
       )}
-      
+
       <Routes>
         <Route path="/psychometric/start" element={<PsychometricStart />} />
         <Route path="/psychometric/skills" element={<PsychometricSkills />} />
