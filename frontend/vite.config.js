@@ -3,8 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // Use subpath for deployment
-  base: '/profiling/',
+  base: '/',
   server: {
     port: 4000
   }

@@ -313,6 +313,42 @@ function AppContent() {
     restoreDisplayView();
   }, [loading, isAuthenticated, currentView, profileData]);
 
+  // Separate effect to restore saved profiles when on saved-profiles view after refresh
+  useEffect(() => {
+    const restoreSavedProfilesView = async () => {
+      // Check if we're on saved-profiles view and need to restore profiles
+      const needsRestore = currentView === 'saved-profiles' && 
+                          allProfiles.length === 0 && 
+                          !loading && 
+                          isAuthenticated();
+      
+      if (needsRestore) {
+        try {
+          setError(null);
+          console.log('Restoring saved profiles after page refresh...');
+          
+          const result = await getAllMyProfiles();
+          
+          if (result.success && result.data && result.data.length > 0) {
+            setAllProfiles(result.data);
+            console.log('Saved profiles restored successfully');
+          } else {
+            // If no profiles found, redirect to start
+            console.warn('No saved profiles found, redirecting to start');
+            setError('No saved profiles found. Please create a profile first.');
+            navigateToView('start', true);
+          }
+        } catch (error) {
+          console.error('Error restoring saved profiles:', error);
+          setError('Failed to load saved profiles. Please try again.');
+          navigateToView('start', true);
+        }
+      }
+    };
+
+    restoreSavedProfilesView();
+  }, [loading, isAuthenticated, currentView, allProfiles.length]);
+
   const handleStart = () => {
     if (!isAuthenticated()) {
       navigateToView('login');
@@ -672,6 +708,7 @@ function AppContent() {
           profiles={allProfiles}
           onSelectProfile={handleSelectProfile}
           onBackToHome={handleBackToStart}
+          onCreateNewProfile={handleStart}
         />
       )}
 

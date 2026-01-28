@@ -387,7 +387,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
 
   const renderInputField = (field) => {
     const baseClasses =
-      'w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition';
+      'w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition';
 
     if (field.type === 'textarea') {
       return (
@@ -419,7 +419,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
   };
 
   const renderChoiceButtons = (config) => (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-2.5 sm:gap-4 grid-cols-1 sm:grid-cols-2">
       {config.options.map((option) => {
         const isActive = formData[config.field] === option.value;
         return (
@@ -427,14 +427,14 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
             key={option.value}
             type="button"
             onClick={() => handleChoiceSelect(config.field, option.value, { autoAdvance: config.autoAdvance })}
-            className={`rounded-2xl border-2 px-5 py-4 text-left transition-all ${
+            className={`rounded-xl sm:rounded-2xl border-2 px-3.5 sm:px-5 py-3 sm:py-4 text-left transition-all ${
               isActive
                 ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                 : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50'
             }`}
           >
-            <div className="text-base font-semibold">{option.label}</div>
-            {option.description && <p className="mt-1 text-sm text-slate-500">{option.description}</p>}
+            <div className="text-sm sm:text-base font-semibold">{option.label}</div>
+            {option.description && <p className="mt-1 text-xs sm:text-sm text-slate-500">{option.description}</p>}
           </button>
         );
       })}
@@ -442,19 +442,19 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
   );
 
   const renderEducationStep = (step) => (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div>
-        <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.question.label}</h3>
+        <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 mb-2 sm:mb-3">{step.question.label}</h3>
         {renderChoiceButtons(step.question)}
       </div>
 
       {formData.schoolType && (
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.followUp.label}</h3>
-          <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 mb-2 sm:mb-3">{step.followUp.label}</h3>
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
             {step.followUp.fields.map((field) => (
-              <div key={field.name} className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-600">
+              <div key={field.name} className="flex flex-col gap-1.5 sm:gap-2">
+                <label className="text-xs sm:text-sm font-medium text-slate-600">
                   {field.label}
                   {field.required && <span className="ml-1 text-red-500">*</span>}
                 </label>
@@ -468,20 +468,20 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
   );
 
   const renderExperienceStep = (step) => (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div>
-        <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.question.label}</h3>
+        <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 mb-2 sm:mb-3">{step.question.label}</h3>
         {renderChoiceButtons(step.question)}
       </div>
 
       {formData.experienceLevel && formData.experienceLevel !== 'none' && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Company Details Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Company Details</h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-600">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-slate-900">Company Details</h3>
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <label className="text-xs sm:text-sm font-medium text-slate-600">
                   Company Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -489,13 +489,13 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                   name="companyName"
                   value={formData.companyName}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   placeholder="e.g., Google, Microsoft"
                   required
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-600">
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <label className="text-xs sm:text-sm font-medium text-slate-600">
                   Designation <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -503,13 +503,13 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                   name="designation"
                   value={formData.designation}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   placeholder="e.g., Software Engineer, Product Manager"
                   required
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-600">
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <label className="text-xs sm:text-sm font-medium text-slate-600">
                   Years of Experience <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -517,13 +517,13 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                   name="yearsOfExperience"
                   value={formData.yearsOfExperience}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   placeholder="e.g., 3, 5, 7"
                   required
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-600">
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <label className="text-xs sm:text-sm font-medium text-slate-600">
                   Year of Joining <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -531,7 +531,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                   name="yearOfJoining"
                   value={formData.yearOfJoining}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   placeholder="e.g., 2020, 2022"
                   required
                 />
@@ -540,9 +540,9 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
           </div>
 
           {/* Work Experience Details */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="text-sm font-medium text-slate-600 mb-2 block">
+              <label className="text-xs sm:text-sm font-medium text-slate-600 mb-1.5 sm:mb-2 block">
                 Where have you worked? <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -550,7 +550,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                 value={formData.workExperience}
                 onChange={handleChange}
                 rows={4}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 placeholder="Please mention the companies/organizations where you have worked, your roles, and key responsibilities..."
                 required
               />
@@ -561,8 +561,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
 
       {/* Only show "Are you a student?" question if user has no experience */}
       {formData.experienceLevel && formData.experienceLevel === 'none' && (
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.followUp.label}</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 mb-2 sm:mb-3">{step.followUp.label}</h3>
           {renderChoiceButtons(step.followUp)}
         </div>
       )}
@@ -570,31 +570,31 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
   );
 
   const renderInternshipStep = () => (
-    <div className="space-y-8">
-      <div className="rounded-3xl border border-slate-200 p-5">
-        <label className="flex items-start gap-4">
+    <div className="space-y-4 sm:space-y-8">
+      <div className="rounded-2xl sm:rounded-3xl border border-slate-200 p-3.5 sm:p-5">
+        <label className="flex items-start gap-3 sm:gap-4">
           <input
             type="checkbox"
             name="hasInternship"
             checked={formData.hasInternship}
             onChange={handleChange}
-            className="mt-1 h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
           />
           <div>
-            <div className="text-lg font-semibold text-slate-900">I have completed an internship</div>
-            <p className="text-sm text-slate-500 mt-1">
+            <div className="text-sm sm:text-base lg:text-lg font-semibold text-slate-900">I have completed an internship</div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
               Include standout projects, roles or tools you used so we can highlight them perfectly.
             </p>
           </div>
         </label>
         {formData.hasInternship && (
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <textarea
               name="internshipDetails"
               value={formData.internshipDetails}
               onChange={handleChange}
               rows={4}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Share your internship project, responsibilities, tools and wins."
               required
             />
@@ -602,30 +602,30 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
         )}
       </div>
 
-      <div className="rounded-3xl border border-slate-200 p-5">
-        <label className="flex items-start gap-4">
+      <div className="rounded-2xl sm:rounded-3xl border border-slate-200 p-3.5 sm:p-5">
+        <label className="flex items-start gap-3 sm:gap-4">
           <input
             type="checkbox"
             name="hasExperience"
             checked={formData.hasExperience}
             onChange={handleChange}
-            className="mt-1 h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
           />
           <div>
-            <div className="text-lg font-semibold text-slate-900">I have professional experience</div>
-            <p className="text-sm text-slate-500 mt-1">
+            <div className="text-sm sm:text-base lg:text-lg font-semibold text-slate-900">I have professional experience</div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
               Tell us about organisations, roles, and measurable outcomes so templates can spotlight them.
             </p>
           </div>
         </label>
         {formData.hasExperience && (
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <textarea
               name="experienceDetails"
               value={formData.experienceDetails}
               onChange={handleChange}
               rows={4}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl sm:rounded-2xl border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Mention role, company, duration, impact, metrics..."
               required
             />
@@ -651,7 +651,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
     }
 
     return (
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-3 sm:gap-5 grid-cols-1 md:grid-cols-2">
         {step.fields
           .filter((field) => {
             // Don't show certifications and achievements if they're empty and not required
@@ -666,9 +666,9 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
           .map((field) => (
             <div
               key={field.name}
-              className={`flex flex-col gap-2 ${field.fullWidth ? 'md:col-span-2' : ''}`}
+              className={`flex flex-col gap-1.5 sm:gap-2 ${field.fullWidth ? 'md:col-span-2' : ''}`}
             >
-              <label className="text-sm font-medium text-slate-600">
+              <label className="text-xs sm:text-sm font-medium text-slate-600">
                 {field.label}
                 {field.required && <span className="ml-1 text-red-500">*</span>}
               </label>
@@ -687,32 +687,32 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4 py-10">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-3 sm:px-4 py-6 sm:py-10">
+      <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <p className="text-sm uppercase tracking-wide text-blue-600 font-semibold">Profile builder</p>
-            <h2 className="text-3xl font-bold text-slate-900 mt-1">Craft a profile that feels alive</h2>
+            <p className="text-xs sm:text-sm uppercase tracking-wide text-blue-600 font-semibold">Profile builder</p>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mt-1">Craft a profile that feels alive</h2>
           </div>
           {onBack && (
             <button
               type="button"
               onClick={onBack}
-              className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-600 hover:border-slate-500 transition"
+              className="self-start sm:self-auto rounded-full border border-slate-300 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:border-slate-500 transition"
             >
               ← Back
             </button>
           )}
         </div>
 
-        <div className="overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-200/80 lg:grid lg:grid-cols-[minmax(0,1fr)_320px]">
-          <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-8">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm font-semibold text-slate-500">
+        <div className="overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-xl sm:shadow-2xl shadow-slate-200/80 lg:grid lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500">
                 <span>Step {currentStep + 1} of {totalSteps}</span>
                 <span>{progress}% complete</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-slate-100">
+              <div className="h-1.5 sm:h-2 w-full rounded-full bg-slate-100">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all"
                   style={{ width: `${progress}%` }}
@@ -721,10 +721,10 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
             </div>
 
             <div>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="text-2xl font-semibold text-slate-900">{steps[currentStep].title}</h3>
-                  <p className="mt-2 text-slate-500">{steps[currentStep].subtitle}</p>
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900">{steps[currentStep].title}</h3>
+                  <p className="mt-1 sm:mt-2 text-sm sm:text-base text-slate-500">{steps[currentStep].subtitle}</p>
                 </div>
                 {currentStep === 0 && (
                   <div className="flex-shrink-0">
@@ -739,11 +739,11 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                       type="button"
                       onClick={handleResumeUpload}
                       disabled={isParsingResume}
-                      className="flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-blue-600 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
                       title="Upload your resume to auto-fill the form"
                     >
                       <svg 
-                        className="w-5 h-5" 
+                        className="w-4 h-4 sm:w-5 sm:h-5" 
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
@@ -765,16 +765,16 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
             {renderStep()}
 
             {stepError && (
-              <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+              <p className="rounded-xl sm:rounded-2xl bg-red-50 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-red-600">
                 {stepError}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-4">
               <button
                 type="button"
                 onClick={currentStep === 0 ? onBack : goToPreviousStep}
-                className={`rounded-2xl border px-6 py-3 font-semibold transition ${
+                className={`rounded-xl sm:rounded-2xl border px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition ${
                   currentStep === 0 && !onBack
                     ? 'cursor-not-allowed border-slate-200 text-slate-300'
                     : 'border-slate-300 text-slate-600 hover:border-slate-500'
@@ -787,7 +787,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
               {isLastStep ? (
                 <button
                   type="submit"
-                  className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-semibold text-white shadow-lg shadow-blue-200 transition hover:opacity-90 disabled:opacity-60"
+                  className="rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-blue-200 transition hover:opacity-90 disabled:opacity-60"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Saving...' : 'Generate my profile'}
@@ -796,7 +796,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
                 <button
                   type="button"
                   onClick={() => goToNextStep()}
-                  className="rounded-2xl bg-slate-900 px-8 py-3 font-semibold text-white transition hover:bg-slate-800"
+                  className="rounded-xl sm:rounded-2xl bg-slate-900 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-slate-800"
                 >
                   Continue
                 </button>
@@ -804,32 +804,32 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
             </div>
           </form>
 
-          <aside className="bg-slate-900 text-white p-8 space-y-8">
+          <aside className="hidden lg:block bg-slate-900 text-white p-6 xl:p-8 space-y-6 xl:space-y-8">
             <div>
-              <p className="text-sm uppercase tracking-widest text-slate-400">Live preview</p>
-              <h4 className="mt-2 text-2xl font-semibold">Your story takes shape</h4>
-              <p className="mt-3 text-sm text-slate-300">
+              <p className="text-xs xl:text-sm uppercase tracking-widest text-slate-400">Live preview</p>
+              <h4 className="mt-2 text-lg xl:text-2xl font-semibold">Your story takes shape</h4>
+              <p className="mt-2 xl:mt-3 text-xs xl:text-sm text-slate-300">
                 Each response instantly feeds the AI so we can recommend templates, tones, and layouts aligned with
                 where you are in your journey.
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 xl:space-y-4">
               <p className="text-xs uppercase tracking-wider text-slate-400">Snapshot</p>
-              <div className="space-y-3">
+              <div className="space-y-2 xl:space-y-3">
                 {quickFacts.map((fact) => (
-                  <div key={fact.label} className="rounded-2xl bg-white/5 px-4 py-3">
+                  <div key={fact.label} className="rounded-xl xl:rounded-2xl bg-white/5 px-3 xl:px-4 py-2.5 xl:py-3">
                     <p className="text-xs text-slate-400">{fact.label}</p>
-                    <p className="text-base font-semibold text-white">{fact.value}</p>
+                    <p className="text-sm xl:text-base font-semibold text-white truncate">{fact.value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 p-4">
-              <p className="text-sm font-semibold text-white">Tips</p>
+            <div className="rounded-xl xl:rounded-2xl border border-white/10 p-3 xl:p-4">
+              <p className="text-xs xl:text-sm font-semibold text-white">Tips</p>
               <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-slate-300">
-                <li>Use bullets or commas for skills – we’ll format them automatically.</li>
+                <li>Use bullets or commas for skills – we'll format them automatically.</li>
                 <li>Numbers stand out. Add metrics wherever you can.</li>
                 <li>Unsure about something? You can always come back and edit.</li>
               </ul>
