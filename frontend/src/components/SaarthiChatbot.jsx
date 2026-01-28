@@ -441,95 +441,743 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
     }
   };
 
+  // Get current time formatted
+  const formatTime = () => {
+    const now = new Date();
+    return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
+  // Get today's date label
+  const getTodayLabel = () => {
+    return 'Today';
+  };
+
   if (isGeneratingQuestions) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Saathi is preparing your personalized questions...</p>
+      <div className="chatbot-loading-container">
+        <div style={{ textAlign: 'center', padding: '0 20px' }}>
+          <div className="chatbot-spinner"></div>
+          <p className="chatbot-loading-text">SaathiX is preparing your personalized questions...</p>
         </div>
+        <style>{`
+          .chatbot-loading-container {
+            height: calc(100vh - 70px);
+            background: linear-gradient(180deg, #f8f9fa 0%, #e8f4f8 50%, #f5e6f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 16px;
+          }
+          
+          .chatbot-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+          }
+          
+          .chatbot-loading-text {
+            color: #6b7280;
+            font-size: 1rem;
+          }
+          
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          
+          @media (max-width: 768px) {
+            .chatbot-spinner {
+              width: 40px;
+              height: 40px;
+            }
+            
+            .chatbot-loading-text {
+              font-size: 0.9rem;
+            }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="chatbot-container">
+      {/* Responsive Styles */}
+      <style>{`
+        .chatbot-container {
+          height: calc(100vh - 70px);
+          background: linear-gradient(180deg, #f8f9fa 0%, #e8f4f8 50%, #f5e6f0 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+          margin: 0;
+          box-sizing: border-box;
+        }
+        
+        .chatbot-main-card {
+          width: 100%;
+          max-width: 900px;
+          height: 100%;
+          max-height: calc(100vh - 102px);
+          background-color: white;
+          border-radius: 24px;
+          border: 1px solid #e5e7eb;
+          overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .chatbot-header {
+          padding: 20px 32px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          flex-shrink: 0;
+          border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .chatbot-header-content {
+          text-align: center;
+          flex: 1;
+        }
+        
+        .chatbot-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin: 0 0 4px 0;
+          color: #111827;
+        }
+        
+        .chatbot-subtitle {
+          font-size: 0.8rem;
+          color: #9ca3af;
+          margin: 0;
+        }
+        
+        .chatbot-status {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #111827;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+        
+        .chatbot-status-dot {
+          width: 8px;
+          height: 8px;
+          background-color: #22c55e;
+          border-radius: 50%;
+          display: inline-block;
+        }
+        
+        .chatbot-today-badge {
+          text-align: center;
+          margin-bottom: 12px;
+          flex-shrink: 0;
+        }
+        
+        .chatbot-today-badge span {
+          display: inline-block;
+          padding: 5px 16px;
+          background-color: #f3f4f6;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          color: #6b7280;
+          font-weight: 500;
+        }
+        
+        .chatbot-messages-area {
+          flex: 1;
+          padding: 0 32px 16px;
+          overflow-y: auto;
+          min-height: 0;
+        }
+        
+        .chatbot-message {
+          margin-bottom: 20px;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        
+        .chatbot-message.user {
+          justify-content: flex-end;
+        }
+        
+        .chatbot-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+        
+        .chatbot-avatar.ai {
+          background-color: #3b82f6;
+        }
+        
+        .chatbot-avatar.user {
+          background-color: #ec4899;
+          font-size: 0.7rem;
+        }
+        
+        .chatbot-message-content {
+          max-width: 70%;
+        }
+        
+        .chatbot-bubble {
+          padding: 14px 18px;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        
+        .chatbot-bubble.user {
+          border-radius: 16px 16px 4px 16px;
+          background-color: white;
+          color: #374151;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .chatbot-bubble.bot {
+          border-radius: 16px 16px 16px 4px;
+          background-color: #f8fafc;
+          color: #374151;
+        }
+        
+        .chatbot-bubble.error {
+          border-radius: 16px 16px 16px 4px;
+          background-color: #fef2f2;
+          color: #dc2626;
+        }
+        
+        .chatbot-bubble p {
+          margin: 0;
+          font-size: 0.9rem;
+          line-height: 1.6;
+          white-space: pre-wrap;
+        }
+        
+        .chatbot-timestamp {
+          margin: 6px 0 0;
+          font-size: 0.75rem;
+          color: #9ca3af;
+        }
+        
+        .chatbot-input-area {
+          padding: 16px 32px 20px;
+          background: linear-gradient(180deg, #f0e6fa 0%, #fce7f3 100%);
+          border-top: 1px solid #f3e8ff;
+          flex-shrink: 0;
+        }
+        
+        .chatbot-input-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        
+        .chatbot-input-container {
+          flex: 1;
+          background-color: white;
+          border-radius: 28px;
+          display: flex;
+          align-items: center;
+          padding: 4px 8px 4px 20px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .chatbot-input {
+          flex: 1;
+          border: none;
+          outline: none;
+          font-size: 0.9rem;
+          color: #374151;
+          background-color: transparent;
+          padding: 10px 0;
+        }
+        
+        .chatbot-send-btn {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background-color: #3b82f6;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+        
+        .chatbot-send-btn:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+        
+        .chatbot-improve-btn {
+          text-align: right;
+          margin-top: 12px;
+        }
+        
+        .chatbot-improve-btn button {
+          background: none;
+          border: none;
+          color: #3b82f6;
+          font-size: 0.85rem;
+          font-weight: 500;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        
+        /* Tablet Responsive */
+        @media (max-width: 1024px) {
+          .chatbot-container {
+            padding: 12px;
+          }
+          
+          .chatbot-main-card {
+            max-height: calc(100vh - 94px);
+          }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+          .chatbot-container {
+            padding: 8px;
+          }
+          
+          .chatbot-main-card {
+            border-radius: 16px;
+            max-height: calc(100vh - 86px);
+          }
+          
+          .chatbot-header {
+            padding: 12px 16px;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+          }
+          
+          .chatbot-header-content {
+            text-align: center;
+          }
+          
+          .chatbot-title {
+            font-size: 1.2rem;
+          }
+          
+          .chatbot-subtitle {
+            font-size: 0.75rem;
+          }
+          
+          .chatbot-status {
+            font-size: 0.75rem;
+            gap: 4px;
+          }
+          
+          .chatbot-status-dot {
+            width: 6px;
+            height: 6px;
+          }
+          
+          .chatbot-today-badge {
+            margin-bottom: 10px;
+          }
+          
+          .chatbot-today-badge span {
+            padding: 4px 12px;
+            font-size: 0.7rem;
+          }
+          
+          .chatbot-messages-area {
+            padding: 0 12px 12px;
+          }
+          
+          .chatbot-message {
+            margin-bottom: 16px;
+            gap: 8px;
+          }
+          
+          .chatbot-message-content {
+            max-width: 80%;
+          }
+          
+          .chatbot-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 0.65rem;
+          }
+          
+          .chatbot-bubble {
+            padding: 10px 14px;
+            border-radius: 12px !important;
+          }
+          
+          .chatbot-bubble.user {
+            border-radius: 12px 12px 4px 12px !important;
+          }
+          
+          .chatbot-bubble.bot,
+          .chatbot-bubble.error {
+            border-radius: 12px 12px 12px 4px !important;
+          }
+          
+          .chatbot-bubble p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+          }
+          
+          .chatbot-timestamp {
+            font-size: 0.7rem;
+            margin-top: 4px;
+          }
+          
+          .chatbot-input-area {
+            padding: 12px 12px 16px;
+          }
+          
+          .chatbot-input-wrapper {
+            gap: 8px;
+          }
+          
+          .chatbot-input-container {
+            padding: 3px 6px 3px 14px;
+            border-radius: 24px;
+          }
+          
+          .chatbot-input {
+            font-size: 0.85rem;
+            padding: 8px 0;
+          }
+          
+          .chatbot-send-btn {
+            width: 42px;
+            height: 42px;
+          }
+          
+          .chatbot-improve-btn {
+            margin-top: 8px;
+          }
+          
+          .chatbot-improve-btn button {
+            font-size: 0.8rem;
+          }
+        }
+        
+        /* Small Mobile */
+        @media (max-width: 480px) {
+          .chatbot-container {
+            padding: 4px;
+          }
+          
+          .chatbot-main-card {
+            border-radius: 12px;
+            max-height: calc(100vh - 78px);
+          }
+          
+          .chatbot-header {
+            padding: 10px 12px;
+          }
+          
+          .chatbot-title {
+            font-size: 1.1rem;
+          }
+          
+          .chatbot-subtitle {
+            font-size: 0.7rem;
+          }
+          
+          .chatbot-status {
+            font-size: 0.7rem;
+          }
+          
+          .chatbot-messages-area {
+            padding: 0 10px 10px;
+          }
+          
+          .chatbot-message {
+            margin-bottom: 12px;
+            gap: 6px;
+          }
+          
+          .chatbot-message-content {
+            max-width: 85%;
+          }
+          
+          .chatbot-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 0.6rem;
+          }
+          
+          .chatbot-bubble {
+            padding: 8px 12px;
+          }
+          
+          .chatbot-bubble p {
+            font-size: 0.8rem;
+          }
+          
+          .chatbot-input-area {
+            padding: 10px 10px 14px;
+          }
+          
+          .chatbot-input-container {
+            padding: 2px 4px 2px 12px;
+          }
+          
+          .chatbot-input {
+            font-size: 0.8rem;
+            padding: 7px 0;
+          }
+          
+          .chatbot-send-btn {
+            width: 38px;
+            height: 38px;
+          }
+        }
+        
+        /* Extra Small Mobile */
+        @media (max-width: 360px) {
+          .chatbot-main-card {
+            border-radius: 10px;
+          }
+          
+          .chatbot-header {
+            padding: 8px 10px;
+          }
+          
+          .chatbot-title {
+            font-size: 1rem;
+          }
+          
+          .chatbot-subtitle {
+            font-size: 0.65rem;
+          }
+          
+          .chatbot-messages-area {
+            padding: 0 8px 8px;
+          }
+          
+          .chatbot-message-content {
+            max-width: 90%;
+          }
+          
+          .chatbot-bubble p {
+            font-size: 0.75rem;
+          }
+          
+          .chatbot-input {
+            font-size: 0.75rem;
+          }
+          
+          .chatbot-send-btn {
+            width: 36px;
+            height: 36px;
+          }
+        }
+      `}</style>
+      
+      {/* Main Chat Card */}
+      <div className="chatbot-main-card">
         {/* Chat Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4"> 
-          <h2 className="text-xl font-semibold">💬 Chat with Saathi</h2>
-          <p className="text-sm text-blue-100">AI Career Counselor</p>
+        <div className="chatbot-header">
+          <div className="chatbot-header-content">
+            <h2 className="chatbot-title">
+              Chat with <span style={{ color: '#22c55e' }}>SaathiX</span>
+            </h2>
+            <p className="chatbot-subtitle">
+              Your Personal AI Career Guide, Anytime
+            </p>
+          </div>
+          <div className="chatbot-status">
+            <span className="chatbot-status-dot"></span>
+            AI Online
+          </div>
+        </div>
+
+        {/* Today Badge */}
+        <div className="chatbot-today-badge">
+          <span>
+            {getTodayLabel()}
+          </span>
         </div>
 
         {/* Messages Area */}
-        <div className="h-96 overflow-y-auto p-4 bg-gray-50">
+        <div className="overflow-y-auto chatbot-messages-area">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`mb-4 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`chatbot-message ${msg.type === 'user' ? 'user' : ''}`}
             >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  msg.type === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : msg.type === 'error'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-white text-gray-800 border border-gray-200'
-                }`}
-                style={undefined}
-              >
-                <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+              {/* AI Avatar - Left side */}
+              {msg.type !== 'user' && (
+                <div className="chatbot-avatar ai">
+                  AI
+                </div>
+              )}
+
+              <div className="chatbot-message-content">
+                {/* Message Bubble */}
+                <div className={`chatbot-bubble ${msg.type === 'user' ? 'user' : msg.type === 'error' ? 'error' : 'bot'}`}>
+                  <p>{msg.text}</p>
+                </div>
+                {/* Timestamp */}
+                <p className="chatbot-timestamp" style={{
+                  textAlign: msg.type === 'user' ? 'right' : 'left'
+                }}>
+                  {formatTime()}
+                </p>
               </div>
+
+              {/* User Avatar - Right side */}
+              {msg.type === 'user' && (
+                <div className="chatbot-avatar user">
+                  ME
+                </div>
+              )}
             </div>
           ))}
+
+          {/* Loading indicator */}
           {isLoading && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-white border border-gray-200 rounded-lg px-4 py-2">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="chatbot-message">
+              <div className="chatbot-avatar ai">
+                AI
+              </div>
+              <div className="chatbot-bubble bot">
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    backgroundColor: '#9ca3af',
+                    borderRadius: '50%',
+                    animation: 'bounce 1s infinite'
+                  }}></div>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    backgroundColor: '#9ca3af',
+                    borderRadius: '50%',
+                    animation: 'bounce 1s infinite',
+                    animationDelay: '0.1s'
+                  }}></div>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    backgroundColor: '#9ca3af',
+                    borderRadius: '50%',
+                    animation: 'bounce 1s infinite',
+                    animationDelay: '0.2s'
+                  }}></div>
                 </div>
               </div>
             </div>
           )}
+
+          {/* Evaluating indicator */}
           {isEvaluating && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-white border border-gray-200 rounded-lg px-4 py-2">
-                <p className="text-sm text-gray-600">Analyzing your responses...</p>
+            <div className="chatbot-message">
+              <div className="chatbot-avatar ai">
+                AI
+              </div>
+              <div className="chatbot-bubble bot">
+                <p style={{ margin: 0, color: '#6b7280' }}>
+                  Analyzing your responses...
+                </p>
               </div>
             </div>
           )}
+
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
         {!isComplete && (
-          <div className="border-t border-gray-200 p-4 bg-white">
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your answer..."
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={isLoading}
-                autoFocus
-              />
+          <div className="chatbot-input-area">
+            <div className="chatbot-input-wrapper">
+              <div className="chatbot-input-container">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type Your Answer..."
+                  disabled={isLoading}
+                  autoFocus
+                  className="chatbot-input"
+                />
+                <button
+                  type="button"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: '8px',
+                    cursor: 'pointer',
+                    color: '#9ca3af',
+                    display: 'none'
+                  }}
+                  title="Attach file"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                  </svg>
+                </button>
+              </div>
               <button
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputMessage.trim()}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="chatbot-send-btn"
               >
-                Send
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+
+            {/* Improve My Writing Link */}
+            <div className="chatbot-improve-btn">
+              <button
+                type="button"
+                onClick={() => {
+                  // This could trigger an AI enhancement of the current input
+                  if (inputMessage.trim()) {
+                    notifySuccess('Feature coming soon!');
+                  }
+                }}
+              >
+                <span>✏️</span> Improve My Writing
               </button>
             </div>
           </div>
         )}
       </div>
 
+      {/* Animation styles */}
+      <style>{`
+        @keyframes bounce {
+          0%, 60%, 100% { transform: translateY(0); }
+          30% { transform: translateY(-4px); }
+        }
+      `}</style>
     </div>
   );
 };

@@ -476,25 +476,17 @@ function PsychometricInstructions() {
       {!error && (
         <main className="card instructions">
           {/* Header with Title and Timer - Horizontal Layout */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            marginBottom: '30px',
-            padding: '20px',
-            background: '#f8f9fa',
-            borderRadius: '8px'
-          }}>
+          <div className="instructions-page-header">
             {/* Left: Psychometric Test Heading */}
-            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '600' }}>Psychometric Test</h1>
+            <h1 className="instructions-page-title">Psychometric Test</h1>
             
             {/* Right: Timer Display */}
-            <div className="instructions-timer" style={{ margin: 0 }}>
-              <div className="timer-display" style={{ padding: '12px 20px' }}>
-                <span className="timer-icon" style={{ fontSize: '20px' }}>⏱️</span>
+            <div className="instructions-timer">
+              <div className="timer-display">
+                <span className="timer-icon">⏱️</span>
                 <div className="timer-text">
-                  <span className="timer-label" style={{ fontSize: '12px' }}>Reading Time</span>
-                  <span className={`timer-value ${timeElapsed >= MIN_READING_TIME_MS ? 'timer-ready' : ''}`} style={{ fontSize: '18px' }}>
+                  <span className="timer-label">Reading Time</span>
+                  <span className={`timer-value ${timeElapsed >= MIN_READING_TIME_MS ? 'timer-ready' : ''}`}>
                     {timeElapsed < MIN_READING_TIME_MS ? formatTime(remainingTime) : 'Ready'}
                   </span>
                 </div>
@@ -505,9 +497,9 @@ function PsychometricInstructions() {
           {/* Section Loading Status - Hidden (preparing in background) */}
 
           {/* Instructions Heading */}
-          <div className="instructions-header" style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h4 style={{ margin: '0 0 8px 0' }}>Test Instructions and Rules</h4>
-            <p className="muted" style={{ margin: 0 }}>
+          <div className="instructions-section-header">
+            <h4>Test Instructions and Rules</h4>
+            <p className="muted">
               Please read all rules carefully. You must read for at least 1 minute before proceeding.
             </p>
           </div>
@@ -579,38 +571,31 @@ function PsychometricInstructions() {
           </div>
 
           {/* Camera Permission Section */}
-          <div className="camera-permission-section" style={{ 
-            marginTop: '30px', 
-            padding: '20px', 
-            background: cameraPermissionGranted ? '#dcfce7' : '#fef3c7',
-            border: `2px solid ${cameraPermissionGranted ? '#10b981' : '#f59e0b'}`,
-            borderRadius: '8px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <div style={{ fontSize: '32px' }}>
+          <div className={`camera-permission-section ${cameraPermissionGranted ? 'camera-granted' : 'camera-required'}`}>
+            <div className="camera-permission-content">
+              <div className="camera-icon">
                 {cameraPermissionGranted ? '✅' : '📹'}
               </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>
+              <div className="camera-text">
+                <h4>
                   {cameraPermissionGranted ? 'Camera Access Granted' : 'Camera Access Required'}
                 </h4>
-                <p style={{ margin: 0, fontSize: '14px', color: '#64748b' }}>
+                <p>
                   {cameraPermissionGranted 
                     ? 'Your camera is ready for proctoring. You may now proceed with the test.'
                     : 'This test requires camera access for proctoring. Please grant permission to continue.'}
                 </p>
                 {cameraPermissionError && (
-                  <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#ef4444' }}>
+                  <p className="camera-error">
                     {cameraPermissionError}
                   </p>
                 )}
               </div>
               {!cameraPermissionGranted && (
                 <button
-                  className="btn-primary"
+                  className="btn-primary camera-btn"
                   onClick={requestCameraPermission}
                   disabled={isCheckingCamera}
-                  style={{ minWidth: '140px' }}
                 >
                   {isCheckingCamera ? 'Checking...' : 'Grant Access'}
                 </button>

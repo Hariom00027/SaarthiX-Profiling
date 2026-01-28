@@ -49,82 +49,103 @@ const ImageUploadForm = ({ onSubmit, onBack, profileData, templateLabel = 'selec
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-2">Upload Photo for {templateLabel}</h2>
-      <p className="mb-6 text-gray-600">
-        Add a clear headshot to personalize your {templateLabel.toLowerCase()}.
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block mb-2 text-sm font-medium">Profile Photo <span style={{ color: '#ef4444' }}>*</span></label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-              id="image-upload"
-            />
-            <label
-              htmlFor="image-upload"
-              className="cursor-pointer flex flex-col items-center"
-            >
-              {imagePreview ? (
-                <div className="mb-4">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-xs max-h-64 rounded-lg shadow-md mx-auto"
-                  />
-                </div>
-              ) : (
-                <div className="mb-4">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    stroke="currentColor"
-                    fill="none"
-                    viewBox="0 0 48 48"
-                  >
-                    <path
-                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
-              <span className="text-blue-600 hover:text-blue-700 font-medium">
-                {imagePreview ? 'Change Image' : 'Click to upload or drag and drop'}
-              </span>
-              <span className="text-sm text-gray-500 mt-2">
-                PNG, JPG, GIF up to 5MB
-              </span>
-            </label>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-3 sm:px-4 py-6 sm:py-10">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+          <div>
+            <p className="text-xs sm:text-sm uppercase tracking-wide text-blue-600 font-semibold">Photo Upload</p>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mt-1">Upload Photo for {templateLabel}</h2>
           </div>
-          {error && (
-            <p className="mt-2 text-sm text-red-600">{error}</p>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="self-start sm:self-auto rounded-full border border-slate-300 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:border-slate-500 transition"
+            >
+              ← Back
+            </button>
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={onBack}
-            className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={!selectedImage}
-          >
-            Continue
-          </button>
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl shadow-slate-200/80 p-4 sm:p-6 lg:p-8">
+          <p className="mb-4 sm:mb-6 text-sm sm:text-base text-gray-600">
+            Add a clear headshot to personalize your {templateLabel.toLowerCase()}.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div>
+              <label className="block mb-2 text-xs sm:text-sm font-medium text-slate-600">Profile Photo <span className="text-red-500">*</span></label>
+              <div className="border-2 border-dashed border-gray-300 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 text-center hover:border-blue-500 transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="cursor-pointer flex flex-col items-center"
+                >
+                  {imagePreview ? (
+                    <div className="mb-3 sm:mb-4">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="max-w-[200px] sm:max-w-xs max-h-48 sm:max-h-64 rounded-lg shadow-md mx-auto"
+                      />
+                    </div>
+                  ) : (
+                    <div className="mb-3 sm:mb-4">
+                      <svg
+                        className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                      >
+                        <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  <span className="text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium">
+                    {imagePreview ? 'Change Image' : 'Click to upload or drag and drop'}
+                  </span>
+                  <span className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2">
+                    PNG, JPG, GIF up to 5MB
+                  </span>
+                </label>
+              </div>
+              {error && (
+                <p className="mt-2 text-xs sm:text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-4">
+              <button
+                type="button"
+                onClick={onBack}
+                className="rounded-xl sm:rounded-2xl border border-slate-300 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-slate-600 hover:border-slate-500 transition"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className="rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-blue-200 transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!selectedImage}
+              >
+                Continue
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

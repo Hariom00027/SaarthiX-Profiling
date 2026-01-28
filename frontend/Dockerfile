@@ -25,14 +25,17 @@ RUN npm run build
 # Production stage with nginx
 FROM nginx:alpine
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 # Copy built files from builder stage to nginx html directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 4000 (matching nginx.conf)
+EXPOSE 4000
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
