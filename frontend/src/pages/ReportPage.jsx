@@ -20,7 +20,7 @@ const ReportPage = () => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `Saathi_Report_${timestamp}.pdf`;
-      
+
       await downloadProfileAsPDF(evaluationResultsRef.current, {
         fileName,
         orientation: 'p'
@@ -52,7 +52,7 @@ const ReportPage = () => {
       };
 
       const result = await regenerateProfile(payload);
-      
+
       if (result.success && result.data) {
         notifySuccess('Profile enhanced successfully!');
         // Navigate to enhance page to show the enhanced profile
@@ -132,11 +132,11 @@ const ReportPage = () => {
 
       sessionStorage.setItem('psychometric_from_profile', 'true');
       sessionStorage.setItem('psychometric_profile_data', JSON.stringify(psychometricData));
-      
+
       notifySuccess('Preparing your psychometric test...');
-      
+
       setTimeout(() => {
-        window.location.href = '/psychometric/start';
+        window.location.href = '/profiling/psychometric/start';
       }, 500);
     } catch (error) {
       console.error('Error preparing psychometric test:', error);
@@ -180,7 +180,7 @@ const ReportPage = () => {
 
         <div ref={evaluationResultsRef} className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-bold mb-6 text-gray-800">Your Interest Evaluation Report</h2>
-          
+
           {/* Interest Scores */}
           {reportData.interests && (
             <div className="mb-8">

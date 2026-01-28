@@ -64,7 +64,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
   // Restore chatbot state from localStorage on mount
   useEffect(() => {
     if (!userProfile || hasRestoredRef.current) return;
-    
+
     hasRestoredRef.current = true;
     let restored = false;
 
@@ -73,7 +73,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
       const saved = localStorage.getItem(CHAT_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        
+
         if (parsed && parsed.chatState && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
           setChatState(parsed.chatState);
           setMessages(parsed.messages);
@@ -152,7 +152,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
           complete: false
         };
         setChatState(initialState);
-        
+
         // Add welcome message and first question
         setMessages([
           {
@@ -180,7 +180,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
 
     const userMsg = inputMessage.trim();
     setInputMessage('');
-    
+
     // Add user message to chat
     setMessages(prev => [...prev, { type: 'user', text: userMsg }]);
     setIsLoading(true);
@@ -192,35 +192,35 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
 
     try {
       const result = await sendChatMessage(userMsg, chatState);
-      
+
       if (result.success && result.data) {
         const { nextQuestion, conversationState: updatedState, isComplete: completed } = result.data;
-        
+
         setChatState(updatedState);
-        
+
         if (completed) {
           setIsComplete(true);
           setMessages(prev => [...prev, {
             type: 'bot',
             text: 'Great! You\'ve answered all questions. Let me analyze your responses...'
           }]);
-          
+
           // Automatically evaluate using the updated chat state (includes the latest answers)
           handleEvaluate(updatedState);
         } else if (nextQuestion) {
           // Check if this question is similar to an already answered question
           const normalizedNext = nextQuestion.toLowerCase();
-          const isInterestsGoalsQuestion = normalizedNext.includes('interests') && 
-                                          (normalizedNext.includes('goals') || normalizedNext.includes('goal'));
-          
+          const isInterestsGoalsQuestion = normalizedNext.includes('interests') &&
+            (normalizedNext.includes('goals') || normalizedNext.includes('goal'));
+
           if (isInterestsGoalsQuestion && updatedState.answers) {
             // Check if we've already answered a similar interests/goals question
             const hasAnsweredSimilar = Object.keys(updatedState.answers).some(answeredQ => {
               const normalizedAnswered = answeredQ.toLowerCase();
-              return normalizedAnswered.includes('interests') && 
-                     (normalizedAnswered.includes('goals') || normalizedAnswered.includes('goal'));
+              return normalizedAnswered.includes('interests') &&
+                (normalizedAnswered.includes('goals') || normalizedAnswered.includes('goal'));
             });
-            
+
             if (hasAnsweredSimilar) {
               // Skip this question and request the next one
               console.log('Skipping duplicate interests/goals question');
@@ -229,7 +229,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
               console.warn('Backend returned a duplicate interests/goals question');
             }
           }
-          
+
           setMessages(prev => [...prev, { type: 'bot', text: nextQuestion }]);
         }
       }
@@ -253,18 +253,18 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
   const handleEvaluate = async (stateForEvaluation) => {
     const evaluationState = stateForEvaluation || chatState;
     if (!evaluationState || !userProfile) return;
-    
+
     setIsEvaluating(true);
     try {
       const result = await evaluateInterests(userProfile, evaluationState.answers);
-      
+
       if (result.success && result.data) {
         setEvaluationResult(result.data);
         setMessages(prev => [...prev, {
           type: 'bot',
           text: 'Evaluation complete! Redirecting to your report page...'
         }]);
-        
+
         // Call the regenerate callback which will handle navigation to report page
         setTimeout(() => {
           if (onRegenerateProfile) {
@@ -298,7 +298,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `Saathi_Report_${timestamp}.pdf`;
-      
+
       await downloadProfileAsPDF(evaluationResultsRef.current, {
         fileName,
         orientation: 'p'
@@ -417,21 +417,21 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
       };
 
       console.log('✅ Prepared psychometric data:', psychometricData);
-      
+
       // Store profile data in sessionStorage for auto-creation on psychometric start page
       sessionStorage.setItem('psychometric_from_profile', 'true');
       sessionStorage.setItem('psychometric_profile_data', JSON.stringify(psychometricData));
-      
+
       console.log('💾 Stored data in sessionStorage');
       console.log('   - psychometric_from_profile:', sessionStorage.getItem('psychometric_from_profile'));
       console.log('   - psychometric_profile_data length:', sessionStorage.getItem('psychometric_profile_data')?.length);
-      
+
       notifySuccess('Preparing your psychometric test...');
-      
+
       // Redirect to psychometric start page which will auto-create session
       console.log('🚀 Redirecting to /psychometric/start in 500ms...');
       setTimeout(() => {
-        window.location.href = '/psychometric/start';
+        window.location.href = '/profiling/psychometric/start';
       }, 500);
     } catch (error) {
       console.error('Error preparing psychometric test:', error);
@@ -456,7 +456,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Chat Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4"> 
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
           <h2 className="text-xl font-semibold">💬 Chat with Saathi</h2>
           <p className="text-sm text-blue-100">AI Career Counselor</p>
         </div>
@@ -469,13 +469,12 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
               className={`mb-4 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  msg.type === 'user'
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${msg.type === 'user'
                     ? 'bg-blue-600 text-white'
                     : msg.type === 'error'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-white text-gray-800 border border-gray-200'
-                }`}
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-white text-gray-800 border border-gray-200'
+                  }`}
                 style={undefined}
               >
                 <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
