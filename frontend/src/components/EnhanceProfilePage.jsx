@@ -264,143 +264,249 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
   const profileHeading = profile?.templateType === 'cover' ? 'Cover Letter' : 'Profile Details';
   const previewTemplateText = enhancedProfile || templateTextFromData;
 
-  const enhancedCardStyle = {
-    marginTop: '30px',
-    border: '2px solid #10b981',
-    borderRadius: '24px',
-    padding: '28px 32px',
-    boxShadow: '0 18px 35px rgba(16, 185, 129, 0.15)',
-    backgroundColor: 'white',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  };
-
-  const cardHeaderStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '16px',
-    paddingBottom: '12px',
-    borderBottom: '1px solid #e5e7eb',
-  };
-
-  const cardBodyStyle = {
-    minHeight: '360px',
-  };
-
-  const cardTextStyle = {
-    lineHeight: '1.6',
-    color: '#374151',
-    fontSize: '1rem',
-  };
-
   return (
-    <div className="profile-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #f8f9fa 0%, #e8f4f8 50%, #f5e6f0 100%)',
+      padding: '24px 32px',
+      boxSizing: 'border-box',
+    }}>
+      {/* Top Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '32px',
+      }}>
         <button
           type="button"
           onClick={onBack}
-          className="profile-btn"
           style={{
-            backgroundColor: '#f3f4f6',
-            color: '#1f2937',
-            border: '1px solid #d1d5db',
-            padding: '10px 16px',
-            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'none',
+            border: 'none',
+            color: '#3b82f6',
+            fontSize: '1rem',
+            fontWeight: '500',
             cursor: 'pointer',
-            fontWeight: '500'
+            padding: '8px 0',
           }}
         >
-          ← Back to {profileHeading}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5"></path>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to {profileHeading}
         </button>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-          <button
-            type="button"
-            onClick={handleSaveProfile}
-            disabled={!profileId || isSaving}
-            className="profile-btn"
-            style={{
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              cursor: !profileId || isSaving ? 'not-allowed' : 'pointer',
-              opacity: !profileId || isSaving ? 0.6 : 1,
-              fontSize: '0.95rem',
-              fontWeight: '500'
-            }}
-          >
-            {isSaving ? 'Saving...' : '💾 Save Profile (JSON)'}
-          </button>
+
+        <button
+          type="button"
+          onClick={runEnhance}
+          disabled={!templateText || isEnhancing}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '12px',
+            fontSize: '0.95rem',
+            fontWeight: '600',
+            cursor: !templateText || isEnhancing ? 'not-allowed' : 'pointer',
+            opacity: !templateText || isEnhancing ? 0.7 : 1,
+            boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          {isEnhancing ? 'Enhancing...' : 'Enhance with AI'}
+        </button>
+      </div>
+
+      {/* Main Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '24px',
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)',
+        overflow: 'hidden',
+      }}>
+        {/* Card Header */}
+        <div style={{
+          padding: '24px 32px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        }}>
+          <div style={{ flex: 1 }}>
+            <h1 style={{
+              fontSize: '1.75rem',
+              fontWeight: '700',
+              margin: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+            }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span style={{ color: '#1f2937' }}>Enhance</span>
+              <span style={{ color: '#22c55e' }}>AI Profile</span>
+            </h1>
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#ecfdf5',
+            padding: '6px 14px',
+            borderRadius: '20px',
+          }}>
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+            }}></span>
+            <span style={{
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              color: '#059669',
+            }}>AI Online</span>
+          </div>
+        </div>
+
+        {/* Action Buttons Row */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          padding: '0 32px 16px 32px',
+          gap: '12px',
+        }}>
           <button
             type="button"
             onClick={handleDownload}
             disabled={!profileId || isDownloading}
-            className="profile-btn btn-pdf"
+            title="Download PDF"
             style={{
-              padding: '10px 20px',
-              borderRadius: '6px',
-              fontWeight: '500',
-              border: '1px solid #1f2937',
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
               backgroundColor: 'white',
-              cursor: !profileId || isDownloading ? 'not-allowed' : 'pointer'
+              cursor: !profileId || isDownloading ? 'not-allowed' : 'pointer',
+              opacity: !profileId || isDownloading ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
             }}
           >
-            {isDownloading ? 'Downloading...' : 'Download Profile (PDF)'}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleSaveProfile}
+            disabled={!profileId || isSaving}
+            title="Save Profile"
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: 'white',
+              cursor: !profileId || isSaving ? 'not-allowed' : 'pointer',
+              opacity: !profileId || isSaving ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="9"></line>
+              <line x1="15" y1="3" x2="15" y2="9"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
           </button>
           <button
             type="button"
             onClick={handleEditProfile}
-            className="profile-btn btn-edit"
             disabled={!profileId}
+            title="Edit Profile"
             style={{
-              padding: '10px 20px',
-              borderRadius: '6px',
-              backgroundColor: '#374151',
-              border: 'none',
-              color: 'white',
-              fontWeight: '500',
-              cursor: !profileId ? 'not-allowed' : 'pointer'
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: 'white',
+              cursor: !profileId ? 'not-allowed' : 'pointer',
+              opacity: !profileId ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
             }}
           >
-            Edit Profile
-          </button>
-          <button
-            type="button"
-            onClick={runEnhance}
-            disabled={!templateText || isEnhancing}
-            className="profile-btn"
-            style={{
-              backgroundColor: '#10b981',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              cursor: !templateText || isEnhancing ? 'not-allowed' : 'pointer',
-              opacity: !templateText || isEnhancing ? 0.6 : 1,
-              fontSize: '0.95rem',
-              fontWeight: '500'
-            }}
-          >
-            {isEnhancing ? 'Enhancing...' : '✨ Enhance with AI'}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
           </button>
         </div>
-      </div>
 
-      <div className="profile-card" style={enhancedCardStyle}>
-        <div style={cardHeaderStyle}>
-          <span style={{ fontSize: '1.4rem' }}>✨</span>
-          <h3 style={{ margin: 0, color: '#10b981', fontSize: '1.5rem', fontWeight: '600' }}>
-            AI-Enhanced Profile
-          </h3>
-        </div>
-        <div style={cardBodyStyle}>
+        {/* Profile Content Area */}
+        <div style={{
+          margin: '0 32px 32px 32px',
+          backgroundColor: '#fefefe',
+          borderRadius: '16px',
+          border: '1px solid #f3f4f6',
+          minHeight: '350px',
+          padding: '24px',
+        }}>
           {isEnhancing ? (
-            <p style={{ ...cardTextStyle, color: '#4b5563', textAlign: 'center' }}>
-              Enhancing your profile with AI insights. This may take a few seconds.
-            </p>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+              color: '#6b7280',
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                border: '3px solid #e5e7eb',
+                borderTopColor: '#8b5cf6',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                marginBottom: '16px',
+              }}></div>
+              <p style={{ fontSize: '1rem', margin: 0 }}>
+                Enhancing your profile with AI insights...
+              </p>
+              <style>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+            </div>
           ) : (
             <TemplatePreview
               templateType={resolvedTemplateType}
@@ -415,127 +521,153 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
             />
           )}
         </div>
-      </div>
 
-      {enhanceError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm" style={{ marginTop: '20px' }}>
-          {enhanceError}
-        </div>
-      )}
-
-      {saveMessage && (
-        <div className={`p-3 border rounded text-sm ${saveMessage.type === 'success'
-          ? 'bg-green-50 border-green-200 text-green-700'
-          : 'bg-red-50 border-red-200 text-red-700'}`}
-          style={{ marginTop: '20px' }}
-        >
-          {saveMessage.text}
-        </div>
-      )}
-
-      {downloadError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm" style={{ marginTop: '20px' }}>
-          {downloadError}
-        </div>
-      )}
-
-      {!templateText && (
-        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-yellow-700 text-sm" style={{ marginTop: '20px' }}>
-          Template text is missing. Please go back and select a template to enhance.
-        </div>
-      )}
-
-      {/* Feedback Section - Show after profile is enhanced */}
-      {!isEnhancing && enhancedProfile && enhancedProfile.trim().length > 0 && (
-        <div style={{
-          marginTop: '30px',
-          padding: '24px',
-          backgroundColor: '#f9fafb',
-          borderRadius: '12px',
-          border: '2px solid #e5e7eb',
-          textAlign: 'center'
-        }}>
-          <h3 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            color: '#111827',
-            marginBottom: '16px'
-          }}>
-            Do you like the profile?
-          </h3>
+        {/* Error Messages */}
+        {enhanceError && (
           <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '16px',
-            flexWrap: 'wrap'
+            margin: '0 32px 20px 32px',
+            padding: '12px 16px',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#dc2626',
+            fontSize: '0.9rem',
           }}>
-            <button
-              type="button"
-              onClick={handleProfileAccepted}
-              disabled={isHandlingFeedback}
-              style={{
-                backgroundColor: '#10b981',
-                color: 'white',
-                border: 'none',
-                padding: '12px 32px',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: isHandlingFeedback ? 'not-allowed' : 'pointer',
-                opacity: isHandlingFeedback ? 0.6 : 1,
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-              }}
-              onMouseEnter={(e) => {
-                if (!isHandlingFeedback) {
-                  e.target.style.backgroundColor = '#059669';
-                  e.target.style.transform = 'translateY(-2px)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isHandlingFeedback) {
-                  e.target.style.backgroundColor = '#10b981';
-                  e.target.style.transform = 'translateY(0)';
-                }
-              }}
-            >
-              {isHandlingFeedback ? 'Saving...' : '✓ Yes'}
-            </button>
-            <button
-              type="button"
-              onClick={handleProfileRejected}
-              disabled={isEnhancing || isHandlingFeedback}
-              style={{
-                backgroundColor: '#ef4444',
-                color: 'white',
-                border: 'none',
-                padding: '12px 32px',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: (isEnhancing || isHandlingFeedback) ? 'not-allowed' : 'pointer',
-                opacity: (isEnhancing || isHandlingFeedback) ? 0.6 : 1,
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-              }}
-              onMouseEnter={(e) => {
-                if (!isEnhancing && !isHandlingFeedback) {
-                  e.target.style.backgroundColor = '#dc2626';
-                  e.target.style.transform = 'translateY(-2px)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isEnhancing && !isHandlingFeedback) {
-                  e.target.style.backgroundColor = '#ef4444';
-                  e.target.style.transform = 'translateY(0)';
-                }
-              }}
-            >
-              {isEnhancing ? 'Regenerating...' : '✗ No, Create Again'}
-            </button>
+            {enhanceError}
           </div>
-        </div>
-      )}
+        )}
+
+        {saveMessage && (
+          <div style={{
+            margin: '0 32px 20px 32px',
+            padding: '12px 16px',
+            backgroundColor: saveMessage.type === 'success' ? '#ecfdf5' : '#fef2f2',
+            border: `1px solid ${saveMessage.type === 'success' ? '#a7f3d0' : '#fecaca'}`,
+            borderRadius: '8px',
+            color: saveMessage.type === 'success' ? '#059669' : '#dc2626',
+            fontSize: '0.9rem',
+          }}>
+            {saveMessage.text}
+          </div>
+        )}
+
+        {downloadError && (
+          <div style={{
+            margin: '0 32px 20px 32px',
+            padding: '12px 16px',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#dc2626',
+            fontSize: '0.9rem',
+          }}>
+            {downloadError}
+          </div>
+        )}
+
+        {!templateText && (
+          <div style={{
+            margin: '0 32px 20px 32px',
+            padding: '12px 16px',
+            backgroundColor: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: '8px',
+            color: '#d97706',
+            fontSize: '0.9rem',
+          }}>
+            Template text is missing. Please go back and select a template to enhance.
+          </div>
+        )}
+
+        {/* Feedback Section */}
+        {!isEnhancing && enhancedProfile && enhancedProfile.trim().length > 0 && (
+          <div style={{
+            padding: '32px',
+            textAlign: 'center',
+            borderTop: '1px solid #f3f4f6',
+          }}>
+            <h3 style={{
+              fontSize: '1.15rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '20px',
+              margin: '0 0 20px 0',
+            }}>
+              Do you like this profile
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '16px',
+              flexWrap: 'wrap',
+            }}>
+              <button
+                type="button"
+                onClick={handleProfileAccepted}
+                disabled={isHandlingFeedback}
+                style={{
+                  backgroundColor: '#22c55e',
+                  color: 'white',
+                  border: 'none',
+                  padding: '14px 48px',
+                  borderRadius: '28px',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: isHandlingFeedback ? 'not-allowed' : 'pointer',
+                  opacity: isHandlingFeedback ? 0.6 : 1,
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isHandlingFeedback) {
+                    e.target.style.backgroundColor = '#16a34a';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isHandlingFeedback) {
+                    e.target.style.backgroundColor = '#22c55e';
+                    e.target.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                {isHandlingFeedback ? 'Saving...' : 'Yes'}
+              </button>
+              <button
+                type="button"
+                onClick={handleProfileRejected}
+                disabled={isEnhancing || isHandlingFeedback}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: '#ef4444',
+                  border: '2px solid #ef4444',
+                  padding: '14px 32px',
+                  borderRadius: '28px',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: (isEnhancing || isHandlingFeedback) ? 'not-allowed' : 'pointer',
+                  opacity: (isEnhancing || isHandlingFeedback) ? 0.6 : 1,
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isEnhancing && !isHandlingFeedback) {
+                    e.target.style.backgroundColor = '#fef2f2';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isEnhancing && !isHandlingFeedback) {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                {isEnhancing ? 'Regenerating...' : 'No, Enhance with prompt'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Success Popup */}
       {showSuccessPopup && (

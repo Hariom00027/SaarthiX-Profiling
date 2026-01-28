@@ -144,6 +144,7 @@ const ProfileDisplay = ({ profileData, onEnhanceRequest, onChatbotRequest, force
   const [isInlineEditing, setIsInlineEditing] = useState(false);
   const [showPhotoUploadModal, setShowPhotoUploadModal] = useState(false);
   const [pendingTemplateChange, setPendingTemplateChange] = useState(null);
+  const [editProfileTab, setEditProfileTab] = useState('profiling'); // 'profiling' or 'coverLetter'
   const templateRef = useRef(null);
 
   useEffect(() => {
@@ -1131,165 +1132,813 @@ const ProfileDisplay = ({ profileData, onEnhanceRequest, onChatbotRequest, force
   };
 
   return (
-    <div className="profile-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        <h2>{heading}</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label htmlFor="template-selector" style={{ fontSize: '0.95rem', fontWeight: '500', color: '#444' }}>
-              Change Template:
-            </label>
-            <select
-              id="template-selector"
-              value={templateType || 'professional'}
-              onChange={handleTemplateChange}
-              disabled={!profileId || isChangingTemplate}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ddd',
-                fontSize: '0.95rem',
-                cursor: isChangingTemplate ? 'not-allowed' : 'pointer',
-                backgroundColor: isChangingTemplate ? '#f5f5f5' : 'white',
-                minWidth: '180px'
-              }}
-            >
-              {templateOptions
-                .filter(option => option.value !== 'cover' || templateType === 'cover')
-                .map((option) => (
-                  <option key={option.value} value={option.value}>
+    <div className="profile-display-container">
+      {/* Responsive Styles */}
+      <style>{`
+        .profile-display-container {
+          min-height: calc(100vh - 70px);
+          background: linear-gradient(180deg, #f8f9fa 0%, #e8f4f8 50%, #f5e6f0 100%);
+          padding: 32px 24px;
+          box-sizing: border-box;
+        }
+        
+        .profile-display-header {
+          max-width: 1100px;
+          margin: 0 auto 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        
+        .profile-display-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #111827;
+          margin: 0 0 8px 0;
+        }
+        
+        .profile-display-subtitle {
+          font-size: 0.95rem;
+          color: #6b7280;
+          margin: 0;
+        }
+        
+        .profile-enhance-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          border-radius: 28px;
+          border: none;
+          background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+          color: white;
+          font-size: 0.95rem;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+          transition: all 0.2s ease;
+        }
+        
+        .profile-enhance-btn:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+        
+        .profile-main-card {
+          max-width: 1100px;
+          margin: 0 auto;
+          background-color: white;
+          border-radius: 24px;
+          border: 1px solid #e5e7eb;
+          padding: 24px;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        }
+        
+        .profile-controls-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        
+        .profile-controls-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        
+        .profile-select-group {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        
+        .profile-select-label {
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: #6b7280;
+        }
+        
+        .profile-select {
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          font-size: 0.85rem;
+          cursor: pointer;
+          background-color: white;
+          min-width: 140px;
+          color: #374151;
+        }
+        
+        .profile-icon-buttons {
+          display: flex;
+          gap: 8px;
+          margin-left: 8px;
+        }
+        
+        .profile-icon-btn {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          border: none;
+          background-color: #3b82f6;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          cursor: pointer;
+        }
+        
+        .profile-icon-btn:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+        
+        .profile-icon-btn:hover:not(:disabled) {
+          background-color: #2563eb;
+        }
+        
+        .profile-inline-edit-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 8px;
+          border: none;
+          color: #3b82f6;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .profile-card-wrapper {
+          position: relative;
+          background-color: white;
+          border-radius: 16px;
+          border: 1px solid #e5e7eb;
+          padding: 24px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        
+        /* Tablet Styles */
+        @media (max-width: 1024px) {
+          .profile-display-container {
+            padding: 24px 16px;
+          }
+          
+          .profile-main-card {
+            padding: 20px;
+            border-radius: 20px;
+          }
+          
+          .profile-card-wrapper {
+            padding: 20px;
+          }
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+          .profile-display-container {
+            padding: 16px 12px;
+          }
+          
+          .profile-display-header {
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+          }
+          
+          .profile-display-title {
+            font-size: 1.35rem;
+          }
+          
+          .profile-display-subtitle {
+            font-size: 0.85rem;
+          }
+          
+          .profile-enhance-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+          }
+          
+          .profile-main-card {
+            padding: 16px;
+            border-radius: 16px;
+          }
+          
+          .profile-controls-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          
+          .profile-controls-right {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+          }
+          
+          .profile-select-group {
+            width: 100%;
+          }
+          
+          .profile-select {
+            width: 100%;
+            min-width: unset;
+            padding: 10px 12px;
+          }
+          
+          .profile-icon-buttons {
+            justify-content: center;
+            margin-left: 0;
+            margin-top: 4px;
+          }
+          
+          .profile-icon-btn {
+            width: 44px;
+            height: 44px;
+            flex: 1;
+            max-width: 80px;
+          }
+          
+          .profile-inline-edit-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 16px;
+          }
+          
+          .profile-card-wrapper {
+            padding: 12px;
+            border-radius: 12px;
+          }
+          
+          .profile-saved-profiles {
+            padding: 12px !important;
+          }
+          
+          .profile-saved-profiles h3 {
+            font-size: 0.85rem !important;
+          }
+          
+          .profile-saved-profiles button {
+            font-size: 0.8rem !important;
+            padding: 6px 10px !important;
+          }
+        }
+        
+        /* Small Mobile Styles */
+        @media (max-width: 480px) {
+          .profile-display-container {
+            padding: 12px 8px;
+          }
+          
+          .profile-display-header {
+            gap: 10px;
+            margin-bottom: 12px;
+          }
+          
+          .profile-display-title {
+            font-size: 1.2rem;
+          }
+          
+          .profile-display-subtitle {
+            font-size: 0.8rem;
+          }
+          
+          .profile-enhance-btn {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            gap: 6px;
+          }
+          
+          .profile-main-card {
+            padding: 12px;
+            border-radius: 14px;
+          }
+          
+          .profile-select {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+          }
+          
+          .profile-select-label {
+            font-size: 0.7rem;
+          }
+          
+          .profile-icon-btn {
+            width: 40px;
+            height: 40px;
+          }
+          
+          .profile-inline-edit-btn {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+          }
+          
+          .profile-card-wrapper {
+            padding: 10px;
+            border-radius: 10px;
+          }
+        }
+        
+        /* Extra Small Mobile */
+        @media (max-width: 360px) {
+          .profile-display-title {
+            font-size: 1.1rem;
+          }
+          
+          .profile-display-subtitle {
+            font-size: 0.75rem;
+          }
+          
+          .profile-enhance-btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+          }
+          
+          .profile-main-card {
+            padding: 10px;
+          }
+          
+          .profile-card-wrapper {
+            padding: 8px;
+          }
+        }
+        
+        /* Edit Modal Responsive Styles */
+        .profile-edit-modal {
+          border-radius: 16px;
+        }
+        
+        .profile-edit-modal-header {
+          padding: 24px 32px 0;
+        }
+        
+        .profile-edit-form {
+          padding: 24px 32px 32px;
+        }
+        
+        .profile-edit-form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        
+        .profile-edit-form-row {
+          grid-column: 1 / -1;
+        }
+        
+        .profile-edit-toggle-group {
+          display: flex;
+          background-color: #f3f4f6;
+          border-radius: 12px;
+          padding: 4px;
+          margin-top: 20px;
+          gap: 4px;
+        }
+        
+        .profile-edit-toggle-btn {
+          flex: 1;
+          padding: 10px 20px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .profile-edit-section {
+          margin-bottom: 28px;
+        }
+        
+        .profile-edit-section-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 20px;
+        }
+        
+        .profile-edit-section-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background-color: #eff6ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .profile-edit-section-title {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #3b82f6;
+        }
+        
+        .profile-edit-input-label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #111827;
+          margin-bottom: 6px;
+        }
+        
+        .profile-edit-input {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          color: #374151;
+          outline: none;
+          box-sizing: border-box;
+        }
+        
+        .profile-edit-textarea {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          color: #374151;
+          outline: none;
+          box-sizing: border-box;
+          resize: vertical;
+          min-height: 100px;
+        }
+        
+        .profile-edit-btn-row {
+          display: flex;
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 24px;
+          padding-top: 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+        
+        .profile-edit-cancel-btn {
+          padding: 10px 24px;
+          font-size: 0.875rem;
+          font-weight: 500;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background-color: white;
+          color: #6b7280;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .profile-edit-save-btn {
+          padding: 10px 24px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          border: none;
+          border-radius: 8px;
+          background-color: #3b82f6;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .profile-edit-save-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+          .profile-edit-modal {
+            border-radius: 12px;
+            margin: 8px;
+          }
+          
+          .profile-edit-modal-header {
+            padding: 16px 16px 0;
+          }
+          
+          .profile-edit-modal-header h2 {
+            font-size: 1.25rem !important;
+          }
+          
+          .profile-edit-modal-header p {
+            font-size: 0.8rem !important;
+          }
+          
+          .profile-edit-form {
+            padding: 16px 16px 20px;
+          }
+          
+          .profile-edit-form-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+          
+          .profile-edit-toggle-group {
+            margin-top: 16px;
+          }
+          
+          .profile-edit-toggle-btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+          }
+          
+          .profile-edit-section {
+            margin-bottom: 20px;
+          }
+          
+          .profile-edit-section-header {
+            margin-bottom: 14px;
+          }
+          
+          .profile-edit-section-icon {
+            width: 28px;
+            height: 28px;
+          }
+          
+          .profile-edit-section-title {
+            font-size: 0.9rem;
+          }
+          
+          .profile-edit-input-label {
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+          }
+          
+          .profile-edit-input,
+          .profile-edit-textarea {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+          }
+          
+          .profile-edit-btn-row {
+            flex-direction: column-reverse;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+          }
+          
+          .profile-edit-cancel-btn,
+          .profile-edit-save-btn {
+            width: 100%;
+            padding: 12px 20px;
+          }
+          
+          .profile-chat-btn-container {
+            margin-top: 20px !important;
+          }
+          
+          .profile-chat-btn {
+            padding: 12px 24px !important;
+            font-size: 0.9rem !important;
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          
+          .profile-message-box {
+            margin: 16px 12px 0 !important;
+            padding: 10px 14px !important;
+            font-size: 0.8rem !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .profile-edit-modal-header h2 {
+            font-size: 1.1rem !important;
+          }
+          
+          .profile-edit-modal-header p {
+            font-size: 0.75rem !important;
+          }
+          
+          .profile-edit-toggle-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+          }
+          
+          .profile-edit-section-title {
+            font-size: 0.85rem;
+          }
+          
+          .profile-edit-input-label {
+            font-size: 0.75rem;
+          }
+          
+          .profile-edit-input,
+          .profile-edit-textarea {
+            padding: 8px 10px;
+            font-size: 0.75rem;
+          }
+          
+          .profile-chat-btn {
+            padding: 10px 20px !important;
+            font-size: 0.85rem !important;
+          }
+        }
+      `}</style>
+      
+      {/* Page Header */}
+      <div className="profile-display-header">
+        <div>
+          <h1 className="profile-display-title">
+            {heading}
+          </h1>
+          <p className="profile-display-subtitle">
+            Refine your professional narrative with our AI-powered tools.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="profile-enhance-btn"
+          onClick={() => onEnhanceRequest?.(templateText)}
+          disabled={!templateText}
+        >
+          <span style={{ fontSize: '1.1rem' }}>✨</span>
+          Enhance with AI
+        </button>
+      </div>
+
+      {/* Main Card */}
+      <div className="profile-main-card">
+        {/* Controls Row */}
+        <div className="profile-controls-row">
+          {/* Left - Inline Edit Toggle */}
+          <button
+            type="button"
+            className="profile-inline-edit-btn"
+            onClick={() => setIsInlineEditing((prev) => !prev)}
+            style={{
+              backgroundColor: isInlineEditing ? '#dbeafe' : 'transparent',
+            }}
+          >
+            <span>✏️</span>
+            {isInlineEditing ? 'Exit Edit Mode' : 'Inline Edit Mode'}
+          </button>
+
+          {/* Right - Template, Font, and Action Buttons */}
+          <div className="profile-controls-right">
+            <div className="profile-select-group">
+              <label className="profile-select-label">
+                Change Template
+              </label>
+              <select
+                id="template-selector"
+                className="profile-select"
+                value={templateType || 'professional'}
+                onChange={handleTemplateChange}
+                disabled={!profileId || isChangingTemplate}
+                style={{
+                  cursor: isChangingTemplate ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {templateOptions
+                  .filter(option => option.value !== 'cover' || templateType === 'cover')
+                  .map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="profile-select-group">
+              <label className="profile-select-label">
+                Change Font
+              </label>
+              <select
+                id="font-selector"
+                className="profile-select"
+                value={selectedFont}
+                onChange={(e) => setSelectedFont(e.target.value)}
+                style={{
+                  fontFamily: selectedFont,
+                }}
+              >
+                {fontOptions.map((option) => (
+                  <option key={option.value} value={option.value} style={{ fontFamily: option.value }}>
                     {option.label}
                   </option>
                 ))}
-            </select>
-            {isChangingTemplate && (
-              <span style={{ fontSize: '0.85rem', color: '#666' }}>Loading...</span>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label htmlFor="font-selector" style={{ fontSize: '0.95rem', fontWeight: '500', color: '#444' }}>
-              Change Font:
-            </label>
-            <select
-              id="font-selector"
-              value={selectedFont}
-              onChange={(e) => setSelectedFont(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ddd',
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                backgroundColor: 'white',
-                minWidth: '180px',
-                fontFamily: selectedFont
-              }}
-            >
-              {fontOptions.map((option) => (
-                <option key={option.value} value={option.value} style={{ fontFamily: option.value }}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsInlineEditing((prev) => !prev)}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '6px',
-              border: '1px solid #3b82f6',
-              backgroundColor: isInlineEditing ? '#3b82f6' : 'white',
-              color: isInlineEditing ? 'white' : '#1f2933',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: 500,
-            }}
-          >
-            {isInlineEditing ? 'Done Inline Editing' : 'Inline Edit Text'}
-          </button>
-        </div>
-      </div>
+              </select>
+            </div>
 
-      {/* Display all saved profiles (collapsed by default, explicit toggle) */}
-      {!hideProfilesList && showAllProfiles && allProfiles.length > 0 && (
-        <div style={{
-          marginBottom: '24px',
-          padding: '16px',
-          backgroundColor: '#f9fafb',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <h3 style={{
-            marginBottom: '12px',
-            fontSize: '1.1rem',
-            fontWeight: '600',
-            color: '#111827'
-          }}>
-            Saved Profiles {allProfiles.length > 3 ? `(Showing 3 of ${allProfiles.length})` : `(${allProfiles.length})`}
-          </h3>
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            flexWrap: 'wrap'
-          }}>
-            {allProfiles.slice(0, 3).map((profileResponse, index) => {
-              const profile = profileResponse.profile || profileResponse;
-              const profileDate = profile?.createdAt 
-                ? new Date(profile.createdAt).toLocaleDateString()
-                : `Profile ${index + 1}`;
-              const isSelected = index === selectedProfileIndex;
-              return (
-                <button
-                  key={profile?.id || index}
-                  onClick={() => handleProfileSelect(index)}
-                  style={{
-                    padding: '10px 16px',
-                    borderRadius: '6px',
-                    border: `2px solid ${isSelected ? '#3b82f6' : '#d1d5db'}`,
-                    backgroundColor: isSelected ? '#dbeafe' : 'white',
-                    color: isSelected ? '#1e40af' : '#374151',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: isSelected ? '600' : '500',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: '4px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isSelected) {
-                      e.target.style.backgroundColor = '#f3f4f6';
-                      e.target.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected) {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                >
-                  <span>Profile {index + 1}</span>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    opacity: 0.7
-                  }}>
-                    {profileDate}
-                  </span>
-                </button>
-              );
-            })}
+            {/* Icon Buttons */}
+            <div className="profile-icon-buttons">
+              {/* Download Button */}
+              <button
+                type="button"
+                className="profile-icon-btn"
+                onClick={handleDownload}
+                disabled={!profileId || isDownloading}
+                title="Download PDF"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button>
+
+              {/* Save Button */}
+              <button
+                type="button"
+                className="profile-icon-btn"
+                onClick={handleSaveProfile}
+                disabled={!profileId || isSaving}
+                title="Save Profile"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+              </button>
+
+              {/* Edit Button */}
+              <button
+                type="button"
+                className="profile-icon-btn"
+                onClick={handleEditClick}
+                disabled={!profileId}
+                title="Edit Profile"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-      )}
 
-      <div
-        className="profile-card-wrapper"
-        style={{ position: 'relative' }}
-        ref={templateRef}
-      >
+        {/* Display all saved profiles (collapsed by default, explicit toggle) */}
+        {!hideProfilesList && showAllProfiles && allProfiles.length > 0 && (
+          <div className="profile-saved-profiles" style={{
+            marginBottom: '20px',
+            padding: '16px',
+            backgroundColor: '#f9fafb',
+            borderRadius: '12px',
+            border: '1px solid #e5e7eb'
+          }}>
+            <h3 style={{
+              marginBottom: '12px',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              color: '#111827'
+            }}>
+              Saved Profiles {allProfiles.length > 3 ? `(Showing 3 of ${allProfiles.length})` : `(${allProfiles.length})`}
+            </h3>
+            <div style={{
+              display: 'flex',
+              gap: '8px',
+              flexWrap: 'wrap'
+            }}>
+              {allProfiles.slice(0, 3).map((profileResponse, index) => {
+                const profileItem = profileResponse.profile || profileResponse;
+                const profileDate = profileItem?.createdAt 
+                  ? new Date(profileItem.createdAt).toLocaleDateString()
+                  : `Profile ${index + 1}`;
+                const isSelected = index === selectedProfileIndex;
+                return (
+                  <button
+                    key={profileItem?.id || index}
+                    onClick={() => handleProfileSelect(index)}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: `2px solid ${isSelected ? '#3b82f6' : '#e5e7eb'}`,
+                      backgroundColor: isSelected ? '#eff6ff' : 'white',
+                      color: isSelected ? '#1e40af' : '#374151',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: isSelected ? '600' : '500',
+                      transition: 'all 0.2s',
+                      flex: '1 1 auto',
+                      minWidth: '120px',
+                      maxWidth: '200px',
+                      textAlign: 'center'
+                    }}
+                  >
+                    Profile {index + 1} • {profileDate}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Profile Content Card */}
+        <div
+          className="profile-card-wrapper"
+          ref={templateRef}
+        >
         <TemplatePreview
           templateType={templateType}
           templateText={templateText}
@@ -1428,509 +2077,636 @@ const ProfileDisplay = ({ profileData, onEnhanceRequest, onChatbotRequest, force
         )}
       </div>
 
-      <div className="profile-actions" style={{ position: 'relative', zIndex: 10, isolation: 'isolate' }}>
+      </div>
+
+      {/* Chat with Saathi Button - Centered */}
+      <div className="profile-chat-btn-container" style={{
+        maxWidth: '1100px',
+        margin: '32px auto 0',
+        textAlign: 'center',
+        padding: '0 12px'
+      }}>
         <button
           type="button"
-          onClick={handleSaveProfile}
-          className="profile-btn"
-          disabled={!profileId || isSaving}
+          className="profile-chat-btn"
+          onClick={() => onChatbotRequest?.()}
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '14px 32px',
+            borderRadius: '28px',
+            border: 'none',
             backgroundColor: '#3b82f6',
             color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            cursor: isSaving || !profileId ? 'not-allowed' : 'pointer',
-            opacity: isSaving || !profileId ? 0.6 : 1,
-            fontSize: '0.95rem',
-            fontWeight: '500',
-            transition: 'all 0.2s ease',
-            whiteSpace: 'nowrap',
-            minHeight: '40px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          {isSaving ? 'Saving...' : '💾 Save Profile'}
-        </button>
-        <button
-          type="button"
-          onClick={handleDownload}
-          className="profile-btn btn-pdf"
-          disabled={!profileId || isDownloading}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            fontSize: '0.95rem',
-            fontWeight: '500',
-            whiteSpace: 'nowrap',
-            minHeight: '40px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          {isDownloading ? 'Downloading...' : 'Download Profile (PDF)'}
-        </button>
-        <button
-          type="button"
-          onClick={handleEditClick}
-          className="profile-btn btn-edit"
-          disabled={!profileId}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            fontSize: '0.95rem',
-            fontWeight: '500',
-            whiteSpace: 'nowrap',
-            minHeight: '40px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          Edit Profile
-        </button>
-        <button
-          type="button"
-          onClick={() => onEnhanceRequest?.(templateText)}
-          className="profile-btn"
-          disabled={!templateText}
-          style={{
-            backgroundColor: '#10b981',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            cursor: !templateText ? 'not-allowed' : 'pointer',
-            opacity: !templateText ? 0.6 : 1,
-            fontSize: '0.95rem',
-            fontWeight: '500',
-            transition: 'all 0.2s ease',
-            whiteSpace: 'nowrap',
-            minHeight: '40px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          ✨ Enhance with AI
-        </button>
-        <button
-          type="button"
-          onClick={() => onChatbotRequest?.()}
-          className="profile-btn"
-          style={{
-            backgroundColor: '#8b5cf6',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '6px',
+            fontSize: '1rem',
+            fontWeight: '600',
             cursor: 'pointer',
-            fontSize: '0.95rem',
-            fontWeight: '500',
+            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
             transition: 'all 0.2s ease',
-            whiteSpace: 'nowrap',
-            minHeight: '40px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            width: 'auto',
+            maxWidth: '100%'
           }}
         >
-          💬 Chat with Saathi
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Chat with Saathi
         </button>
       </div>
+
+      {/* Error/Success Messages */}
       {downloadError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm" style={{ marginTop: '20px' }}>
+        <div className="profile-message-box" style={{
+          maxWidth: '1100px',
+          margin: '20px auto 0',
+          padding: '12px 16px',
+          backgroundColor: '#fef2f2',
+          border: '1px solid #fecaca',
+          borderRadius: '8px',
+          color: '#dc2626',
+          fontSize: '0.875rem'
+        }}>
           {downloadError}
         </div>
       )}
       {saveMessage && (
-        <div className={`p-3 border rounded text-sm ${saveMessage.type === 'success' 
-          ? 'bg-green-50 border-green-200 text-green-700' 
-          : 'bg-red-50 border-red-200 text-red-700'}`} 
-          style={{ marginTop: '20px' }}>
+        <div className="profile-message-box" style={{
+          maxWidth: '1100px',
+          margin: '20px auto 0',
+          padding: '12px 16px',
+          backgroundColor: saveMessage.type === 'success' ? '#f0fdf4' : '#fef2f2',
+          border: `1px solid ${saveMessage.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
+          borderRadius: '8px',
+          color: saveMessage.type === 'success' ? '#16a34a' : '#dc2626',
+          fontSize: '0.875rem'
+        }}>
           {saveMessage.text}
         </div>
       )}
 
       {isEditing && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Edit Profile</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div 
+            className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto profile-edit-modal"
+            style={{
+              borderRadius: '16px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            {/* Header */}
+            <div className="profile-edit-modal-header" style={{ padding: '20px 16px 0', position: 'relative' }}>
+              {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="text-gray-500 hover:text-gray-700"
+                style={{
+                  position: 'absolute',
+                  top: '24px',
+                  right: '32px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  color: '#9ca3af',
+                  fontSize: '1.5rem',
+                  lineHeight: 1,
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.color = '#6b7280'}
+                onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
               >
-                ✕
+                ×
               </button>
+
+              {/* Centered Title and Subtitle */}
+              <div style={{ textAlign: 'center' }}>
+                <h2 style={{ 
+                  fontSize: '1.5rem', 
+                  fontWeight: '600', 
+                  color: '#111827',
+                  marginBottom: '8px'
+                }}>
+                  Profile Details
+                </h2>
+                <p style={{ 
+                  fontSize: '0.875rem', 
+                  color: '#6b7280',
+                  margin: 0
+                }}>
+                  Update your personal and academic details to personalize your career roadmap.
+                </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="mb-4">
-                <h4 className="text-lg font-semibold text-gray-700">Profile Information</h4>
-                <p className="text-sm text-gray-500 mt-1">Your personal and academic details</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Name</span>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formValues.name}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formValues.email}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Phone Number</span>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formValues.phone}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                    placeholder="e.g., (123) 456-7890"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Date of Birth</span>
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formValues.dob}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">LinkedIn</span>
-                  <input
-                    type="text"
-                    name="linkedin"
-                    value={formValues.linkedin}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Institute</span>
-                  <input
-                    type="text"
-                    name="institute"
-                    value={formValues.institute}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Current Degree</span>
-                  <input
-                    type="text"
-                    name="currentDegree"
-                    value={formValues.currentDegree}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Branch</span>
-                  <input
-                    type="text"
-                    name="branch"
-                    value={formValues.branch}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Year of Study</span>
-                  <input
-                    type="text"
-                    name="yearOfStudy"
-                    value={formValues.yearOfStudy}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                {/* Only show Certifications if it has a value */}
-                {(formValues.certifications && formValues.certifications.trim()) && (
-                  <label className="flex flex-col gap-2 md:col-span-2">
-                    <span className="text-sm font-medium">Certifications</span>
-                    <textarea
-                      name="certifications"
-                      value={formValues.certifications}
-                      onChange={handleInputChange}
-                      className="w-full border rounded px-3 py-2"
-                      rows={2}
-                    />
-                  </label>
-                )}
-
-                {/* Only show Achievements if it has a value */}
-                {(formValues.achievements && formValues.achievements.trim()) && (
-                  <label className="flex flex-col gap-2 md:col-span-2">
-                    <span className="text-sm font-medium">Achievements</span>
-                    <textarea
-                      name="achievements"
-                      value={formValues.achievements}
-                      onChange={handleInputChange}
-                      className="w-full border rounded px-3 py-2"
-                      rows={2}
-                    />
-                  </label>
-                )}
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Technical Skills</span>
-                  <textarea
-                    name="technicalSkills"
-                    value={formValues.technicalSkills}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Soft Skills</span>
-                  <textarea
-                    name="softSkills"
-                    value={formValues.softSkills}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Interests</span>
-                  <textarea
-                    name="interests"
-                    value={formValues.interests}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                    placeholder="e.g., Product design, Systems thinking"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Hobbies</span>
-                  <textarea
-                    name="hobbies"
-                    value={formValues.hobbies}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                    placeholder="e.g., Photography, Learning new languages"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Template Type</span>
-                  <select
-                    name="templateType"
-                    value={formValues.templateType}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  >
-                    {templateOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              {/* Separator between Profile and Cover Letter sections */}
-              <div className="my-6 border-t-2 border-gray-300"></div>
-              
-              <div className="mb-4">
-                <h4 className="text-lg font-semibold text-gray-700">Cover Letter Details</h4>
-                <p className="text-sm text-gray-500 mt-1">Provide company-specific information for your cover letter</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Hiring Manager Name</span>
-                  <input
-                    type="text"
-                    name="hiringManagerName"
-                    value={formValues.hiringManagerName}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Company Name</span>
-                  <input
-                    type="text"
-                    name="companyName"
-                    value={formValues.companyName}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Company Address</span>
-                  <textarea
-                    name="companyAddress"
-                    value={formValues.companyAddress}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Position Title</span>
-                  <input
-                    type="text"
-                    name="positionTitle"
-                    value={formValues.positionTitle}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Relevant Experience</span>
-                  <textarea
-                    name="relevantExperience"
-                    value={formValues.relevantExperience}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Key Achievement</span>
-                  <input
-                    type="text"
-                    name="keyAchievement"
-                    value={formValues.keyAchievement}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Strengths</span>
-                  <textarea
-                    name="strengths"
-                    value={formValues.strengths}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <label className="flex flex-col gap-2 md:col-span-2">
-                  <span className="text-sm font-medium">Closing Note</span>
-                  <textarea
-                    name="closingNote"
-                    value={formValues.closingNote}
-                    onChange={handleInputChange}
-                    className="w-full border rounded px-3 py-2"
-                    rows={2}
-                  />
-                </label>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
-                  <label className="flex items-center gap-2 text-sm font-medium">
-                    <input
-                      type="checkbox"
-                      name="hasInternship"
-                      checked={formValues.hasInternship}
-                      onChange={handleInputChange}
-                      className="h-4 w-4"
-                    />
-                    <span>Completed Internship</span>
-                  </label>
-                  {formValues.hasInternship && (
-                    <textarea
-                      name="internshipDetails"
-                      value={formValues.internshipDetails}
-                      onChange={handleInputChange}
-                      className="w-full border rounded px-3 py-2"
-                      rows={2}
-                      required={formValues.hasInternship}
-                      placeholder="Share internship projects, roles, or key takeaways"
-                    />
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-2">
-                  <label className="flex items-center gap-2 text-sm font-medium">
-                    <input
-                      type="checkbox"
-                      name="hasExperience"
-                      checked={formValues.hasExperience}
-                      onChange={handleInputChange}
-                      className="h-4 w-4"
-                    />
-                    <span>Professional Experience</span>
-                  </label>
-                  {formValues.hasExperience && (
-                    <textarea
-                      name="experienceDetails"
-                      value={formValues.experienceDetails}
-                      onChange={handleInputChange}
-                      className="w-full border rounded px-3 py-2"
-                      rows={2}
-                      required={formValues.hasExperience}
-                      placeholder="Mention organisations, roles, and key contributions"
-                    />
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
+              {/* Toggle Button */}
+              <div className="profile-edit-toggle-group">
                 <button
                   type="button"
+                  className="profile-edit-toggle-btn"
+                  onClick={() => setEditProfileTab('profiling')}
+                  style={{
+                    backgroundColor: editProfileTab === 'profiling' ? 'white' : 'transparent',
+                    color: editProfileTab === 'profiling' ? '#3b82f6' : '#6b7280',
+                    boxShadow: editProfileTab === 'profiling' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  Profiling
+                </button>
+                <button
+                  type="button"
+                  className="profile-edit-toggle-btn"
+                  onClick={() => setEditProfileTab('coverLetter')}
+                  style={{
+                    backgroundColor: editProfileTab === 'coverLetter' ? 'white' : 'transparent',
+                    color: editProfileTab === 'coverLetter' ? '#3b82f6' : '#6b7280',
+                    boxShadow: editProfileTab === 'coverLetter' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  Cover Letter
+                </button>
+              </div>
+              </div>
+
+            <form onSubmit={handleSubmit} className="profile-edit-form">
+              {/* Profiling Sections */}
+              {editProfileTab === 'profiling' && (
+                <>
+              {/* Personal Details Section */}
+              <div className="profile-edit-section">
+                <div className="profile-edit-section-header">
+                  <div className="profile-edit-section-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span className="profile-edit-section-title">
+                    Personal Details
+                  </span>
+                </div>
+
+                <div className="profile-edit-form-grid">
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formValues.name}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formValues.email}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formValues.phone}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Date of Birth
+                    </label>
+                    <input
+                      type="date"
+                      name="dob"
+                      value={formValues.dob}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      LinkedIn Profile URL
+                    </label>
+                    <input
+                      type="url"
+                      name="linkedin"
+                      value={formValues.linkedin}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Academic Background Section */}
+              <div className="profile-edit-section">
+                <div className="profile-edit-section-header">
+                  <div className="profile-edit-section-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                  </div>
+                  <span className="profile-edit-section-title">
+                    Academic Background
+                  </span>
+                </div>
+
+                <div className="profile-edit-form-grid">
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Institute / University
+                    </label>
+                    <input
+                      type="text"
+                      name="institute"
+                      value={formValues.institute}
+                      onChange={handleInputChange}
+                      required
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Current Degree
+                    </label>
+                    <input
+                      type="text"
+                      name="currentDegree"
+                      value={formValues.currentDegree}
+                      onChange={handleInputChange}
+                      required
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Branch / Specialization
+                    </label>
+                    <input
+                      type="text"
+                      name="branch"
+                      value={formValues.branch}
+                      onChange={handleInputChange}
+                      required
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Year of Study
+                    </label>
+                    <input
+                      type="text"
+                      name="yearOfStudy"
+                      value={formValues.yearOfStudy}
+                      onChange={handleInputChange}
+                      required
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  {/* Certifications - only show if has value */}
+                  {(formValues.certifications && formValues.certifications.trim()) && (
+                    <div className="profile-edit-form-row">
+                      <label className="profile-edit-input-label">
+                        Certifications
+                      </label>
+                      <textarea
+                        name="certifications"
+                        value={formValues.certifications}
+                        onChange={handleInputChange}
+                        rows={2}
+                        className="profile-edit-textarea"
+                      />
+                    </div>
+                  )}
+
+                  {/* Achievements - only show if has value */}
+                  {(formValues.achievements && formValues.achievements.trim()) && (
+                    <div className="profile-edit-form-row">
+                      <label className="profile-edit-input-label">
+                        Achievements
+                      </label>
+                      <textarea
+                        name="achievements"
+                        value={formValues.achievements}
+                        onChange={handleInputChange}
+                        rows={2}
+                        className="profile-edit-textarea"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Skills & Interests Section */}
+              <div className="profile-edit-section">
+                <div className="profile-edit-section-header">
+                  <div className="profile-edit-section-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </div>
+                  <span className="profile-edit-section-title">
+                    Skills & Interests
+                  </span>
+                </div>
+
+                <div className="profile-edit-form-grid">
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Technical Skills
+                    </label>
+                    <textarea
+                      name="technicalSkills"
+                      value={formValues.technicalSkills}
+                      onChange={handleInputChange}
+                      required
+                      rows={2}
+                      placeholder="e.g., Python, JavaScript, Machine Learning"
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Soft Skills
+                    </label>
+                    <textarea
+                      name="softSkills"
+                      value={formValues.softSkills}
+                      onChange={handleInputChange}
+                      required
+                      rows={2}
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Interests
+                    </label>
+                    <textarea
+                      name="interests"
+                      value={formValues.interests}
+                      onChange={handleInputChange}
+                      required
+                      rows={2}
+                      placeholder="e.g., Product design, Systems thinking"
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Hobbies
+                    </label>
+                    <textarea
+                      name="hobbies"
+                      value={formValues.hobbies}
+                      onChange={handleInputChange}
+                      required
+                      rows={2}
+                      placeholder="e.g., Photography, Learning new languages"
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Template Type
+                    </label>
+                    <select
+                      name="templateType"
+                      value={formValues.templateType}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                      style={{ backgroundColor: 'white' }}
+                    >
+                      {templateOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+                </>
+              )}
+
+              {/* Cover Letter Section */}
+              {editProfileTab === 'coverLetter' && (
+              <div className="profile-edit-section">
+                <div className="profile-edit-section-header">
+                  <div className="profile-edit-section-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <span className="profile-edit-section-title">
+                    Cover Letter Details
+                  </span>
+                </div>
+
+                <div className="profile-edit-form-grid">
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Hiring Manager Name
+                    </label>
+                    <input
+                      type="text"
+                      name="hiringManagerName"
+                      value={formValues.hiringManagerName}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Company Name
+                    </label>
+                    <input
+                      type="text"
+                      name="companyName"
+                      value={formValues.companyName}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Company Address
+                    </label>
+                    <textarea
+                      name="companyAddress"
+                      value={formValues.companyAddress}
+                      onChange={handleInputChange}
+                      rows={2}
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Position Title
+                    </label>
+                    <input
+                      type="text"
+                      name="positionTitle"
+                      value={formValues.positionTitle}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Relevant Experience
+                    </label>
+                    <textarea
+                      name="relevantExperience"
+                      value={formValues.relevantExperience}
+                      onChange={handleInputChange}
+                      rows={2}
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Key Achievement
+                    </label>
+                    <input
+                      type="text"
+                      name="keyAchievement"
+                      value={formValues.keyAchievement}
+                      onChange={handleInputChange}
+                      className="profile-edit-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="profile-edit-input-label">
+                      Strengths
+                    </label>
+                    <textarea
+                      name="strengths"
+                      value={formValues.strengths}
+                      onChange={handleInputChange}
+                      rows={2}
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Closing Note
+                    </label>
+                    <textarea
+                      name="closingNote"
+                      value={formValues.closingNote}
+                      onChange={handleInputChange}
+                      rows={2}
+                      className="profile-edit-textarea"
+                    />
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        name="hasInternship"
+                        checked={formValues.hasInternship}
+                        onChange={handleInputChange}
+                        style={{ width: '16px', height: '16px', accentColor: '#3b82f6' }}
+                      />
+                      Completed Internship
+                    </label>
+                    {formValues.hasInternship && (
+                      <textarea
+                        name="internshipDetails"
+                        value={formValues.internshipDetails}
+                        onChange={handleInputChange}
+                        rows={2}
+                        required={formValues.hasInternship}
+                        placeholder="Share internship projects, roles, or key takeaways"
+                        className="profile-edit-textarea"
+                        style={{ marginTop: '8px' }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        name="hasExperience"
+                        checked={formValues.hasExperience}
+                        onChange={handleInputChange}
+                        style={{ width: '16px', height: '16px', accentColor: '#3b82f6' }}
+                      />
+                      Professional Experience
+                    </label>
+                    {formValues.hasExperience && (
+                      <textarea
+                        name="experienceDetails"
+                        value={formValues.experienceDetails}
+                        onChange={handleInputChange}
+                        rows={2}
+                        required={formValues.hasExperience}
+                        placeholder="Mention organisations, roles, and key contributions"
+                        className="profile-edit-textarea"
+                        style={{
+                          marginTop: '8px'
+                        }}
+                    />
+                  )}
+                </div>
+              </div>
+              </div>
+              )}
+
+              {/* Footer Buttons */}
+              <div className="profile-edit-btn-row">
+                <button
+                  type="button"
+                  className="profile-edit-cancel-btn"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                  className="profile-edit-save-btn"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                  {isSubmitting ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </form>
@@ -1940,29 +2716,8 @@ const ProfileDisplay = ({ profileData, onEnhanceRequest, onChatbotRequest, force
 
       {/* Photo Upload Modal */}
       {showPhotoUploadModal && pendingTemplateChange && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '24px',
-            maxWidth: '600px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
-          }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-[600px] w-full max-h-[90vh] overflow-auto shadow-xl p-4 sm:p-6">
             <ImageUploadForm
               onSubmit={handlePhotoUpload}
               onBack={handlePhotoUploadCancel}

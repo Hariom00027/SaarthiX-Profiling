@@ -1,0 +1,103 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: saarthix-mongodb
+    restart: unless-stopped
+    ports:
+      - "37017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - saarthix-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # Backend Service (Spring Boot)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: saarthix-backend
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    environment:
+      # MongoDB Configuration
+      - MONGODB_URI=mongodb://mongodb:27017/profiling_db
+      - MONGODB_DATABASE=profiling_db
+      
+      # Frontend URL
+      - FRONTEND_URL=http://localhost:4000
+      
+      # JWT Secret (CHANGE THIS IN PRODUCTION!)
+      - JWT_SECRET=${JWT_SECRET:-your-256-bit-secret-key-here-please-change-this-in-production-minimum-32-characters-long}
+      
+      # OpenAI API Key (optional - set in .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      
+      # Google OAuth2 (optional - set in .env file)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=http://localhost:9090/login/oauth2/code/google
+      
+      # Admin Credentials (optional - set in .env file)
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - ADMIN_NAME=${ADMIN_NAME:-Admin}
+      
+      # Logging
+      - LOG_PATH=/app/logs
+    volumes:
+      - backend_logs:/app/logs
+      - backend_profiles:/app/profiles
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - saarthix-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Frontend Service (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:9090
+    container_name: saarthix-frontend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - saarthix-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  saarthix-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  backend_logs:
+    driver: local
+  backend_profiles:
+    driver: local

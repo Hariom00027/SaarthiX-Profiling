@@ -2,6 +2,7 @@ package com.profiling.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.profiling.exception.AIServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,12 +82,12 @@ public class OpenAIServiceImpl implements OpenAIService {
                     .block(Duration.ofSeconds(600));
 
             if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-                throw new RuntimeException("No choices returned from OpenAI API");
+                throw new AIServiceException("AI service did not return a valid response. Please try again.");
             }
 
             Choice firstChoice = response.getChoices().get(0);
             if (firstChoice.getMessage() == null || firstChoice.getMessage().getContent() == null) {
-                throw new RuntimeException("Invalid response structure from OpenAI API");
+                throw new AIServiceException("AI service returned an invalid response structure. Please try again.");
             }
 
             String enhancedText = firstChoice.getMessage().getContent().trim();
@@ -98,11 +99,53 @@ public class OpenAIServiceImpl implements OpenAIService {
         } catch (org.springframework.web.reactive.function.client.WebClientResponseException e) {
             log.error("OpenAI API Error - Status: {}, Response: {}", e.getStatusCode(), e.getResponseBodyAsString());
             log.error("Request details - Model: {}, Prompt length: {} characters", MODEL, prompt.length());
-            throw new RuntimeException("Failed to enhance profile with AI: " + e.getMessage() + " | Response: " + e.getResponseBodyAsString(), e);
+            String errorMessage = "AI enhancement failed: " + extractErrorMessage(e.getResponseBodyAsString());
+            throw new AIServiceException(errorMessage, e);
+        } catch (AIServiceException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to enhance profile via OpenAI: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to enhance profile with AI: " + e.getMessage(), e);
+            throw new AIServiceException("AI enhancement service is temporarily unavailable. Please try again later.", e);
         }
+    }
+
+    /**
+     * Extract a user-friendly error message from OpenAI API error response
+     */
+    private String extractErrorMessage(String responseBody) {
+        if (responseBody == null || responseBody.isEmpty()) {
+            return "Service temporarily unavailable";
+        }
+        try {
+            // Try to parse the error message from JSON response
+            if (responseBody.contains("\"message\"")) {
+                int msgStart = responseBody.indexOf("\"message\"");
+                int valueStart = responseBody.indexOf(":", msgStart) + 1;
+                int valueEnd = responseBody.indexOf("\"", valueStart + 2);
+                if (valueStart > 0 && valueEnd > valueStart) {
+                    // Skip the opening quote
+                    valueStart = responseBody.indexOf("\"", valueStart) + 1;
+                    if (valueStart > 0 && valueEnd > valueStart) {
+                        return responseBody.substring(valueStart, valueEnd);
+                    }
+                }
+            }
+            // Check for rate limit error
+            if (responseBody.contains("rate_limit") || responseBody.contains("Rate limit")) {
+                return "AI service is busy. Please wait a moment and try again.";
+            }
+            // Check for quota error
+            if (responseBody.contains("quota") || responseBody.contains("insufficient_quota")) {
+                return "AI service quota exceeded. Please contact support.";
+            }
+            // Check for invalid API key
+            if (responseBody.contains("invalid_api_key") || responseBody.contains("Incorrect API key")) {
+                return "AI service configuration error. Please contact support.";
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to parse OpenAI error response: {}", ex.getMessage());
+        }
+        return "Service temporarily unavailable. Please try again.";
     }
 
     @Override
@@ -204,22 +247,25 @@ public class OpenAIServiceImpl implements OpenAIService {
                     .block(Duration.ofSeconds(600));
 
             if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-                throw new RuntimeException("No choices returned from OpenAI API");
+                throw new AIServiceException("AI service did not return a valid response. Please try again.");
             }
 
             Choice firstChoice = response.getChoices().get(0);
             if (firstChoice.getMessage() == null || firstChoice.getMessage().getContent() == null) {
-                throw new RuntimeException("Invalid response structure from OpenAI API");
+                throw new AIServiceException("AI service returned an invalid response structure. Please try again.");
             }
 
             return firstChoice.getMessage().getContent().trim();
         } catch (org.springframework.web.reactive.function.client.WebClientResponseException e) {
             log.error("OpenAI API Error - Status: {}, Response: {}", e.getStatusCode(), e.getResponseBodyAsString());
             log.error("Request details - Model: {}, Max tokens: {}, Prompt length: {}", MODEL, maxTokens, userPrompt.length());
-            throw new RuntimeException("Failed to enhance paragraph with AI: " + e.getMessage() + " | Response: " + e.getResponseBodyAsString(), e);
+            String errorMessage = "AI enhancement failed: " + extractErrorMessage(e.getResponseBodyAsString());
+            throw new AIServiceException(errorMessage, e);
+        } catch (AIServiceException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to call OpenAI chat completions: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to enhance paragraph with AI: " + e.getMessage(), e);
+            throw new AIServiceException("AI enhancement service is temporarily unavailable. Please try again later.", e);
         }
     }
 
@@ -379,14 +425,16 @@ public class OpenAIServiceImpl implements OpenAIService {
                     .block(Duration.ofSeconds(600));
 
             if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-                throw new RuntimeException("No choices returned from OpenAI API");
+                throw new AIServiceException("AI service did not return a valid response. Please try again.");
             }
 
             String responseText = response.getChoices().get(0).getMessage().getContent().trim();
             return parseQuestionsFromResponse(responseText);
+        } catch (AIServiceException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to generate questions: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to generate questions: " + e.getMessage(), e);
+            throw new AIServiceException("Failed to generate questions. Please try again later.", e);
         }
     }
 
@@ -470,13 +518,15 @@ public class OpenAIServiceImpl implements OpenAIService {
                     .block(Duration.ofSeconds(600));
 
             if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-                throw new RuntimeException("No choices returned from OpenAI API");
+                throw new AIServiceException("AI service did not return a valid response. Please try again.");
             }
 
             return response.getChoices().get(0).getMessage().getContent().trim();
+        } catch (AIServiceException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to evaluate interests: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to evaluate interests: " + e.getMessage(), e);
+            throw new AIServiceException("Failed to evaluate interests. Please try again later.", e);
         }
     }
 

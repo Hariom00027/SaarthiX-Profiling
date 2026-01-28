@@ -5,6 +5,77 @@ import {
   DesignerPortraitDisplay
 } from './TemplateDisplays';
 
+// Responsive styles for the template preview wrapper
+const TemplatePreviewResponsiveStyles = () => (
+  <style>{`
+    .profile-card,
+    .profile-card-wrapper {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    .profile-card p,
+    .profile-card-wrapper p {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Fallback template styles */
+    .profile-card > p.whitespace-pre-line {
+      line-height: 1.8;
+      padding: 16px;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-card,
+      .profile-card-wrapper {
+        padding: 12px !important;
+        border-radius: 12px !important;
+      }
+      
+      .profile-card > p.whitespace-pre-line {
+        font-size: 0.9rem;
+        line-height: 1.7;
+        padding: 12px;
+      }
+      
+      .profile-card > h3 {
+        font-size: 1.2rem;
+        padding: 12px;
+        margin-bottom: 8px;
+      }
+      
+      .profile-card > h3 span {
+        font-size: 0.85rem !important;
+        margin-top: 6px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .profile-card,
+      .profile-card-wrapper {
+        padding: 10px !important;
+        border-radius: 10px !important;
+      }
+      
+      .profile-card > p.whitespace-pre-line {
+        font-size: 0.85rem;
+        line-height: 1.6;
+        padding: 10px;
+      }
+      
+      .profile-card > h3 {
+        font-size: 1.1rem;
+        padding: 10px;
+      }
+    }
+  `}</style>
+);
+
 const TemplatePreview = ({
   templateType,
   templateText,
@@ -223,6 +294,7 @@ const TemplatePreview = ({
       className={wrapperClassName} 
       style={mergedStyle}
     >
+      <TemplatePreviewResponsiveStyles />
       {renderedContent}
     </div>
   );

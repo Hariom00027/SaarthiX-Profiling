@@ -72,7 +72,8 @@ public class GlobalExceptionHandler {
             UnauthorizedException.class,
             DatabaseConnectionException.class,
             DataSaveException.class,
-            ResourceNotFoundException.class
+            ResourceNotFoundException.class,
+            AIServiceException.class
     })
     public ResponseEntity<Map<String, Object>> handleCustomExceptions(ApplicationException ex,
                                                                       HttpServletRequest request) {
