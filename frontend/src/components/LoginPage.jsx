@@ -38,7 +38,7 @@ const LoginPage = ({ initialError }) => {
         await login(token, { id: userId, email: userEmail, name: userName, role });
         // Don't reload - let React handle the state update
         // The App.jsx useEffect will detect authentication and switch to 'start'
-        window.location.href = '/';
+        window.location.href = '/profiling/';
       } else {
         setError(response.error || 'Authentication failed');
       }

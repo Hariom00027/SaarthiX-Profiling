@@ -2,7 +2,7 @@ import axios from 'axios';
 import { notifyError, notifySuccess } from './utils/notifications';
 
 // Get API URL from environment variable or use default
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/profiling-api';
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -69,15 +69,15 @@ export const submitProfile = async (profileData, templateType = 'professional') 
       ...profileData,
       templateType: templateType
     };
-    
+
     const response = await api.post('/api/profiles', dataWithTemplate);
     console.log('API response:', response);
     console.log('API response data:', response.data);
-    
+
     // Backend returns: { message: "...", data: { profile: {...}, templateText: "..." } }
     // Extract the actual profile data from the nested structure
     const actualData = response.data.data || response.data;
-    
+
     return { success: true, data: actualData };
   } catch (error) {
     console.error('API error:', error);
@@ -165,7 +165,7 @@ export const enhanceProfileWithAI = async (profileText, userPrompt = null) => {
 
     // Backend returns: { message: "...", data: { enhancedProfile: "..." } }
     const enhancedProfile = response.data?.data?.enhancedProfile || response.data?.enhancedProfile;
-    
+
     if (!enhancedProfile) {
       return {
         success: false,
@@ -285,7 +285,7 @@ export const getCurrentUser = async () => {
 export const exchangeSomethingXToken = async (token, email, name, userType) => {
   try {
     console.log('Calling exchange endpoint with:', { token: token ? 'present' : 'missing', email, name, userType });
-    
+
     // Use form data for POST request
     const formData = new URLSearchParams();
     if (token) formData.append('token', token);
@@ -298,7 +298,7 @@ export const exchangeSomethingXToken = async (token, email, name, userType) => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-    
+
     console.log('Exchange response:', response.data);
     return {
       success: true,
@@ -351,7 +351,7 @@ export const regenerateProfile = async (payload = {}) => {
 export const getMyProfile = async () => {
   try {
     const response = await api.get('/api/profiles/my-profile');
-    
+
     return {
       success: true,
       data: response.data?.data || response.data
