@@ -144,9 +144,10 @@ export const uploadTemplatePreview = async (templateId, file) => {
 /**
  * API function to enhance profile using AI
  * @param {string} profileText - The profile text to enhance
+ * @param {string} [userPrompt] - Optional instructions to guide enhancement (max 50 words)
  * @returns {Promise<{success: boolean, data?: string, error?: string}>}
  */
-export const enhanceProfileWithAI = async (profileText) => {
+export const enhanceProfileWithAI = async (profileText, userPrompt = null) => {
   try {
     if (!profileText || profileText.trim().length === 0) {
       return {
@@ -155,9 +156,12 @@ export const enhanceProfileWithAI = async (profileText) => {
       };
     }
 
-    const response = await api.post('/api/ai-enhance', {
-      profile: profileText
-    });
+    const body = { profile: profileText };
+    if (userPrompt != null && userPrompt.trim().length > 0) {
+      body.prompt = userPrompt.trim();
+    }
+
+    const response = await api.post('/api/ai-enhance', body);
 
     // Backend returns: { message: "...", data: { enhancedProfile: "..." } }
     const enhancedProfile = response.data?.data?.enhancedProfile || response.data?.enhancedProfile;

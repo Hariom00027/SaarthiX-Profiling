@@ -1,5 +1,574 @@
-/* Custom animations and effects for Report Page */
+/* Report page – layout and design aligned to shared UI */
 
+.report-page {
+  min-height: 100vh;
+  background: #ffffff !important;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.report-container {
+  max-width: 56rem;
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+/* ----- Header ----- */
+.report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.report-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #5D8BFF;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.report-back-link:hover {
+  color: #4a7ae8;
+}
+
+.report-back-arrow {
+  font-size: 1rem;
+}
+
+.report-header-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.report-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.25;
+}
+
+.report-subtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.report-enhance-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #E6A6ED 0%, #DE70E8 100%);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.report-enhance-btn:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.report-enhance-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.report-enhance-icon {
+  font-size: 1rem;
+}
+
+/* ----- Cards (base) ----- */
+.report-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+.report-card-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937 !important;
+  margin: 0 0 1rem 0;
+}
+
+.report-content {
+  background: #ffffff;
+}
+
+.report-card-text {
+  font-size: 0.875rem;
+  color: #4b5563 !important;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.report-card-text-muted {
+  color: #6b7280;
+}
+
+/* ----- Top section: Interest Scores | Persona + Summary ----- */
+.report-top-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .report-top-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-card-interest-scores .report-total-score {
+  font-size: 0.8125rem;
+  color: #374151 !important;
+  margin: 1rem 0 0 0;
+}
+
+.report-card-persona {
+  background: #f0f7ff !important;
+  border-color: #92CAF8;
+}
+
+.report-persona-block + .report-summary-block {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ----- Donut chart ----- */
+.report-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.report-donut-chart {
+  flex-shrink: 0;
+}
+
+.report-donut-svg {
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
+}
+
+.report-donut-segment {
+  transition: opacity 0.2s;
+}
+
+.report-donut-segment:hover {
+  opacity: 0.9;
+}
+
+.report-donut-hole {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.1));
+}
+
+.report-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.report-donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.report-donut-legend-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.report-donut-legend-label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+/* ----- Incomplete answers alert ----- */
+.report-incomplete-alert {
+  display: flex;
+  gap: 1rem;
+  background: #FFFBE6;
+  border: 1px solid #e6d96a;
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-incomplete-icon-wrap {
+  flex-shrink: 0;
+}
+
+.report-incomplete-icon-wrap svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #b59f2e;
+}
+
+.report-incomplete-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.report-incomplete-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.report-incomplete-desc {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+}
+
+.report-incomplete-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.report-incomplete-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  margin-bottom: 0.35rem;
+}
+
+.report-incomplete-bullet {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #b59f2e;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+}
+
+.report-incomplete-q {
+  font-weight: 600;
+}
+
+/* ----- Strengths / Do's | Areas to Improve / Don'ts ----- */
+.report-strengths-section {
+  margin-bottom: 1.5rem;
+}
+
+.report-strengths-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .report-strengths-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-strength-block + .report-strength-block,
+.report-weakness-block + .report-weakness-block {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.report-strength-heading,
+.report-weakness-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+}
+
+.report-strength-heading-green {
+  color: #5DBF8C;
+}
+
+.report-weakness-heading {
+  color: #ED6E6E;
+}
+
+.report-list-green,
+.report-list-red {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.report-list-item-green,
+.report-list-item-red {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.report-list-item-green svg,
+.report-list-item-red svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.report-list-item-green svg {
+  color: #059669;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.report-list-item-red svg {
+  color: #dc2626;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ----- 90-Day Roadmap ----- */
+.report-roadmap {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.report-roadmap-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+}
+
+.report-roadmap-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 1.5rem;
+}
+
+.report-roadmap-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-roadmap-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #5D8BFF;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.report-roadmap-connector {
+  flex: 1;
+  max-width: 4rem;
+  height: 2px;
+  background: #d1d5db;
+  min-width: 2rem;
+}
+
+.report-roadmap-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .report-roadmap-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-roadmap-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.report-roadmap-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.report-roadmap-card-desc {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ----- Recommended Roles ----- */
+.report-roles-section {
+  background: #2B6CB0;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-roles-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin: 0 0 1.25rem 0;
+}
+
+.report-roles-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.report-role-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #fff;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
+}
+
+/* ----- Suggested Courses | Project Ideas ----- */
+.report-courses-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .report-courses-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-list-bullet-blue {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.report-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.report-bullet-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  background: #4285F4;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+}
+
+/* ----- Footer buttons ----- */
+.report-footer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+.report-btn-outline,
+.report-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.report-btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.report-btn-outline {
+  background: #fff;
+  border: 2px solid #5D8BFF;
+  color: #2B6CB0;
+}
+
+.report-btn-outline:hover {
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.report-btn-primary {
+  background: #5D8BFF;
+  border: none;
+  color: #fff;
+}
+
+.report-btn-primary:hover {
+  background: #4a7ae8;
+  transform: translateY(-1px);
+}
+
+/* ----- Animations (existing) ----- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -8,26 +577,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
   }
 }
 
@@ -47,75 +596,237 @@
   animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
-/* Smooth scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
+/* Scrollbar */
+.report-page ::-webkit-scrollbar {
+  width: 8px;
 }
 
-::-webkit-scrollbar-track {
+.report-page ::-webkit-scrollbar-track {
   background: #f1f5f9;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb {
+.report-page ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 10px;
-  transition: background 0.3s ease;
+  border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Hover effects */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-}
-
-/* Gradient text animation */
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.gradient-animate {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-}
-
-/* Print styles */
+/* Print */
 @media print {
-  .no-print {
+  .report-page {
+    background: white;
+  }
+
+  .report-enhance-btn,
+  .report-back-link,
+  .report-footer-buttons {
     display: none !important;
   }
-  
-  body {
-    background: white !important;
+}
+
+/* ----- Mobile responsive (768px and below) ----- */
+@media (max-width: 768px) {
+  .report-page {
+    padding: 1rem 1rem 2rem;
   }
-  
-  .print-page-break {
-    page-break-before: always;
+
+  .report-container {
+    max-width: 100%;
+  }
+
+  .report-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .report-back-link {
+    order: 0;
+    font-size: 0.875rem;
+  }
+
+  .report-header-title-block {
+    order: 1;
+  }
+
+  .report-title {
+    font-size: 1.375rem;
+    line-height: 1.3;
+  }
+
+  .report-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .report-enhance-btn {
+    order: 2;
+    align-self: flex-end;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    min-height: 44px;
+  }
+
+  .report-top-cards {
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-card {
+    padding: 1.25rem;
+  }
+
+  .report-card-heading {
+    font-size: 0.9375rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .report-donut-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .report-donut-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+  }
+
+  .report-incomplete-alert {
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .report-incomplete-icon-wrap svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .report-incomplete-title {
+    font-size: 0.9375rem;
+  }
+
+  .report-incomplete-desc,
+  .report-incomplete-item {
+    font-size: 0.8125rem;
+  }
+
+  .report-strengths-section {
+    margin-bottom: 1rem;
+  }
+
+  .report-strengths-grid {
+    gap: 1rem;
+  }
+
+  .report-roadmap {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-roadmap-title {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-roadmap-timeline {
+    margin-bottom: 1rem;
+  }
+
+  .report-roadmap-number {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.8125rem;
+  }
+
+  .report-roadmap-connector {
+    max-width: 2.5rem;
+  }
+
+  .report-roadmap-cards {
+    gap: 0.75rem;
+  }
+
+  .report-roadmap-card {
+    padding: 0.875rem;
+  }
+
+  .report-roadmap-card-title {
+    font-size: 0.875rem;
+  }
+
+  .report-roadmap-card-desc {
+    font-size: 0.75rem;
+  }
+
+  .report-roles-section {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-roles-title {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-roles-tags {
+    gap: 0.5rem;
+  }
+
+  .report-role-tag {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .report-courses-section {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .report-bullet-item {
+    font-size: 0.8125rem;
+  }
+
+  .report-footer-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .report-btn-outline,
+  .report-btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+    min-height: 44px;
   }
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .report-card-enter,
-  .report-stagger-1,
-  .report-stagger-2,
-  .report-stagger-3 {
-    animation: fadeInUp 0.4s ease-out;
+/* ----- Small mobile (480px and below) ----- */
+@media (max-width: 480px) {
+  .report-page {
+    padding: 0.75rem 0.75rem 1.5rem;
+  }
+
+  .report-title {
+    font-size: 1.25rem;
+  }
+
+  .report-card {
+    padding: 1rem;
+  }
+
+  .report-donut-chart {
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+
+  .report-total-score {
+    font-size: 0.75rem;
   }
 }

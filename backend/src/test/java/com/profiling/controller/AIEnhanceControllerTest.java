@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +43,7 @@ class AIEnhanceControllerTest {
     @DisplayName("enhanceProfile should return enhanced profile with valid request")
     void testEnhanceProfile_ValidRequest_ReturnsEnhanced() {
         String enhancedText = "Enhanced profile text";
-        when(openAIService.enhanceProfile(anyString())).thenReturn(enhancedText);
+        when(openAIService.enhanceProfile(anyString(), any())).thenReturn(enhancedText);
 
         ResponseEntity<ApiResponse> response = controller.enhanceProfile(validRequest);
 
@@ -50,7 +52,7 @@ class AIEnhanceControllerTest {
         assertEquals("Profile enhanced successfully", response.getBody().getMessage());
         EnhanceResponse enhanceResponse = (EnhanceResponse) response.getBody().getData();
         assertEquals(enhancedText, enhanceResponse.getEnhancedProfile());
-        verify(openAIService).enhanceProfile("Original profile text");
+        verify(openAIService).enhanceProfile("Original profile text", isNull());
     }
 
     @Test
@@ -63,7 +65,7 @@ class AIEnhanceControllerTest {
         });
 
         assertEquals("Profile text is required", exception.getMessage());
-        verify(openAIService, never()).enhanceProfile(anyString());
+        verify(openAIService, never()).enhanceProfile(anyString(), any());
     }
 
     @Test
@@ -76,7 +78,7 @@ class AIEnhanceControllerTest {
         });
 
         assertEquals("Profile text is required", exception.getMessage());
-        verify(openAIService, never()).enhanceProfile(anyString());
+        verify(openAIService, never()).enhanceProfile(anyString(), any());
     }
 
     @Test
@@ -89,13 +91,13 @@ class AIEnhanceControllerTest {
         });
 
         assertEquals("Profile text is required", exception.getMessage());
-        verify(openAIService, never()).enhanceProfile(anyString());
+        verify(openAIService, never()).enhanceProfile(anyString(), any());
     }
 
     @Test
     @DisplayName("enhanceProfile should handle service exception")
     void testEnhanceProfile_ServiceException_ThrowsException() {
-        when(openAIService.enhanceProfile(anyString()))
+        when(openAIService.enhanceProfile(anyString(), any()))
             .thenThrow(new RuntimeException("OpenAI API error"));
 
         assertThrows(RuntimeException.class, () -> {

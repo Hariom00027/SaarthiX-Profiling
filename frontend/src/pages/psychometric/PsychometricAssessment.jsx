@@ -680,7 +680,6 @@ function PsychometricAssessment() {
                   />
                   <span>
                     {option}
-                    {currentQuestion.correctOptionIndex === index && ' *'}
                   </span>
                 </label>
               ))}
