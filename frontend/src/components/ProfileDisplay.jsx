@@ -2384,37 +2384,35 @@ const ProfileDisplay = ({ profileData, onEnhanceRequest, onChatbotRequest, force
                     />
                   </div>
 
-                  {/* Certifications - only show if has value */}
-                  {(formValues.certifications && formValues.certifications.trim()) && (
-                    <div className="profile-edit-form-row">
-                      <label className="profile-edit-input-label">
-                        Certifications
-                      </label>
-                      <textarea
-                        name="certifications"
-                        value={formValues.certifications}
-                        onChange={handleInputChange}
-                        rows={2}
-                        className="profile-edit-textarea"
-                      />
-                    </div>
-                  )}
+                  {/* Certifications - required */}
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Certifications <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      name="certifications"
+                      value={formValues.certifications}
+                      onChange={handleInputChange}
+                      rows={2}
+                      required
+                      className="profile-edit-textarea"
+                    />
+                  </div>
 
-                  {/* Achievements - only show if has value */}
-                  {(formValues.achievements && formValues.achievements.trim()) && (
-                    <div className="profile-edit-form-row">
-                      <label className="profile-edit-input-label">
-                        Achievements
-                      </label>
-                      <textarea
-                        name="achievements"
-                        value={formValues.achievements}
-                        onChange={handleInputChange}
-                        rows={2}
-                        className="profile-edit-textarea"
-                      />
-                    </div>
-                  )}
+                  {/* Achievements - required */}
+                  <div className="profile-edit-form-row">
+                    <label className="profile-edit-input-label">
+                      Achievements <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      name="achievements"
+                      value={formValues.achievements}
+                      onChange={handleInputChange}
+                      rows={2}
+                      required
+                      className="profile-edit-textarea"
+                    />
+                  </div>
                 </div>
               </div>
 

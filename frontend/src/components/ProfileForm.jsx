@@ -146,8 +146,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       title: 'Skills & highlights',
       subtitle: 'List what makes you stand out.',
       fields: [
-        { name: 'certifications', label: 'Certifications', type: 'textarea', required: false, rows: 2 },
-        { name: 'achievements', label: 'Achievements', type: 'textarea', required: false, rows: 2 },
+        { name: 'certifications', label: 'Certifications', type: 'textarea', required: true, rows: 2 },
+        { name: 'achievements', label: 'Achievements', type: 'textarea', required: true, rows: 2 },
         { name: 'technicalSkills', label: 'Technical Skills', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., React, SQL, Canva' },
         { name: 'softSkills', label: 'Soft Skills', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., Leadership, Communication' },
           { name: 'interests', label: 'Interests', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., Product design, Data storytelling' },

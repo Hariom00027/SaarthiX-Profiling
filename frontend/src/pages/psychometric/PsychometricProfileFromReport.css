@@ -3,15 +3,19 @@
   background: #f3f4f6;
   padding: 24px 16px 48px;
   overflow-x: auto;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 .psy-profile-shell {
   max-width: 980px;
+  width: 100%;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
 .psy-actions {
@@ -59,6 +63,7 @@
   background: #ffffff;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .psy-page-heading {
@@ -83,6 +88,9 @@
   line-height: 1.6;
   margin: 0 0 14px 0;
   opacity: 0.95;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .psy-hero-right {
@@ -131,6 +139,8 @@
   font-weight: 800;
   line-height: 1.05;
   margin-bottom: 18px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .psy-skills-card {
@@ -154,6 +164,8 @@
   padding-left: 20px;
   font-size: 14px;
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .psy-skills-bullets li {
@@ -180,6 +192,8 @@
   color: #111827;
   font-size: 18px;
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .psy-bullets li {
@@ -256,6 +270,244 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Mobile & tablet: same layout, scaled down (two columns kept) */
+@media (max-width: 768px) {
+  .psy-profile-page {
+    padding: 10px 8px 24px;
+    overflow-x: hidden;
+  }
+
+  .psy-profile-shell {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .psy-btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .psy-actions {
+    gap: 8px;
+  }
+
+  .psy-a4-outer {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .psy-a4-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-x: hidden;
+  }
+
+  .psy-hero-left,
+  .psy-hero-right,
+  .psy-col {
+    min-width: 0;
+  }
+
+  .psy-page-heading {
+    font-size: 14px;
+    margin: 12px 0 6px;
+  }
+
+  /* Hero: keep 1.4fr 1fr layout, scale down padding/gap/sizes */
+  .psy-hero {
+    grid-template-columns: 1.4fr 1fr;
+    gap: 10px;
+    padding: 12px 10px 14px;
+  }
+
+  .psy-summary p {
+    font-size: 10px;
+    line-height: 1.45;
+    margin-bottom: 6px;
+  }
+
+  .psy-hero-right {
+    gap: 6px;
+  }
+
+  .psy-photo-frame {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+    border-width: 2px;
+  }
+
+  .psy-title-name {
+    font-size: 14px;
+    margin-bottom: 6px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .psy-skills-card {
+    max-width: 100%;
+    padding: 8px 10px 6px;
+    border-radius: 8px;
+  }
+
+  .psy-skills-title {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .psy-skills-bullets {
+    font-size: 9px;
+    padding-left: 14px;
+  }
+
+  .psy-skills-bullets li {
+    margin: 2px 0;
+  }
+
+  /* Details: keep two columns, scale down */
+  .psy-details {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px 10px 16px;
+  }
+
+  .psy-section-title {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .psy-bullets {
+    font-size: 10px;
+    padding-left: 14px;
+  }
+
+  .psy-bullets li {
+    margin: 2px 0;
+  }
+}
+
+/* Small phones: same layout, scale down further */
+@media (max-width: 480px) {
+  .psy-profile-page {
+    padding: 8px 6px 20px;
+  }
+
+  .psy-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .psy-page-heading {
+    font-size: 12px;
+    margin: 8px 0 4px;
+  }
+
+  .psy-hero {
+    gap: 8px;
+    padding: 10px 8px 10px;
+  }
+
+  .psy-hero-right {
+    gap: 4px;
+  }
+
+  .psy-summary p {
+    font-size: 9px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .psy-photo-frame {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    border-width: 1px;
+  }
+
+  .psy-title-name {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .psy-skills-card {
+    padding: 6px 8px 4px;
+  }
+
+  .psy-skills-title {
+    font-size: 8px;
+    margin-bottom: 2px;
+  }
+
+  .psy-skills-bullets {
+    font-size: 8px;
+    padding-left: 12px;
+  }
+
+  .psy-details {
+    gap: 8px;
+    padding: 10px 8px 12px;
+  }
+
+  .psy-section-title {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .psy-bullets {
+    font-size: 8px;
+    padding-left: 12px;
+  }
+
+  .psy-bullets li {
+    margin: 1px 0;
+  }
+
+  /* Modal: compact on very small screens */
+  .psy-modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .psy-modal {
+    padding: 14px 14px 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .psy-modal-header h2 {
+    font-size: 16px;
+  }
+
+  .psy-modal-desc {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .psy-modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .psy-modal-actions .psy-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Modal responsive (all narrow viewports) */
+@media (max-width: 560px) {
+  .psy-modal {
+    max-width: 100%;
+  }
 }
 
 /* Print/PDF */

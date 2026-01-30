@@ -40,7 +40,12 @@ public class TemplateEngine {
         values.put("softSkills", valueOrDefault(profile.getSoftSkills(), "[soft skills]"));
         values.put("email", valueOrDefault(profile.getEmail(), "[email]"));
         values.put("phone", valueOrDefault(profile.getPhone(), "[phone number]"));
-        values.put("linkedin", valueOrDefault(profile.getLinkedin(), "[LinkedIn profile]"));
+        values.put("linkedin", valueOrDefault(profile.getLinkedin(), ""));
+        values.put("linkedinInvitePhrase", buildLinkedinInvitePhrase(profile));
+        values.put("linkedinCheckOutPhrase", buildLinkedinCheckOutPhrase(profile));
+        values.put("linkedinConnectPhrase", buildLinkedinConnectPhrase(profile));
+        values.put("linkedinLine", buildLinkedinLine(profile));
+        values.put("linkedinConnectMePhrase", buildLinkedinConnectMePhrase(profile));
         values.put("dob", valueOrDefault(profile.getDob(), "[date of birth]"));
         values.put("profileImage",
                 valueOrDefault(profile.getProfileImage(), "https://via.placeholder.com/420x520.png?text=Profile"));
@@ -178,6 +183,41 @@ public class TemplateEngine {
     private String buildSignatureLinkedin(Profile profile) {
         if (StringUtils.hasText(profile.getLinkedin())) {
             return profile.getLinkedin().trim();
+        }
+        return "";
+    }
+
+    private String buildLinkedinInvitePhrase(Profile profile) {
+        if (StringUtils.hasText(profile.getLinkedin())) {
+            return ", and I invite you to explore my comprehensive professional profile at " + profile.getLinkedin().trim();
+        }
+        return "";
+    }
+
+    private String buildLinkedinCheckOutPhrase(Profile profile) {
+        if (StringUtils.hasText(profile.getLinkedin())) {
+            return " or check out my LinkedIn: " + profile.getLinkedin().trim();
+        }
+        return "";
+    }
+
+    private String buildLinkedinConnectPhrase(Profile profile) {
+        if (StringUtils.hasText(profile.getLinkedin())) {
+            return " or connect through " + profile.getLinkedin().trim() + ".";
+        }
+        return "";
+    }
+
+    private String buildLinkedinLine(Profile profile) {
+        if (StringUtils.hasText(profile.getLinkedin())) {
+            return "LinkedIn: " + profile.getLinkedin().trim();
+        }
+        return "";
+    }
+
+    private String buildLinkedinConnectMePhrase(Profile profile) {
+        if (StringUtils.hasText(profile.getLinkedin())) {
+            return " or connect with me on LinkedIn: " + profile.getLinkedin().trim();
         }
         return "";
     }

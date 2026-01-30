@@ -782,7 +782,7 @@ function AppContent() {
                 hobbies: profileData?.profile?.hobbies || profileData?.hobbies || '',
                 goals: profileData?.profile?.goals || profileData?.goals || ''
               }}
-              onRegenerateProfile={async (answers, reportData) => {
+              onRegenerateProfile={async (answers, reportData) =https://github.com/Hariom00027/SaarthiX-Profiling/pull/3/conflict?name=frontend%252Fsrc%252FApp.jsx&ancestor_oid=d9c7fa724818dde007a8a2ce09c9defb2e11efc0&base_oid=6d459edb4ee978dd29332b89e38bbd7d3adad708&head_oid=73e022bb4e55c2ca178eb3435491635bdace5d76> {
                 // Store report data for report view
                 sessionStorage.setItem('chatbot_report_data', JSON.stringify({ answers, reportData }));
                 setHasReportData(true);
@@ -794,46 +794,32 @@ function AppContent() {
           </div>
         </div>
       )}
-      {currentView === 'report' && profileData && (
-        <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-8 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-6">
-              <button
-                onClick={() => navigateToView('chatbot')}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Back to Chatbot
-              </button>
-            </div>
-            {/* Report view will be rendered here */}
-            <ReportView
-              profileData={profileData}
-              onEnhanceProfile={async (answers, reportData) => {
-                const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
-                const profile = profileData?.profile || profileData || {};
+      {currentView === 'report' && (
+        <div className="min-h-screen bg-white">
+          <ReportView
+            profileData={profileData}
+            onBack={() => navigateToView('chatbot')}
+            onEnhanceProfile={profileData ? async (answers, reportData) => {
+            const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
+            const profile = profileData?.profile || profileData || {};
 
-                const payload = {
-                  templateId: templateType,
-                  formData: profile,
-                  chatAnswers: answers,
-                  reportData: reportData || {}
-                };
+            const payload = {
+              templateId: templateType,
+              formData: profile,
+              chatAnswers: answers,
+              reportData: reportData || {}
+            };
 
-                const result = await regenerateProfile(payload);
+            const result = await regenerateProfile(payload);
 
-                if (result.success && result.data) {
-                  setProfileData(result.data);
-                  navigateToView('enhance');
-                  return { success: true };
-                } else {
-                  return { success: false, error: result.error || 'Failed to enhance profile' };
-                }
-              }}
-            />
-          </div>
+            if (result.success && result.data) {
+              setProfileData(result.data);
+              navigateToView('enhance');
+              return { success: true };
+            }
+            return { success: false, error: result.error || 'Failed to enhance profile' };
+          } : undefined}
+          />
         </div>
       )}
     </div>

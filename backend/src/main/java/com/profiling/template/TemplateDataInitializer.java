@@ -209,19 +209,19 @@ public class TemplateDataInitializer implements ApplicationRunner {
 
     private String professionalTemplate() {
         return """
-                I am {{name}}, a dedicated and accomplished student currently pursuing a {{currentDegree}} degree with a specialization in {{branch}} at {{institute}}. Presently in my {{yearOfStudy}} year of academic tenure, I have demonstrated exceptional commitment to professional development through the successful completion of distinguished certifications including {{certifications}}. Throughout my educational journey, I have achieved notable recognition for {{achievements}}, which underscores my unwavering dedication to excellence. My technical proficiencies encompass {{technicalSkills}}, complemented by refined soft skills such as {{softSkills}}, which collectively position me as a well-rounded professional.{{professionalInternshipSentence}}{{professionalExperienceSentence}} For professional correspondence, I can be reached at {{email}}, and I invite you to explore my comprehensive professional profile at {{linkedin}}. Date of Birth: {{dob}}.
+                I am {{name}}, a dedicated and accomplished student currently pursuing a {{currentDegree}} degree with a specialization in {{branch}} at {{institute}}. Presently in my {{yearOfStudy}} year of academic tenure, I have demonstrated exceptional commitment to professional development through the successful completion of distinguished certifications including {{certifications}}. Throughout my educational journey, I have achieved notable recognition for {{achievements}}, which underscores my unwavering dedication to excellence. My technical proficiencies encompass {{technicalSkills}}, complemented by refined soft skills such as {{softSkills}}, which collectively position me as a well-rounded professional.{{professionalInternshipSentence}}{{professionalExperienceSentence}} For professional correspondence, I can be reached at {{email}}{{linkedinInvitePhrase}}. Date of Birth: {{dob}}.
                 """;
     }
 
     private String bioTemplate() {
         return """
-                Hey there! I'm {{name}} 👋 I'm a {{yearOfStudy}} year student studying {{branch}} in {{currentDegree}} at {{institute}}. I've picked up some cool certifications along the way like {{certifications}}, and I'm pretty proud of {{achievements}}! I love working with {{technicalSkills}}, and people tell me I'm good at {{softSkills}}. Want to connect? Drop me a line at {{email}} or check out my LinkedIn: {{linkedin}}.{{internshipClause}}{{experienceClause}} Let's chat!
+                Hey there! I'm {{name}} 👋 I'm a {{yearOfStudy}} year student studying {{branch}} in {{currentDegree}} at {{institute}}. I've picked up some cool certifications along the way like {{certifications}}, and I'm pretty proud of {{achievements}}! I love working with {{technicalSkills}}, and people tell me I'm good at {{softSkills}}. Want to connect? Drop me a line at {{email}}{{linkedinCheckOutPhrase}}.{{internshipClause}}{{experienceClause}} Let's chat!
                 """;
     }
 
     private String storyTemplate() {
         return """
-                This is the story of {{name}}, born on {{dob}}. From a young age, there was always a passion for learning and growth. Today, that journey has led to pursuing a {{currentDegree}} degree in {{branch}} at {{institute}}, now in the {{yearOfStudy}} year. Along this path, several milestones were reached - certifications earned in {{certifications}}, and memorable achievements like {{achievements}}. The skills developed include {{technicalSkills}}, paired with personal strengths in {{softSkills}}.{{internshipNarrative}}{{experienceNarrative}} This journey continues to unfold, and new chapters are being written every day. To be part of this story, reach out at {{email}} or connect through {{linkedin}}.
+                This is the story of {{name}}, born on {{dob}}. From a young age, there was always a passion for learning and growth. Today, that journey has led to pursuing a {{currentDegree}} degree in {{branch}} at {{institute}}, now in the {{yearOfStudy}} year. Along this path, several milestones were reached - certifications earned in {{certifications}}, and memorable achievements like {{achievements}}. The skills developed include {{technicalSkills}}, paired with personal strengths in {{softSkills}}.{{internshipNarrative}}{{experienceNarrative}} This journey continues to unfold, and new chapters are being written every day. To be part of this story, reach out at {{email}}{{linkedinConnectPhrase}}.
                 """;
     }
 
@@ -479,7 +479,7 @@ public class TemplateDataInitializer implements ApplicationRunner {
                 {{/hasExperience}}
 
                 For communication or professional opportunities, {{name}} can be reached at {{email}}.
-                LinkedIn: {{linkedin}}
+                {{linkedinLine}}
                 Date of Birth: {{dob}}
                 """;
     }
@@ -510,13 +510,13 @@ public class TemplateDataInitializer implements ApplicationRunner {
 
     private String executiveTemplate() {
         return """
-                My name is {{name}}, a results-driven and ambitious student currently pursuing a {{currentDegree}} in {{branch}} at {{institute}}. As a {{yearOfStudy}} year student, I have consistently demonstrated excellence in academics and practical learning. I hold certifications in {{certifications}}, which have strengthened my technical foundation and problem-solving capabilities. Recognized for {{achievements}}, I continue to seek opportunities to expand my expertise and make meaningful contributions. My core technical skills include {{technicalSkills}}, complemented by strong interpersonal and organizational abilities such as {{softSkills}}.{{internshipDetails}}{{experienceDetails}} I am eager to collaborate in dynamic environments where innovation meets execution. For any professional inquiries, please contact me at {{email}} or connect with me on LinkedIn: {{linkedin}}. Date of Birth: {{dob}}.
+                My name is {{name}}, a results-driven and ambitious student currently pursuing a {{currentDegree}} in {{branch}} at {{institute}}. As a {{yearOfStudy}} year student, I have consistently demonstrated excellence in academics and practical learning. I hold certifications in {{certifications}}, which have strengthened my technical foundation and problem-solving capabilities. Recognized for {{achievements}}, I continue to seek opportunities to expand my expertise and make meaningful contributions. My core technical skills include {{technicalSkills}}, complemented by strong interpersonal and organizational abilities such as {{softSkills}}.{{internshipDetails}}{{experienceDetails}} I am eager to collaborate in dynamic environments where innovation meets execution. For any professional inquiries, please contact me at {{email}}{{linkedinConnectMePhrase}}. Date of Birth: {{dob}}.
                 """;
     }
 
     private String professionalProfileTemplate() {
         return """
-                {{name}} is a dedicated and accomplished student currently pursuing a {{currentDegree}} degree with a specialization in {{branch}} at {{institute}}. Presently in my {{yearOfStudy}} year of academic tenure, I have demonstrated exceptional commitment to professional development through the successful completion of distinguished certifications including {{certifications}}. Throughout my educational journey, I have achieved notable recognition for {{achievements}}, which underscores my unwavering dedication to excellence. My technical proficiencies encompass {{technicalSkills}}, complemented by refined soft skills such as {{softSkills}}, which collectively position me as a well-rounded professional.{{internshipDetails}}{{experienceDetails}} For professional correspondence, I can be reached at {{email}}, and I invite you to explore my comprehensive professional profile at {{linkedin}}. Date of Birth: {{dob}}.
+                {{name}} is a dedicated and accomplished student currently pursuing a {{currentDegree}} degree with a specialization in {{branch}} at {{institute}}. Presently in my {{yearOfStudy}} year of academic tenure, I have demonstrated exceptional commitment to professional development through the successful completion of distinguished certifications including {{certifications}}. Throughout my educational journey, I have achieved notable recognition for {{achievements}}, which underscores my unwavering dedication to excellence. My technical proficiencies encompass {{technicalSkills}}, complemented by refined soft skills such as {{softSkills}}, which collectively position me as a well-rounded professional.{{internshipDetails}}{{experienceDetails}} For professional correspondence, I can be reached at {{email}}{{linkedinInvitePhrase}}. Date of Birth: {{dob}}.
                 """;
     }
 

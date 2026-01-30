@@ -37,8 +37,17 @@ public class AIEnhanceController {
             throw new BadRequestException("Profile text is required");
         }
 
+        String userPrompt = request.getPrompt() != null ? request.getPrompt().trim() : null;
+        if (userPrompt != null && !userPrompt.isEmpty()) {
+            int wordCount = userPrompt.split("\\s+").length;
+            if (wordCount > 50) {
+                log.warn("Enhance profile request prompt exceeds 50 words: {}", wordCount);
+                throw new BadRequestException("Prompt must be 50 words or fewer");
+            }
+        }
+
         log.info("Enhancing profile text via AI");
-        String enhancedProfile = openAIService.enhanceProfile(request.getProfile());
+        String enhancedProfile = openAIService.enhanceProfile(request.getProfile(), userPrompt);
         EnhanceResponse responseDTO = new EnhanceResponse(enhancedProfile);
 
         ApiResponse response = new ApiResponse("Profile enhanced successfully", responseDTO);
