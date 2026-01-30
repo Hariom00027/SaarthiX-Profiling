@@ -28,8 +28,9 @@ FROM nginx:alpine
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Copy built files from builder stage to nginx html directory
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built files from builder stage to nginx html directory (nested for subpath)
+RUN mkdir -p /usr/share/nginx/html/profiling
+COPY --from=builder /app/dist /usr/share/nginx/html/profiling
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

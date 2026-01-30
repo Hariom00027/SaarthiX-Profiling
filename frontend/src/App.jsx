@@ -177,10 +177,10 @@ function AppContent() {
         .then(() => {
           console.log('Login successful, navigating to start');
           // Clean URL after successful login
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           // Set view directly to ensure it updates immediately
           setCurrentView('start');
-          window.history.replaceState({ view: 'start' }, '', '/start');
+          window.history.replaceState({ view: 'start' }, '', '/profiling/start');
           // Clear processing flag after a short delay to allow view to render
           setTimeout(() => {
             setIsProcessingTokenExchange(false);
@@ -191,7 +191,7 @@ function AppContent() {
           console.error('SomethingX token exchange failed:', err);
           setError('Failed to complete login from SomethingX: ' + (err.message || 'Please try again.'));
           // Clean URL even on error
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           setCurrentView('login');
           setIsProcessingTokenExchange(false);
         });
@@ -200,7 +200,7 @@ function AppContent() {
 
     // Clean URL for other cases (OAuth, etc.)
     if (token || errorParam) {
-      window.history.replaceState({}, '', '/');
+      window.history.replaceState({}, '', '/profiling/');
     }
 
     // Handle token from OAuth callback (standard Profiling token)
@@ -317,18 +317,18 @@ function AppContent() {
   useEffect(() => {
     const restoreSavedProfilesView = async () => {
       // Check if we're on saved-profiles view and need to restore profiles
-      const needsRestore = currentView === 'saved-profiles' && 
-                          allProfiles.length === 0 && 
-                          !loading && 
-                          isAuthenticated();
-      
+      const needsRestore = currentView === 'saved-profiles' &&
+        allProfiles.length === 0 &&
+        !loading &&
+        isAuthenticated();
+
       if (needsRestore) {
         try {
           setError(null);
           console.log('Restoring saved profiles after page refresh...');
-          
+
           const result = await getAllMyProfiles();
-          
+
           if (result.success && result.data && result.data.length > 0) {
             setAllProfiles(result.data);
             console.log('Saved profiles restored successfully');

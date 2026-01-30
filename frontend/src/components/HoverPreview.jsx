@@ -21,16 +21,16 @@ const HoverPreview = ({ imageUrl, visible }) => {
   }
 
   // Resolve image URL - handle both absolute and relative paths
-  const resolvedImageUrl = imageUrl.startsWith('http') 
-    ? imageUrl 
-    : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090'}${imageUrl}`;
+  const resolvedImageUrl = imageUrl.startsWith('http')
+    ? imageUrl
+    : `${import.meta.env.VITE_API_BASE_URL || '/profiling-api'}${imageUrl}`;
 
   return createPortal(
     <div className="hover-preview-backdrop">
       <div className="hover-preview-container">
-        <img 
-          src={resolvedImageUrl} 
-          alt="Template preview" 
+        <img
+          src={resolvedImageUrl}
+          alt="Template preview"
           className="hover-preview-image"
           onError={(e) => {
             // Hide image on error

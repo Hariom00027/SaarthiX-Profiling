@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090'
+const baseUrl = import.meta.env.VITE_API_BASE_URL || '/profiling-api'
 
 export async function createPsychometricSession(userInfo) {
   try {

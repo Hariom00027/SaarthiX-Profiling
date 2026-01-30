@@ -15,29 +15,29 @@ const DonutChart = ({ data, totalScore }) => {
   const centerY = size / 2;
 
   const colors = ['#4A90D9', '#E85D75', '#F5A623', '#7B68EE', '#50C878'];
-  
+
   const segments = useMemo(() => {
     const total = Object.values(data).reduce((sum, val) => sum + val, 0);
     let currentAngle = -90;
-    
+
     return Object.entries(data).map(([key, value], index) => {
       const percentage = (value / total) * 100;
       const angle = (value / total) * 360;
       const startAngle = currentAngle;
       currentAngle += angle;
-      
+
       const startRad = (startAngle * Math.PI) / 180;
       const endRad = ((startAngle + angle) * Math.PI) / 180;
-      
+
       const x1 = centerX + radius * Math.cos(startRad);
       const y1 = centerY + radius * Math.sin(startRad);
       const x2 = centerX + radius * Math.cos(endRad);
       const y2 = centerY + radius * Math.sin(endRad);
-      
+
       const largeArcFlag = angle > 180 ? 1 : 0;
-      
+
       const pathD = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-      
+
       return {
         key,
         value,
@@ -74,8 +74,8 @@ const DonutChart = ({ data, totalScore }) => {
       <div className="flex flex-col gap-3">
         {segments.map((segment) => (
           <div key={segment.key} className="flex items-center gap-3 group cursor-default">
-            <div 
-              className="w-4 h-4 rounded-full shadow-md transition-transform group-hover:scale-110" 
+            <div
+              className="w-4 h-4 rounded-full shadow-md transition-transform group-hover:scale-110"
               style={{ backgroundColor: segment.color }}
             />
             <span className="text-sm text-gray-800 capitalize font-semibold min-w-[80px]">{segment.key}</span>
@@ -129,7 +129,7 @@ const ReportPage = () => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `Saathi_Report_${timestamp}.pdf`;
-      
+
       await downloadProfileAsPDF(evaluationResultsRef.current, {
         fileName,
         orientation: 'p'
@@ -160,7 +160,7 @@ const ReportPage = () => {
       };
 
       const result = await regenerateProfile(payload);
-      
+
       if (result.success && result.data) {
         notifySuccess('Profile enhanced successfully!');
         navigate('/enhance', {
@@ -239,11 +239,11 @@ const ReportPage = () => {
 
       sessionStorage.setItem('psychometric_from_profile', 'true');
       sessionStorage.setItem('psychometric_profile_data', JSON.stringify(psychometricData));
-      
+
       notifySuccess('Preparing your psychometric test...');
-      
+
       setTimeout(() => {
-        window.location.href = '/psychometric/start';
+        window.location.href = '/profiling/psychometric/start';
       }, 500);
     } catch (error) {
       console.error('Error preparing psychometric test:', error);
@@ -262,12 +262,12 @@ const ReportPage = () => {
   // Parse roadmap into months if it's a string
   const roadmapMonths = useMemo(() => {
     if (!reportData?.roadmap90Days) return null;
-    
+
     // If it's already structured, use it
     if (typeof reportData.roadmap90Days === 'object' && reportData.roadmap90Days.months) {
       return reportData.roadmap90Days.months;
     }
-    
+
     // Try to parse from string
     const roadmapText = String(reportData.roadmap90Days);
     const months = [
@@ -275,16 +275,16 @@ const ReportPage = () => {
       { title: 'Month 2: Application', description: '' },
       { title: 'Month 3: Refinement', description: '' }
     ];
-    
+
     // Try to extract month information from the text
     const month1Match = roadmapText.match(/month\s*1[:\s]*(.*?)(?=month\s*2|$)/i);
     const month2Match = roadmapText.match(/month\s*2[:\s]*(.*?)(?=month\s*3|$)/i);
     const month3Match = roadmapText.match(/month\s*3[:\s]*(.*?)$/i);
-    
+
     if (month1Match) months[0].description = month1Match[1].trim().substring(0, 150);
     if (month2Match) months[1].description = month2Match[1].trim().substring(0, 150);
     if (month3Match) months[2].description = month3Match[1].trim().substring(0, 150);
-    
+
     // If no months found, split text into thirds
     if (!month1Match && !month2Match && !month3Match) {
       const textLength = roadmapText.length;
@@ -293,7 +293,7 @@ const ReportPage = () => {
       months[1].description = roadmapText.substring(third, third * 2).trim().substring(0, 150);
       months[2].description = roadmapText.substring(third * 2).trim().substring(0, 150);
     }
-    
+
     return months;
   }, [reportData?.roadmap90Days]);
 
@@ -333,7 +333,7 @@ const ReportPage = () => {
             </svg>
             Back to Chatbot
           </button>
-          
+
           <button
             onClick={handleEnhanceProfile}
             disabled={isRegenerating}
@@ -493,24 +493,22 @@ const ReportPage = () => {
               <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
                 90-Day <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Roadmap</span>
               </h2>
-              
+
               <div className="relative">
                 {/* Timeline Steps */}
                 <div className="space-y-6">
                   {roadmapMonths && roadmapMonths.map((month, index) => (
                     <div key={index} className={`flex items-start gap-5 ${index === 0 ? '' : index === 1 ? 'ml-16' : 'ml-32'} transition-all duration-300`}>
-                      <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-base shadow-lg ${
-                        index === 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 
-                        index === 1 ? 'bg-gradient-to-br from-yellow-500 to-amber-500' : 
-                        'bg-gradient-to-br from-green-500 to-emerald-600'
-                      }`}>
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-base shadow-lg ${index === 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                          index === 1 ? 'bg-gradient-to-br from-yellow-500 to-amber-500' :
+                            'bg-gradient-to-br from-green-500 to-emerald-600'
+                        }`}>
                         0{index + 1}
                       </div>
-                      <div className={`rounded-2xl p-5 flex-1 max-w-md shadow-md border-2 ${
-                        index === 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 
-                        index === 1 ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200' : 
-                        'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
-                      }`}>
+                      <div className={`rounded-2xl p-5 flex-1 max-w-md shadow-md border-2 ${index === 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' :
+                          index === 1 ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200' :
+                            'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
+                        }`}>
                         <h4 className="text-base font-bold text-gray-900 mb-2">{month.title}</h4>
                         <p className="text-sm text-gray-700 leading-relaxed">{month.description || 'Focus on building strong foundations and skills.'}</p>
                       </div>
@@ -529,8 +527,8 @@ const ReportPage = () => {
               </h3>
               <div className="flex flex-wrap gap-3 justify-center">
                 {reportData.recommendedRoles.map((role, idx) => (
-                  <span 
-                    key={idx} 
+                  <span
+                    key={idx}
                     className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-white/20 transition-all cursor-default shadow-lg"
                   >
                     {role}

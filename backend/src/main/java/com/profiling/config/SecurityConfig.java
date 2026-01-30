@@ -36,11 +36,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.Arrays.asList(
-            frontendUrl,
-            "http://localhost:4001",
-            "http://localhost:8090",
-            "http://localhost:3000"
+        configuration.setAllowedOriginPatterns(java.util.Arrays.asList(
+            "https://saarthix.com",
+            "https://*.saarthix.com",
+            "http://localhost:*",
+            "http://127.0.0.1:*"
         ));
         configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
