@@ -5,6 +5,14 @@ import java.util.Map;
 
 public interface OpenAIService {
     String enhanceProfile(String profileText);
+
+    /**
+     * Enhance profile with optional user prompt to guide the enhancement (e.g. "make it more formal", "emphasize leadership").
+     * @param profileText The profile text to enhance
+     * @param userPrompt Optional instructions from the user (max 50 words); null or empty means no custom prompt
+     * @return Enhanced profile text
+     */
+    String enhanceProfile(String profileText, String userPrompt);
     
     /**
      * Generate personalized questions based on user profile

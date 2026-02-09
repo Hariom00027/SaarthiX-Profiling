@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { generateQuestions, sendChatMessage, evaluateInterests } from '../api';
 import { downloadProfileAsPDF } from '../utils/downloadProfile';
 import { notifyError, notifySuccess } from '../utils/notifications';
@@ -15,10 +15,13 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
   const [evaluationResult, setEvaluationResult] = useState(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
   const messagesEndRef = useRef(null);
   const evaluationResultsRef = useRef(null);
   const inputRef = useRef(null);
   const hasRestoredRef = useRef(false);
+  const recognitionRef = useRef(null);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -37,6 +40,63 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
             inputRef.current?.focus();
           });
         }
+      }
+    }
+  };
+
+  const appendToInputMessage = useCallback((text) => {
+    setInputMessage(prev => {
+      const spacer = prev && !prev.endsWith(' ') && !text.startsWith(' ') ? ' ' : '';
+      return prev + spacer + text;
+    });
+  }, []);
+
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+    }
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!recognitionRef.current) return;
+    recognitionRef.current.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          final += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      setInterimTranscript(interim);
+      if (final) {
+        appendToInputMessage(final);
+        setInterimTranscript('');
+      }
+    };
+  }, [appendToInputMessage]);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      setInterimTranscript('');
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } else {
+        notifyError('Speech recognition is not supported in this browser.');
       }
     }
   };
@@ -457,7 +517,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
       <div className="chatbot-loading-container">
         <div style={{ textAlign: 'center', padding: '0 20px' }}>
           <div className="chatbot-spinner"></div>
-          <p className="chatbot-loading-text">SaathiX is preparing your personalized questions...</p>
+          <p className="chatbot-loading-text">Saathi is preparing your personalized questions...</p>
         </div>
         <style>{`
           .chatbot-loading-container {
@@ -1000,7 +1060,7 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
         <div className="chatbot-header">
           <div className="chatbot-header-content">
             <h2 className="chatbot-title">
-              Chat with <span style={{ color: '#22c55e' }}>SaathiX</span>
+              Chat with <span style={{ color: '#22c55e' }}>Saathi</span>
             </h2>
             <p className="chatbot-subtitle">
               Your Personal AI Career Guide, Anytime
@@ -1111,15 +1171,56 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
         {/* Input Area */}
         {!isComplete && (
           <div className="chatbot-input-area">
+            {/* Live transcription when listening */}
+            {isListening && (
+              <div className="chatbot-voice-feedback" style={{
+                marginBottom: '8px',
+                minHeight: '24px',
+                padding: '4px 12px',
+                background: interimTranscript ? '#f8fafc' : 'transparent',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }}>
+                {interimTranscript && (
+                  <>
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      background: '#22c55e',
+                      borderRadius: '50%',
+                      animation: 'pulse-dot 1s infinite',
+                      flexShrink: 0
+                    }} />
+                    <span style={{
+                      fontSize: '14px',
+                      color: '#64748b',
+                      fontStyle: 'italic',
+                      lineHeight: '1.4'
+                    }}>
+                      {interimTranscript}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
             <div className="chatbot-input-wrapper">
-              <div className="chatbot-input-container">
+              <div
+                className="chatbot-input-container"
+                style={{
+                  border: isListening ? '2px solid #22c55e' : undefined,
+                  boxShadow: isListening ? '0 0 0 2px rgba(34, 197, 94, 0.2)' : undefined
+                }}
+              >
                 <input
                   ref={inputRef}
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type Your Answer..."
+                  placeholder="Type your answer or use the mic to speak..."
                   disabled={isLoading}
                   autoFocus
                   className="chatbot-input"
@@ -1141,6 +1242,42 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
                   </svg>
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={toggleListening}
+                title={isListening ? 'Stop voice input' : 'Start voice input'}
+                className="chatbot-mic-btn"
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  border: isListening ? 'none' : '2px solid #22c55e',
+                  background: isListening ? '#22c55e' : 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  boxShadow: isListening ? '0 0 16px rgba(34, 197, 94, 0.5)' : '0 2px 8px rgba(34, 197, 94, 0.3)',
+                  animation: isListening ? 'pulse-mic 1.5s infinite' : 'none',
+                  flexShrink: 0
+                }}
+              >
+                {isListening ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+                    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                )}
+              </button>
               <button
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputMessage.trim()}
@@ -1176,6 +1313,15 @@ const SaarthiChatbot = ({ userProfile, onRegenerateProfile }) => {
         @keyframes bounce {
           0%, 60%, 100% { transform: translateY(0); }
           30% { transform: translateY(-4px); }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        @keyframes pulse-mic {
+          0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+          70% { box-shadow: 0 0 0 16px rgba(34, 197, 94, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
       `}</style>
     </div>

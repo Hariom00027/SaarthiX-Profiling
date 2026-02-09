@@ -50,12 +50,19 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @Override
     public String enhanceProfile(String profileText) {
+        return enhanceProfile(profileText, null);
+    }
+
+    @Override
+    public String enhanceProfile(String profileText, String userPrompt) {
         if (profileText == null || profileText.trim().isEmpty()) {
             throw new IllegalArgumentException("Profile text cannot be empty");
         }
 
         log.info("Calling OpenAI to enhance profile text");
-        String prompt = buildPrompt(profileText);
+        String prompt = (userPrompt != null && !userPrompt.trim().isEmpty())
+                ? buildPrompt(profileText, userPrompt.trim())
+                : buildPrompt(profileText);
 
         // Build request payload for OpenAI Chat Completions API
         Map<String, Object> requestBody = new HashMap<>();
@@ -397,6 +404,17 @@ public class OpenAIServiceImpl implements OpenAIService {
             "Remember: Your response must have the same word count as the original text and must NOT contain any information not present in the original. If the original does not mention year of study, your response must also not mention it.",
             wordCountInstruction, yearRestriction, placeholderInstruction, profileText
         );
+    }
+
+    private String buildPrompt(String profileText, String userPrompt) {
+        String basePrompt = buildPrompt(profileText);
+        String userInstruction = "ADDITIONAL USER INSTRUCTIONS (follow these when enhancing):\n" + userPrompt + "\n\n";
+        // Insert user instructions before "Text to enhance:" in the base prompt
+        int textToEnhanceIdx = basePrompt.indexOf("Text to enhance:");
+        if (textToEnhanceIdx > 0) {
+            return basePrompt.substring(0, textToEnhanceIdx) + userInstruction + basePrompt.substring(textToEnhanceIdx);
+        }
+        return basePrompt + "\n\n" + userInstruction;
     }
 
     @Override

@@ -28,7 +28,9 @@ import com.profiling.exception.ResourceNotFoundException;
 import com.profiling.exception.UnauthorizedException;
 import com.profiling.model.Profile;
 import com.profiling.model.ProfileResponse;
+import com.profiling.model.User;
 import com.profiling.repository.ProfileRepository;
+import com.profiling.repository.UserRepository;
 import com.profiling.service.OpenAIService;
 import com.profiling.template.TemplateFactory;
 import com.profiling.template.TemplateRenderResult;
@@ -46,6 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileJsonService profileJsonService;
     private final TemplateService templateService;
     private final OpenAIService openAIService;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -56,12 +59,14 @@ public class ProfileServiceImpl implements ProfileService {
                              TemplateFactory templateFactory,
                              ProfileJsonService profileJsonService,
                              TemplateService templateService,
-                             OpenAIService openAIService) {
+                             OpenAIService openAIService,
+                             UserRepository userRepository) {
         this.profileRepository = profileRepository;
         this.templateFactory = templateFactory;
         this.profileJsonService = profileJsonService;
         this.templateService = templateService;
         this.openAIService = openAIService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -126,6 +131,31 @@ public class ProfileServiceImpl implements ProfileService {
             log.info("Skipping cleanup for profile update userId={} profileId={}", userId, savedProfile.getId());
         }
         
+        // Update User model with graduation date if provided
+        if (profile.getGraduationYear() != null || profile.getGraduationMonth() != null) {
+            try {
+                Optional<User> userOpt = userRepository.findById(userId);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    if (profile.getGraduationYear() != null && !profile.getGraduationYear().trim().isEmpty()) {
+                        user.setExpectedGraduationYear(profile.getGraduationYear().trim());
+                        log.info("Updated User expectedGraduationYear: {}", profile.getGraduationYear().trim());
+                    }
+                    if (profile.getGraduationMonth() != null && !profile.getGraduationMonth().trim().isEmpty()) {
+                        user.setExpectedGraduationMonth(profile.getGraduationMonth().trim());
+                        log.info("Updated User expectedGraduationMonth: {}", profile.getGraduationMonth().trim());
+                    }
+                    userRepository.save(user);
+                    log.info("User graduation date updated successfully for userId={}", userId);
+                } else {
+                    log.warn("User not found for userId={}, cannot update graduation date", userId);
+                }
+            } catch (Exception e) {
+                log.warn("Failed to update User graduation date for userId={}: {}", userId, e.getMessage());
+                // Don't throw - profile was saved successfully, graduation date update is optional
+            }
+        }
+
         // Save profile as JSON file
         try {
             String jsonPath = profileJsonService.saveProfileAsJson(savedProfile);

@@ -21,8 +21,14 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
   const [saveMessage, setSaveMessage] = useState(null);
   const [isHandlingFeedback, setIsHandlingFeedback] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showPromptInput, setShowPromptInput] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
 
-  const runEnhance = useCallback(async () => {
+  const PROMPT_MAX_WORDS = 50;
+  const promptWordCount = customPrompt.trim() ? customPrompt.trim().split(/\s+/).length : 0;
+  const isPromptOverLimit = promptWordCount > PROMPT_MAX_WORDS;
+
+  const runEnhance = useCallback(async (userPrompt) => {
     if (!templateText || templateText.trim().length === 0) {
       setEnhanceError('No profile text available to enhance.');
       return;
@@ -33,11 +39,13 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
       setEnhanceError(null);
       setEnhancedProfile('');
 
-      const result = await enhanceProfileWithAI(templateText);
+      const result = await enhanceProfileWithAI(templateText, userPrompt || undefined);
 
       if (result.success) {
         setEnhancedProfile(result.data);
         setEnhanceError(null);
+        setShowPromptInput(false);
+        setCustomPrompt('');
       } else {
         setEnhanceError(result.error || 'Failed to enhance profile');
         setEnhancedProfile('');
@@ -247,18 +255,23 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
     }
   };
 
-  const handleProfileRejected = async () => {
-    // Clear the current enhanced profile and regenerate
-    setEnhancedProfile('');
-    setEnhanceError(null);
-    
-    // Regenerate the profile by calling enhance again
-    if (typeof onProfileRejected === 'function') {
-      onProfileRejected();
+  const handleEnhanceWithPromptClick = () => {
+    setShowPromptInput(true);
+  };
+
+  const handlePromptEnhance = () => {
+    if (isPromptOverLimit || !customPrompt.trim()) return;
+    runEnhance(customPrompt.trim());
+  };
+
+  const handlePromptChange = (e) => {
+    const val = e.target.value;
+    const words = val.trim() ? val.trim().split(/\s+/) : [];
+    if (words.length <= PROMPT_MAX_WORDS) {
+      setCustomPrompt(val);
+    } else {
+      setCustomPrompt(words.slice(0, PROMPT_MAX_WORDS).join(' '));
     }
-    
-    // Always regenerate the profile
-    await runEnhance();
   };
 
   const profileHeading = profile?.templateType === 'cover' ? 'Cover Letter' : 'Profile Details';
@@ -593,78 +606,146 @@ const EnhanceProfilePage = ({ profileData, templateText, templateType: providedT
               marginBottom: '20px',
               margin: '0 0 20px 0',
             }}>
-              Do you like this profile
+              Do you like this profile?
             </h3>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px',
-              flexWrap: 'wrap',
-            }}>
-              <button
-                type="button"
-                onClick={handleProfileAccepted}
-                disabled={isHandlingFeedback}
-                style={{
-                  backgroundColor: '#22c55e',
-                  color: 'white',
-                  border: 'none',
-                  padding: '14px 48px',
-                  borderRadius: '28px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: isHandlingFeedback ? 'not-allowed' : 'pointer',
-                  opacity: isHandlingFeedback ? 0.6 : 1,
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isHandlingFeedback) {
-                    e.target.style.backgroundColor = '#16a34a';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isHandlingFeedback) {
-                    e.target.style.backgroundColor = '#22c55e';
-                    e.target.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {isHandlingFeedback ? 'Saving...' : 'Yes'}
-              </button>
-              <button
-                type="button"
-                onClick={handleProfileRejected}
-                disabled={isEnhancing || isHandlingFeedback}
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#ef4444',
-                  border: '2px solid #ef4444',
-                  padding: '14px 32px',
-                  borderRadius: '28px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: (isEnhancing || isHandlingFeedback) ? 'not-allowed' : 'pointer',
-                  opacity: (isEnhancing || isHandlingFeedback) ? 0.6 : 1,
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isEnhancing && !isHandlingFeedback) {
-                    e.target.style.backgroundColor = '#fef2f2';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isEnhancing && !isHandlingFeedback) {
-                    e.target.style.backgroundColor = 'transparent';
-                    e.target.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {isEnhancing ? 'Regenerating...' : 'No, Enhance with prompt'}
-              </button>
-            </div>
+            {!showPromptInput ? (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '16px',
+                flexWrap: 'wrap',
+              }}>
+                <button
+                  type="button"
+                  onClick={handleProfileAccepted}
+                  disabled={isHandlingFeedback}
+                  style={{
+                    backgroundColor: '#22c55e',
+                    color: 'white',
+                    border: 'none',
+                    padding: '14px 48px',
+                    borderRadius: '28px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: isHandlingFeedback ? 'not-allowed' : 'pointer',
+                    opacity: isHandlingFeedback ? 0.6 : 1,
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isHandlingFeedback) {
+                      e.target.style.backgroundColor = '#16a34a';
+                      e.target.style.transform = 'translateY(-2px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isHandlingFeedback) {
+                      e.target.style.backgroundColor = '#22c55e';
+                      e.target.style.transform = 'translateY(0)';
+                    }
+                  }}
+                >
+                  {isHandlingFeedback ? 'Saving...' : 'Accept'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEnhanceWithPromptClick}
+                  disabled={isHandlingFeedback}
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#8b5cf6',
+                    border: '2px solid #8b5cf6',
+                    padding: '14px 32px',
+                    borderRadius: '28px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: isHandlingFeedback ? 'not-allowed' : 'pointer',
+                    opacity: isHandlingFeedback ? 0.6 : 1,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isHandlingFeedback) {
+                      e.target.style.backgroundColor = '#f5f3ff';
+                      e.target.style.transform = 'translateY(-2px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isHandlingFeedback) {
+                      e.target.style.backgroundColor = 'transparent';
+                      e.target.style.transform = 'translateY(0)';
+                    }
+                  }}
+                >
+                  Enhance with prompt
+                </button>
+              </div>
+            ) : (
+              <div style={{
+                textAlign: 'left',
+                maxWidth: '480px',
+                margin: '0 auto',
+              }}>
+                <textarea
+                  value={customPrompt}
+                  onChange={handlePromptChange}
+                  placeholder="Describe how you'd like to enhance (e.g. make it more formal, emphasize leadership). Max 50 words."
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    border: isPromptOverLimit ? '2px solid #ef4444' : '1px solid #e5e7eb',
+                    fontSize: '0.95rem',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <div style={{
+                  marginTop: '8px',
+                  marginBottom: '12px',
+                  fontSize: '0.875rem',
+                  color: isPromptOverLimit ? '#dc2626' : '#6b7280',
+                }}>
+                  {promptWordCount} / {PROMPT_MAX_WORDS} words
+                  {isPromptOverLimit && ' — reduce to 50 words or fewer'}
+                </div>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setShowPromptInput(false); setCustomPrompt(''); }}
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#6b7280',
+                      border: '1px solid #d1d5db',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      fontSize: '0.95rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePromptEnhance}
+                    disabled={isEnhancing || !customPrompt.trim() || isPromptOverLimit}
+                    style={{
+                      backgroundColor: (isEnhancing || !customPrompt.trim() || isPromptOverLimit) ? '#c4b5fd' : '#8b5cf6',
+                      color: 'white',
+                      border: 'none',
+                      padding: '12px 28px',
+                      borderRadius: '12px',
+                      fontSize: '0.95rem',
+                      fontWeight: '600',
+                      cursor: (isEnhancing || !customPrompt.trim() || isPromptOverLimit) ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {isEnhancing ? 'Enhancing...' : 'Enhance'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

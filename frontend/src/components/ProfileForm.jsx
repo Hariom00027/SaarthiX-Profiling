@@ -13,6 +13,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
     currentDegree: '',
     branch: '',
     yearOfStudy: '',
+    graduationYear: '',
+    graduationMonth: '',
     certifications: '',
     achievements: '',
     technicalSkills: '',
@@ -52,6 +54,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
         currentDegree: initialData.currentDegree || '',
         branch: initialData.branch || '',
         yearOfStudy: initialData.yearOfStudy || '',
+        graduationYear: initialData.graduationYear || '',
+        graduationMonth: initialData.graduationMonth || '',
         certifications: initialData.certifications || '',
         achievements: initialData.achievements || '',
         technicalSkills: initialData.technicalSkills || '',
@@ -110,6 +114,21 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
           { name: 'branch', label: 'Field of Study', required: true },
           { name: 'institute', label: 'Institute / University', required: true },
           { name: 'yearOfStudy', label: 'Year of Study', required: true },
+          { name: 'graduationYear', label: 'Graduation Year', type: 'number', required: true, placeholder: 'e.g., 2025' },
+          { name: 'graduationMonth', label: 'Graduation Month', type: 'select', required: true, options: [
+            { value: '1', label: 'January' },
+            { value: '2', label: 'February' },
+            { value: '3', label: 'March' },
+            { value: '4', label: 'April' },
+            { value: '5', label: 'May' },
+            { value: '6', label: 'June' },
+            { value: '7', label: 'July' },
+            { value: '8', label: 'August' },
+            { value: '9', label: 'September' },
+            { value: '10', label: 'October' },
+            { value: '11', label: 'November' },
+            { value: '12', label: 'December' },
+          ] },
         ],
       },
     },
@@ -146,8 +165,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       title: 'Skills & highlights',
       subtitle: 'List what makes you stand out.',
       fields: [
-        { name: 'certifications', label: 'Certifications', type: 'textarea', required: false, rows: 2 },
-        { name: 'achievements', label: 'Achievements', type: 'textarea', required: false, rows: 2 },
+        { name: 'certifications', label: 'Certifications', type: 'textarea', required: true, rows: 2 },
+        { name: 'achievements', label: 'Achievements', type: 'textarea', required: true, rows: 2 },
         { name: 'technicalSkills', label: 'Technical Skills', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., React, SQL, Canva' },
         { name: 'softSkills', label: 'Soft Skills', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., Leadership, Communication' },
           { name: 'interests', label: 'Interests', type: 'textarea', required: true, rows: 3, placeholder: 'e.g., Product design, Data storytelling' },
@@ -233,6 +252,21 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       for (const field of step.followUp.fields) {
         if (field.required && !String(data[field.name] || '').trim()) {
           return { valid: false, message: `${field.label} is required.` };
+        }
+      }
+      // Validate graduation year is a valid year
+      if (data.graduationYear) {
+        const year = parseInt(data.graduationYear);
+        const currentYear = new Date().getFullYear();
+        if (isNaN(year) || year < currentYear || year > currentYear + 10) {
+          return { valid: false, message: 'Please enter a valid graduation year (current year to 10 years ahead).' };
+        }
+      }
+      // Validate graduation month is between 1-12
+      if (data.graduationMonth) {
+        const month = parseInt(data.graduationMonth);
+        if (isNaN(month) || month < 1 || month > 12) {
+          return { valid: false, message: 'Please select a valid graduation month.' };
         }
       }
       return { valid: true };
@@ -404,6 +438,26 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       );
     }
 
+    if (field.type === 'select') {
+      return (
+        <select
+          key={field.name}
+          name={field.name}
+          value={formData[field.name]}
+          onChange={handleChange}
+          className={baseClasses}
+          required={field.required}
+        >
+          <option value="">Select {field.label}</option>
+          {field.options?.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
     return (
       <input
         key={field.name}
@@ -414,6 +468,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
         placeholder={field.placeholder}
         className={baseClasses}
         required={field.required}
+        min={field.type === 'number' ? '1900' : undefined}
+        max={field.type === 'number' ? '2100' : undefined}
       />
     );
   };

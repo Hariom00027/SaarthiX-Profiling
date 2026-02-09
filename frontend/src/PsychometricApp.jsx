@@ -9,7 +9,7 @@ import PsychometricReport from './pages/psychometric/PsychometricReport'
 import SavedPsychometricReports from './pages/psychometric/SavedPsychometricReports'
 import ProfilePreview from './pages/psychometric/ProfilePreview'
 import PsychometricProfileFromReport from './pages/psychometric/PsychometricProfileFromReport'
-import Header from './components/Header'
+import Navbar from './components/Navbar'
 import './styles/psychometric.css'
 
 function PsychometricApp() {
@@ -25,9 +25,9 @@ function PsychometricApp() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Show header on all psychometric pages except during the actual assessment */}
+      {/* Show navbar on all psychometric pages except during the actual assessment */}
       {!isAssessmentPage && (
-        <Header onNavigateToStart={handleNavigateToStart} />
+        <Navbar />
       )}
 
       <Routes>

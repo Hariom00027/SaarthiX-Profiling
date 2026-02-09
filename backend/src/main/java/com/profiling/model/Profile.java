@@ -23,6 +23,8 @@ public class Profile {
     private String currentDegree;
     private String branch;
     private String yearOfStudy;
+    private String graduationYear;
+    private String graduationMonth;
     private String certifications;
     private String achievements;
     private String technicalSkills;
@@ -145,6 +147,22 @@ public class Profile {
 
     public void setYearOfStudy(String yearOfStudy) {
         this.yearOfStudy = yearOfStudy;
+    }
+
+    public String getGraduationYear() {
+        return graduationYear;
+    }
+
+    public void setGraduationYear(String graduationYear) {
+        this.graduationYear = graduationYear;
+    }
+
+    public String getGraduationMonth() {
+        return graduationMonth;
+    }
+
+    public void setGraduationMonth(String graduationMonth) {
+        this.graduationMonth = graduationMonth;
     }
 
     public String getCertifications() {
