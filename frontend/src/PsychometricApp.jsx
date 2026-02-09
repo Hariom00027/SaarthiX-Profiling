@@ -9,27 +9,27 @@ import PsychometricReport from './pages/psychometric/PsychometricReport'
 import SavedPsychometricReports from './pages/psychometric/SavedPsychometricReports'
 import ProfilePreview from './pages/psychometric/ProfilePreview'
 import PsychometricProfileFromReport from './pages/psychometric/PsychometricProfileFromReport'
-import Header from './components/Header'
+import Navbar from './components/Navbar'
 import './styles/psychometric.css'
 
 function PsychometricApp() {
   const location = useLocation()
   const navigate = useNavigate()
-  
+
   // Hide navbar during the actual assessment test
   const isAssessmentPage = location.pathname.includes('/psychometric/assessment/')
-  
+
   const handleNavigateToStart = () => {
-    window.location.href = '/start'
+    window.location.href = '/profiling/start'
   }
 
   return (
     <div className="relative min-h-screen">
-      {/* Show header on all psychometric pages except during the actual assessment */}
+      {/* Show navbar on all psychometric pages except during the actual assessment */}
       {!isAssessmentPage && (
-        <Header onNavigateToStart={handleNavigateToStart} />
+        <Navbar />
       )}
-      
+
       <Routes>
         <Route path="/psychometric/start" element={<PsychometricStart />} />
         <Route path="/psychometric/skills" element={<PsychometricSkills />} />

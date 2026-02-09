@@ -267,7 +267,7 @@ const TemplateSelection = ({ onTemplateSelect, onCoverLetterSelect, onBack }) =>
                   )}
                   
                   <button
-                    className={`template-select-btn ${index === 0 || selectedTemplate === template.id ? 'primary' : 'outline'}`}
+                    className={`template-select-btn ${selectedTemplate === template.id ? 'primary' : 'outline'}`}
                     onClick={() => handleTemplateClick(template)}
                   >
                     Select Template

@@ -2,84 +2,40 @@ import React, { useState, useEffect, useRef } from 'react';
 import { parseResume } from '../api';
 import { notifyError, notifySuccess } from '../utils/notifications';
 
-const PROFILING_FORM_DRAFT_KEY = 'saarthix_profiling_form_draft';
-
-const defaultFormData = {
-  name: '',
-  email: '',
-  phone: '',
-  dob: '',
-  linkedin: '',
-  institute: '',
-  currentDegree: '',
-  branch: '',
-  yearOfStudy: '',
-  certifications: '',
-  achievements: '',
-  technicalSkills: '',
-  softSkills: '',
-  interests: '',
-  hobbies: '',
-  hasInternship: false,
-  internshipDetails: '',
-  hasExperience: false,
-  experienceDetails: '',
-  workExperience: '',
-  schoolType: '',
-  experienceLevel: '',
-  studentStatus: '',
-  companyName: '',
-  designation: '',
-  yearsOfExperience: '',
-  yearOfJoining: '',
-};
-
-function getDraftFromStorage() {
-  try {
-    const raw = localStorage.getItem(PROFILING_FORM_DRAFT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed.formData === 'object' && typeof parsed.currentStep === 'number') {
-      return {
-        formData: { ...defaultFormData, ...parsed.formData },
-        currentStep: Math.max(0, Math.min(parsed.currentStep, 4)),
-      };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-function saveDraftToStorage(formData, currentStep) {
-  try {
-    localStorage.setItem(
-      PROFILING_FORM_DRAFT_KEY,
-      JSON.stringify({ formData, currentStep })
-    );
-  } catch {
-    // ignore quota or private mode errors
-  }
-}
-
-function clearDraftFromStorage() {
-  try {
-    localStorage.removeItem(PROFILING_FORM_DRAFT_KEY);
-  } catch {
-    // ignore
-  }
-}
-
 const ProfileForm = ({ onSuccess, onBack, initialData }) => {
-  const [formData, setFormData] = useState(() => {
-    const draft = getDraftFromStorage();
-    return draft ? draft.formData : defaultFormData;
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    dob: '',
+    linkedin: '',
+    institute: '',
+    currentDegree: '',
+    branch: '',
+    yearOfStudy: '',
+    graduationYear: '',
+    graduationMonth: '',
+    certifications: '',
+    achievements: '',
+    technicalSkills: '',
+    softSkills: '',
+    interests: '',
+    hobbies: '',
+    hasInternship: false,
+    internshipDetails: '',
+    hasExperience: false,
+    experienceDetails: '',
+    workExperience: '',
+    schoolType: '',
+    experienceLevel: '',
+    studentStatus: '',
+    companyName: '',
+    designation: '',
+    yearsOfExperience: '',
+    yearOfJoining: '',
   });
 
-  const [currentStep, setCurrentStep] = useState(() => {
-    const draft = getDraftFromStorage();
-    return draft ? draft.currentStep : 0;
-  });
+  const [currentStep, setCurrentStep] = useState(0);
   const [stepError, setStepError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isParsingResume, setIsParsingResume] = useState(false);
@@ -98,6 +54,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
         currentDegree: initialData.currentDegree || '',
         branch: initialData.branch || '',
         yearOfStudy: initialData.yearOfStudy || '',
+        graduationYear: initialData.graduationYear || '',
+        graduationMonth: initialData.graduationMonth || '',
         certifications: initialData.certifications || '',
         achievements: initialData.achievements || '',
         technicalSkills: initialData.technicalSkills || '',
@@ -161,6 +119,21 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
           { name: 'branch', label: 'Field of Study', required: true },
           { name: 'institute', label: 'Institute / University', required: true },
           { name: 'yearOfStudy', label: 'Year of Study', required: true },
+          { name: 'graduationYear', label: 'Graduation Year', type: 'number', required: true, placeholder: 'e.g., 2025' },
+          { name: 'graduationMonth', label: 'Graduation Month', type: 'select', required: true, options: [
+            { value: '1', label: 'January' },
+            { value: '2', label: 'February' },
+            { value: '3', label: 'March' },
+            { value: '4', label: 'April' },
+            { value: '5', label: 'May' },
+            { value: '6', label: 'June' },
+            { value: '7', label: 'July' },
+            { value: '8', label: 'August' },
+            { value: '9', label: 'September' },
+            { value: '10', label: 'October' },
+            { value: '11', label: 'November' },
+            { value: '12', label: 'December' },
+          ] },
         ],
       },
     },
@@ -284,6 +257,21 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       for (const field of step.followUp.fields) {
         if (field.required && !String(data[field.name] || '').trim()) {
           return { valid: false, message: `${field.label} is required.` };
+        }
+      }
+      // Validate graduation year is a valid year
+      if (data.graduationYear) {
+        const year = parseInt(data.graduationYear);
+        const currentYear = new Date().getFullYear();
+        if (isNaN(year) || year < currentYear || year > currentYear + 10) {
+          return { valid: false, message: 'Please enter a valid graduation year (current year to 10 years ahead).' };
+        }
+      }
+      // Validate graduation month is between 1-12
+      if (data.graduationMonth) {
+        const month = parseInt(data.graduationMonth);
+        if (isNaN(month) || month < 1 || month > 12) {
+          return { valid: false, message: 'Please select a valid graduation month.' };
         }
       }
       return { valid: true };
@@ -456,6 +444,26 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       );
     }
 
+    if (field.type === 'select') {
+      return (
+        <select
+          key={field.name}
+          name={field.name}
+          value={formData[field.name]}
+          onChange={handleChange}
+          className={baseClasses}
+          required={field.required}
+        >
+          <option value="">Select {field.label}</option>
+          {field.options?.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
     return (
       <input
         key={field.name}
@@ -466,6 +474,8 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
         placeholder={field.placeholder}
         className={baseClasses}
         required={field.required}
+        min={field.type === 'number' ? '1900' : undefined}
+        max={field.type === 'number' ? '2100' : undefined}
       />
     );
   };

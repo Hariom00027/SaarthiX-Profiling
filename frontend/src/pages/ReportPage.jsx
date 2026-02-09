@@ -14,30 +14,29 @@ const DonutChart = ({ data, totalScore }) => {
   const centerX = size / 2;
   const centerY = size / 2;
 
-  const colors = ['#B192FD', '#FDB142', '#8CFDB1', '#92CAF8', '#4285F4'];
-  
+  const colors = ['#4A90D9', '#E85D75', '#F5A623', '#7B68EE', '#50C878'];
   const segments = useMemo(() => {
     const total = Object.values(data).reduce((sum, val) => sum + val, 0);
     let currentAngle = -90;
-    
+
     return Object.entries(data).map(([key, value], index) => {
       const percentage = (value / total) * 100;
       const angle = (value / total) * 360;
       const startAngle = currentAngle;
       currentAngle += angle;
-      
+
       const startRad = (startAngle * Math.PI) / 180;
       const endRad = ((startAngle + angle) * Math.PI) / 180;
-      
+
       const x1 = centerX + radius * Math.cos(startRad);
       const y1 = centerY + radius * Math.sin(startRad);
       const x2 = centerX + radius * Math.cos(endRad);
       const y2 = centerY + radius * Math.sin(endRad);
-      
+
       const largeArcFlag = angle > 180 ? 1 : 0;
-      
+
       const pathD = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-      
+
       return {
         key,
         value,
@@ -67,9 +66,13 @@ const DonutChart = ({ data, totalScore }) => {
       </div>
       <div className="report-donut-legend">
         {segments.map((segment) => (
-          <div key={segment.key} className="report-donut-legend-item">
-            <span className="report-donut-legend-dot" style={{ backgroundColor: segment.color }} />
-            <span className="report-donut-legend-label">{segment.key}</span>
+          <div key={segment.key} className="flex items-center gap-3 group cursor-default">
+            <div
+              className="w-4 h-4 rounded-full shadow-md transition-transform group-hover:scale-110"
+              style={{ backgroundColor: segment.color }}
+            />
+            <span className="text-sm text-gray-800 capitalize font-semibold min-w-[80px]">{segment.key}</span>
+            <span className="text-sm text-gray-600 font-bold">{segment.percentage}%</span>
           </div>
         ))}
       </div>
@@ -121,7 +124,7 @@ const ReportPage = (props = {}) => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `Saathi_Report_${timestamp}.pdf`;
-      
+
       await downloadProfileAsPDF(evaluationResultsRef.current, {
         fileName,
         orientation: 'p'
@@ -162,7 +165,7 @@ const ReportPage = (props = {}) => {
       };
 
       const result = await regenerateProfile(payload);
-      
+
       if (result.success && result.data) {
         notifySuccess('Profile enhanced successfully!');
         navigate('/enhance', {
@@ -241,11 +244,11 @@ const ReportPage = (props = {}) => {
 
       sessionStorage.setItem('psychometric_from_profile', 'true');
       sessionStorage.setItem('psychometric_profile_data', JSON.stringify(psychometricData));
-      
+
       notifySuccess('Preparing your psychometric test...');
-      
+
       setTimeout(() => {
-        window.location.href = '/psychometric/start';
+        window.location.href = '/profiling/psychometric/start';
       }, 500);
     } catch (error) {
       console.error('Error preparing psychometric test:', error);
@@ -264,12 +267,12 @@ const ReportPage = (props = {}) => {
   // Parse roadmap into months if it's a string
   const roadmapMonths = useMemo(() => {
     if (!reportData?.roadmap90Days) return null;
-    
+
     // If it's already structured, use it
     if (typeof reportData.roadmap90Days === 'object' && reportData.roadmap90Days.months) {
       return reportData.roadmap90Days.months;
     }
-    
+
     // Try to parse from string
     const roadmapText = String(reportData.roadmap90Days);
     const months = [
@@ -277,16 +280,16 @@ const ReportPage = (props = {}) => {
       { title: 'Month 2: Application', description: '' },
       { title: 'Month 3: Refinement', description: '' }
     ];
-    
+
     // Try to extract month information from the text
     const month1Match = roadmapText.match(/month\s*1[:\s]*(.*?)(?=month\s*2|$)/i);
     const month2Match = roadmapText.match(/month\s*2[:\s]*(.*?)(?=month\s*3|$)/i);
     const month3Match = roadmapText.match(/month\s*3[:\s]*(.*?)$/i);
-    
+
     if (month1Match) months[0].description = month1Match[1].trim().substring(0, 150);
     if (month2Match) months[1].description = month2Match[1].trim().substring(0, 150);
     if (month3Match) months[2].description = month3Match[1].trim().substring(0, 150);
-    
+
     // If no months found, split text into thirds
     if (!month1Match && !month2Match && !month3Match) {
       const textLength = roadmapText.length;
@@ -295,7 +298,7 @@ const ReportPage = (props = {}) => {
       months[1].description = roadmapText.substring(third, third * 2).trim().substring(0, 150);
       months[2].description = roadmapText.substring(third * 2).trim().substring(0, 150);
     }
-    
+
     return months;
   }, [reportData?.roadmap90Days]);
 
@@ -336,10 +339,12 @@ const ReportPage = (props = {}) => {
           >
             <span className="report-back-arrow">←</span> Back to Chatbot
           </button>
+
           <div className="report-header-title-block">
             <h1 className="report-title">Your Interest Evaluation Report</h1>
             <p className="report-subtitle">Analysis based on your recent interactions and assessments</p>
           </div>
+
           <button
             type="button"
             onClick={handleEnhanceProfile}
@@ -399,103 +404,135 @@ const ReportPage = (props = {}) => {
             </div>
           )}
 
-          {/* Strengths + Do's (left) | Areas to Improve + Don'ts (right) */}
-          <section className="report-strengths-section">
-            <div className="report-strengths-grid">
-              <div className="report-card report-card-strengths report-stagger-3">
-                {reportData.strengths && reportData.strengths.length > 0 && (
-                  <div className="report-strength-block">
-                    <h3 className="report-strength-heading report-strength-heading-green">Strengths</h3>
-                    <ul className="report-list-green">
-                      {reportData.strengths.map((strength, idx) => (
-                        <li key={idx} className="report-list-item-green">
+          {/* Strengths & Areas to Improve */}
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200 mb-6 hover-lift report-stagger-3">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Strengths */}
+              {reportData.strengths && reportData.strengths.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-green-600 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Strengths
+                  </h3>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 space-y-3 border border-green-200">
+                    {reportData.strengths.map((strength, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <CheckIcon />
+                        <span className="text-sm text-gray-800 leading-relaxed">{strength}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Areas to Improve */}
+              {reportData.weaknesses && reportData.weaknesses.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    Areas to Improve
+                  </h3>
+                  <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-5 space-y-3 border border-red-200">
+                    {reportData.weaknesses.map((weakness, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <XIcon />
+                        <span className="text-sm text-gray-800 leading-relaxed">{weakness}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Do's & Don'ts */}
+            {(reportData.dos?.length > 0 || reportData.donts?.length > 0) && (
+              <div className="grid md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-gray-200">
+                {/* Do's */}
+                {reportData.dos && reportData.dos.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-green-700 mb-4">Do's</h3>
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 space-y-3 border border-green-200">
+                      {reportData.dos.map((doItem, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
                           <CheckIcon />
-                          <span>{strength}</span>
-                        </li>
+                          <span className="text-sm text-gray-800 leading-relaxed">{doItem}</span>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
-                {reportData.dos && reportData.dos.length > 0 && (
-                  <div className="report-strength-block">
-                    <h3 className="report-strength-heading report-strength-heading-green">Do&apos;s</h3>
-                    <ul className="report-list-green">
-                      {reportData.dos.map((doItem, idx) => (
-                        <li key={idx} className="report-list-item-green">
-                          <CheckIcon />
-                          <span>{doItem}</span>
-                        </li>
+
+                {/* Don'ts */}
+                {reportData.donts && reportData.donts.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-red-700 mb-4">Don'ts</h3>
+                    <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-5 space-y-3 border border-red-200">
+                      {reportData.donts.map((dont, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <XIcon />
+                          <span className="text-sm text-gray-800 leading-relaxed">{dont}</span>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </div>
-              <div className="report-card report-card-weaknesses report-stagger-3">
-                {reportData.weaknesses && reportData.weaknesses.length > 0 && (
-                  <div className="report-weakness-block">
-                    <h3 className="report-weakness-heading">Areas to Improve</h3>
-                    <ul className="report-list-red">
-                      {reportData.weaknesses.map((weakness, idx) => (
-                        <li key={idx} className="report-list-item-red">
-                          <XIcon />
-                          <span>{weakness}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {reportData.donts && reportData.donts.length > 0 && (
-                  <div className="report-weakness-block">
-                    <h3 className="report-weakness-heading">Don&apos;ts</h3>
-                    <ul className="report-list-red">
-                      {reportData.donts.map((dont, idx) => (
-                        <li key={idx} className="report-list-item-red">
-                          <XIcon />
-                          <span>{dont}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+            )}
+          </div>
+
+          {/* 90-Day Roadmap */}
+          {reportData.roadmap90Days && (
+            <div className="mb-6 bg-white rounded-3xl p-8 shadow-lg border border-gray-200 hover-lift report-card-enter">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                90-Day <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Roadmap</span>
+              </h2>
+
+              <div className="relative">
+                {/* Timeline Steps */}
+                <div className="space-y-6">
+                  {roadmapMonths && roadmapMonths.map((month, index) => (
+                    <div key={index} className={`flex items-start gap-5 ${index === 0 ? '' : index === 1 ? 'ml-16' : 'ml-32'} transition-all duration-300`}>
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-base shadow-lg ${index === 0 ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                        index === 1 ? 'bg-gradient-to-br from-yellow-500 to-amber-500' :
+                          'bg-gradient-to-br from-green-500 to-emerald-600'
+                        }`}>
+                        0{index + 1}
+                      </div>
+                      <div className={`rounded-2xl p-5 flex-1 max-w-md shadow-md border-2 ${index === 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' :
+                        index === 1 ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200' :
+                          'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
+                        }`}>
+                        <h4 className="text-base font-bold text-gray-900 mb-2">{month.title}</h4>
+                        <p className="text-sm text-gray-700 leading-relaxed">{month.description || 'Focus on building strong foundations and skills.'}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </section>
-
-          {/* 90-Day Roadmap: timeline + month cards */}
-          {reportData.roadmap90Days && (
-            <section className="report-roadmap report-card-enter">
-              <h2 className="report-roadmap-title">90-Day Roadmap</h2>
-              <div className="report-roadmap-timeline">
-                {roadmapMonths && roadmapMonths.map((month, index) => (
-                  <React.Fragment key={index}>
-                    <div className="report-roadmap-step">
-                      <div className="report-roadmap-number">{String(index + 1).padStart(2, '0')}</div>
-                    </div>
-                    {index < roadmapMonths.length - 1 && <div className="report-roadmap-connector" />}
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="report-roadmap-cards">
-                {roadmapMonths && roadmapMonths.map((month, index) => (
-                  <div key={index} className="report-roadmap-card">
-                    <h4 className="report-roadmap-card-title">{month.title || `Month ${index + 1}: ${index === 0 ? 'Foundation' : index === 1 ? 'Application' : 'Refinement'}`}</h4>
-                    <p className="report-roadmap-card-desc">{month.description || 'Focus on building strong foundations and skills.'}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
           )}
 
-          {/* Recommended Roles: dark blue section */}
+          {/* Recommended Roles */}
           {reportData.recommendedRoles && reportData.recommendedRoles.length > 0 && (
-            <section className="report-roles-section report-card-enter">
-              <h3 className="report-roles-title">Recommended Roles</h3>
-              <div className="report-roles-tags">
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-8 mb-6 shadow-xl hover-lift report-card-enter">
+              <h3 className="text-2xl font-bold text-white text-center mb-6">
+                Recommended <span className="text-yellow-300">Roles</span>
+              </h3>
+              <div className="flex flex-wrap gap-3 justify-center">
                 {reportData.recommendedRoles.map((role, idx) => (
-                  <span key={idx} className="report-role-tag">{role}</span>
+                  <span
+                    key={idx}
+                    className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-white/20 transition-all cursor-default shadow-lg"
+                  >
+                    {role}
+                  </span>
                 ))}
               </div>
-            </section>
+            </div>
           )}
 
           {/* Suggested Courses | Project Ideas */}

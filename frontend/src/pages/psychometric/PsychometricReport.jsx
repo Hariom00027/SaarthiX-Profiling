@@ -151,13 +151,13 @@ function PsychometricReport() {
         }
       }
       reader.readAsText(file)
-    } 
+    }
     // Handle PDF files
     else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
       try {
         // Call the API to parse the PDF
         const result = await parseProfilePdf(file)
-        
+
         if (result.success && result.data) {
           showUploadedProfilePreview(result.data)
         } else {
@@ -176,13 +176,13 @@ function PsychometricReport() {
     // For uploaded profiles, navigate to preview page
     setUploadedProfile(profileData)
     setShowEnhanceModal(false)
-    
-    navigate('/psychometric/profile-preview', { 
-      state: { 
+
+    navigate('/psychometric/profile-preview', {
+      state: {
         profileData: profileData,
         reportData: report,
         sessionId: sessionId
-      } 
+      }
     })
   }
 
@@ -198,7 +198,7 @@ function PsychometricReport() {
     try {
       setIsEnhancing(true)
       const profileData = selectedProfile.profile || selectedProfile
-      
+
       const result = await enhanceProfileWithReport({
         profileId: profileData.id,
         // IMPORTANT: send the actual Profile object so backend updates the same saved profile (no new profile created)
@@ -212,7 +212,7 @@ function PsychometricReport() {
         setShowEnhanceModal(false)
         setSelectedProfile(null)
         setIsEnhancing(false)
-        
+
         // Store the enhanced profile ID and show success modal
         setEnhancedProfileId(profileData.id)
         setShowSuccessModal(true)
@@ -230,16 +230,16 @@ function PsychometricReport() {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false)
-    
+
     // Store the enhanced profile ID in localStorage for the main app to load
     if (enhancedProfileId) {
       localStorage.setItem('viewProfileId', enhancedProfileId)
       localStorage.setItem('currentView', 'display')
     }
-    
+
     setEnhancedProfileId(null)
     // Navigate to main app display page which will load the enhanced profile
-    window.location.href = '/display'
+    window.location.href = '/profiling/profile-display'
   }
 
   const closeEnhanceModal = () => {
@@ -318,10 +318,10 @@ function PsychometricReport() {
             </div>
             {report.reportGeneratedAt && (
               <div className="report-date">
-                {new Date(report.reportGeneratedAt).toLocaleDateString('en-GB', { 
-                  day: '2-digit', 
-                  month: '2-digit', 
-                  year: 'numeric' 
+                {new Date(report.reportGeneratedAt).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
                 })}
               </div>
             )}
@@ -339,8 +339,8 @@ function PsychometricReport() {
             </div>
             <div className="progress-bar-section">
               <div className="progress-bar-container">
-                <div 
-                  className="progress-bar-fill" 
+                <div
+                  className="progress-bar-fill"
                   style={{ width: `${report.candidatePercentile || 0}%` }}
                 ></div>
               </div>
@@ -352,8 +352,8 @@ function PsychometricReport() {
         {/* Action Buttons */}
         <div className="report-actions">
           <button onClick={handleViewAnswers} className="btn-view-answers">VIEW ANSWERS</button>
-          <button 
-            onClick={handleSaveReport} 
+          <button
+            onClick={handleSaveReport}
             className={`btn-save-report ${isSaved ? 'saved' : ''}`}
             disabled={isSaving || isSaved}
           >
@@ -362,8 +362,8 @@ function PsychometricReport() {
           <button onClick={handleDownloadPdf} className="btn-download-report">
             DOWNLOAD FULL REPORT
           </button>
-          <button 
-            onClick={handleCreateProfile} 
+          <button
+            onClick={handleCreateProfile}
             className="btn-create-profile"
             disabled={!report}
           >
@@ -378,7 +378,7 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>BIO</h3>
           <p className="section-description">
-            This section provides a comprehensive overview of the candidate's professional background, 
+            This section provides a comprehensive overview of the candidate's professional background,
             educational qualifications, career aspirations, and personal interests.
           </p>
           <div className="bio-content">
@@ -413,7 +413,7 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>EDUCATION</h3>
           <p className="section-description">
-            This section details the candidate's academic qualifications, including their degree, 
+            This section details the candidate's academic qualifications, including their degree,
             specialization, and educational institution.
           </p>
           {report.university && <p><strong>UNIVERSITY:</strong> {report.university}</p>}
@@ -426,7 +426,7 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>SUMMARY OF PSYCHOMETRIC TEST</h3>
           <p className="section-description">
-            This section provides a comprehensive analysis of the candidate's performance across all 
+            This section provides a comprehensive analysis of the candidate's performance across all
             sections of the psychometric assessment, including aptitude, behavioral, and domain-specific evaluations.
           </p>
           <div className="interview-content">
@@ -444,8 +444,8 @@ function PsychometricReport() {
         <div className="report-section swot-section">
           <h3>SWOT Analysis</h3>
           <p className="section-description">
-            SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis provides a structured evaluation 
-            of the candidate's profile, identifying key areas of excellence, areas for improvement, 
+            SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis provides a structured evaluation
+            of the candidate's profile, identifying key areas of excellence, areas for improvement,
             potential growth opportunities, and external factors that may impact their career trajectory.
           </p>
           <div className="swot-grid">
@@ -511,7 +511,7 @@ function PsychometricReport() {
         <div className="report-section fit-section">
           <h3>FIT ANALYSIS</h3>
           <p className="section-description">
-            This analysis evaluates how well the candidate's skills, personality traits, and performance 
+            This analysis evaluates how well the candidate's skills, personality traits, and performance
             align with their chosen career path and the requirements of their field of interest.
           </p>
           <div className="fit-content-wrapper">
@@ -531,20 +531,20 @@ function PsychometricReport() {
                     { name: 'POOR', score: chartData?.poorScore || 30, fill: '#cbd5e1' },
                     { name: 'AVERAGE', score: chartData?.averageScore || 60, fill: '#94a3b8' },
                     { name: 'BEST', score: chartData?.bestScore || 90, fill: '#10b981' },
-                    { 
-                      name: 'You', 
+                    {
+                      name: 'You',
                       score: chartData?.candidatePosition === 'BEST' ? chartData?.bestScore : (chartData?.candidatePosition === 'AVERAGE' ? chartData?.averageScore : chartData?.poorScore) || 50,
-                      fill: '#3b82f6' 
+                      fill: '#3b82f6'
                     }
                   ]}
                   margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" tick={{fill: '#64748b', fontSize: 12}} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
                   <YAxis hide />
-                  <Tooltip 
-                    cursor={{fill: 'transparent'}}
-                    contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'}}
+                  <Tooltip
+                    cursor={{ fill: 'transparent' }}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                   />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]}>
                     {
@@ -560,9 +560,9 @@ function PsychometricReport() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="candidate-indicator" style={{marginTop: '10px', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'}}>
-                 <div style={{width: 10, height: 10, borderRadius: '50%', background: '#3b82f6'}}></div>
-                 {userInfo.name?.toUpperCase() || 'CANDIDATE'}
+              <div className="candidate-indicator" style={{ marginTop: '10px', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#3b82f6' }}></div>
+                {userInfo.name?.toUpperCase() || 'CANDIDATE'}
               </div>
             </div>
           </div>
@@ -575,8 +575,8 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>Extended Analysis</h3>
           <p className="section-description">
-            This section provides an in-depth narrative analysis of the candidate's overall profile, 
-            synthesizing performance metrics, personality traits, and behavioral patterns into a 
+            This section provides an in-depth narrative analysis of the candidate's overall profile,
+            synthesizing performance metrics, personality traits, and behavioral patterns into a
             comprehensive assessment.
           </p>
           {report.narrativeSummary ? (
@@ -594,7 +594,7 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>Behavioral Insights</h3>
           <p className="section-description">
-            This section analyzes the candidate's behavioral patterns, personality traits, and 
+            This section analyzes the candidate's behavioral patterns, personality traits, and
             interpersonal skills based on their responses to behavioral assessment questions.
           </p>
           {report.behavioralInsights ? (
@@ -612,7 +612,7 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>Domain-Specific Insights</h3>
           <p className="section-description">
-            This section provides specialized insights into the candidate's knowledge and performance 
+            This section provides specialized insights into the candidate's knowledge and performance
             in their specific domain or field of expertise, based on domain-specific assessment questions.
           </p>
           {report.domainInsights ? (
@@ -630,10 +630,10 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>Big Five Personality Traits</h3>
           <p className="section-description">
-            The Big Five personality model evaluates five core dimensions of personality: Openness to Experience, 
+            The Big Five personality model evaluates five core dimensions of personality: Openness to Experience,
             Conscientiousness, Extraversion, Agreeableness, and Neuroticism, providing insights into the candidate's personality structure and behavioral tendencies.
           </p>
-          
+
           {/* Big Five Chart */}
           <div className="big-five-chart-container">
             <ResponsiveContainer width="100%" height={400}>
@@ -655,8 +655,8 @@ function PsychometricReport() {
                   fill="#3b82f6"
                   fillOpacity={0.2}
                 />
-                <Tooltip 
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'}}
+                <Tooltip
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -670,10 +670,10 @@ function PsychometricReport() {
                 <span className="trait-score">{report.openness || 0}/100</span>
               </div>
               <p className="trait-description">
-                Measures curiosity, creativity, and willingness to try new experiences. 
-                {(report.openness || 0) >= 70 ? ' High scorers are imaginative, adventurous, and intellectually curious, embracing new ideas and unconventional approaches.' : 
-                 (report.openness || 0) >= 40 ? ' Moderate scorers balance traditional and innovative approaches, showing selective openness to new experiences.' : 
-                 ' Lower scorers prefer familiar routines, practical solutions, and conventional approaches to problems.'}
+                Measures curiosity, creativity, and willingness to try new experiences.
+                {(report.openness || 0) >= 70 ? ' High scorers are imaginative, adventurous, and intellectually curious, embracing new ideas and unconventional approaches.' :
+                  (report.openness || 0) >= 40 ? ' Moderate scorers balance traditional and innovative approaches, showing selective openness to new experiences.' :
+                    ' Lower scorers prefer familiar routines, practical solutions, and conventional approaches to problems.'}
               </p>
             </div>
             <div className="trait-detail-item">
@@ -682,10 +682,10 @@ function PsychometricReport() {
                 <span className="trait-score">{report.conscientiousness || 0}/100</span>
               </div>
               <p className="trait-description">
-                Reflects organization, dependability, and goal-directed behavior. 
-                {(report.conscientiousness || 0) >= 70 ? ' High scorers are disciplined, thorough, and reliable, excelling at planning and following through on commitments.' : 
-                 (report.conscientiousness || 0) >= 40 ? ' Moderate scorers demonstrate reasonable organization and reliability, balancing structure with flexibility.' : 
-                 ' Lower scorers tend to be more spontaneous and flexible, sometimes at the expense of organization and planning.'}
+                Reflects organization, dependability, and goal-directed behavior.
+                {(report.conscientiousness || 0) >= 70 ? ' High scorers are disciplined, thorough, and reliable, excelling at planning and following through on commitments.' :
+                  (report.conscientiousness || 0) >= 40 ? ' Moderate scorers demonstrate reasonable organization and reliability, balancing structure with flexibility.' :
+                    ' Lower scorers tend to be more spontaneous and flexible, sometimes at the expense of organization and planning.'}
               </p>
             </div>
             <div className="trait-detail-item">
@@ -694,10 +694,10 @@ function PsychometricReport() {
                 <span className="trait-score">{report.extraversion || 0}/100</span>
               </div>
               <p className="trait-description">
-                Indicates sociability, assertiveness, and energy from social interactions. 
-                {(report.extraversion || 0) >= 70 ? ' High scorers are outgoing, energetic, and thrive in social settings, preferring teamwork and external stimulation.' : 
-                 (report.extraversion || 0) >= 40 ? ' Moderate scorers (ambiverts) adapt well to both social and solitary situations, balancing interaction with reflection.' : 
-                 ' Lower scorers (introverts) prefer quieter, more solitary activities and may excel in independent work requiring deep focus.'}
+                Indicates sociability, assertiveness, and energy from social interactions.
+                {(report.extraversion || 0) >= 70 ? ' High scorers are outgoing, energetic, and thrive in social settings, preferring teamwork and external stimulation.' :
+                  (report.extraversion || 0) >= 40 ? ' Moderate scorers (ambiverts) adapt well to both social and solitary situations, balancing interaction with reflection.' :
+                    ' Lower scorers (introverts) prefer quieter, more solitary activities and may excel in independent work requiring deep focus.'}
               </p>
             </div>
             <div className="trait-detail-item">
@@ -706,10 +706,10 @@ function PsychometricReport() {
                 <span className="trait-score">{report.agreeableness || 0}/100</span>
               </div>
               <p className="trait-description">
-                Evaluates cooperation, compassion, and interpersonal harmony. 
-                {(report.agreeableness || 0) >= 70 ? ' High scorers are empathetic, cooperative, and prioritize maintaining positive relationships and team harmony.' : 
-                 (report.agreeableness || 0) >= 40 ? ' Moderate scorers balance cooperation with assertiveness, showing both empathy and the ability to challenge when necessary.' : 
-                 ' Lower scorers tend to be more competitive and direct, prioritizing objectivity and results over interpersonal harmony.'}
+                Evaluates cooperation, compassion, and interpersonal harmony.
+                {(report.agreeableness || 0) >= 70 ? ' High scorers are empathetic, cooperative, and prioritize maintaining positive relationships and team harmony.' :
+                  (report.agreeableness || 0) >= 40 ? ' Moderate scorers balance cooperation with assertiveness, showing both empathy and the ability to challenge when necessary.' :
+                    ' Lower scorers tend to be more competitive and direct, prioritizing objectivity and results over interpersonal harmony.'}
               </p>
             </div>
             <div className="trait-detail-item">
@@ -718,10 +718,10 @@ function PsychometricReport() {
                 <span className="trait-score">{report.neuroticism || 0}/100</span>
               </div>
               <p className="trait-description">
-                Measures emotional stability and stress resilience. 
-                {(report.neuroticism || 0) >= 70 ? ' High scorers may experience more frequent emotional fluctuations and stress sensitivity, which can drive careful risk assessment.' : 
-                 (report.neuroticism || 0) >= 40 ? ' Moderate scorers show balanced emotional responses, with good stress management in most situations.' : 
-                 ' Lower scorers demonstrate strong emotional stability, remaining calm and composed under pressure with excellent stress resilience.'}
+                Measures emotional stability and stress resilience.
+                {(report.neuroticism || 0) >= 70 ? ' High scorers may experience more frequent emotional fluctuations and stress sensitivity, which can drive careful risk assessment.' :
+                  (report.neuroticism || 0) >= 40 ? ' Moderate scorers show balanced emotional responses, with good stress management in most situations.' :
+                    ' Lower scorers demonstrate strong emotional stability, remaining calm and composed under pressure with excellent stress resilience.'}
               </p>
             </div>
           </div>
@@ -731,11 +731,11 @@ function PsychometricReport() {
         <div className="report-section">
           <h3>Performance Summary</h3>
           <p className="section-description">
-            This section provides a quantitative overview of the candidate's performance across different 
-            assessment sections, including aptitude, behavioral, and domain-specific scores, along with 
+            This section provides a quantitative overview of the candidate's performance across different
+            assessment sections, including aptitude, behavioral, and domain-specific scores, along with
             the overall performance metric.
           </p>
-          
+
           {/* Performance Chart */}
           <div className="performance-chart-container">
             <ResponsiveContainer width="100%" height={350}>
@@ -751,11 +751,11 @@ function PsychometricReport() {
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                 <XAxis type="number" domain={[0, 100]} hide />
-                <YAxis dataKey="name" type="category" width={100} tick={{fill: '#64748b', fontSize: 13, fontWeight: 600}} axisLine={false} tickLine={false} />
-                <Tooltip 
-                   cursor={{fill: 'transparent'}}
-                   contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'}}
-                   formatter={(value) => [`${value.toFixed(1)}%`, 'Score']}
+                <YAxis dataKey="name" type="category" width={100} tick={{ fill: '#64748b', fontSize: 13, fontWeight: 600 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                  formatter={(value) => [`${value.toFixed(1)}%`, 'Score']}
                 />
                 <Bar dataKey="score" radius={[0, 4, 4, 0]} barSize={40}>
                   {
@@ -781,8 +781,8 @@ function PsychometricReport() {
                 <span className="performance-score">{report.aptitudeScore?.toFixed(1) || '0.0'}%</span>
               </div>
               <p className="performance-description">
-                Measures cognitive abilities, problem-solving skills, and analytical thinking. This score reflects 
-                the candidate's capacity to understand complex concepts, apply logical reasoning, and solve 
+                Measures cognitive abilities, problem-solving skills, and analytical thinking. This score reflects
+                the candidate's capacity to understand complex concepts, apply logical reasoning, and solve
                 quantitative and qualitative problems efficiently.
               </p>
             </div>
@@ -792,8 +792,8 @@ function PsychometricReport() {
                 <span className="performance-score">{report.behavioralScore?.toFixed(1) || '0.0'}%</span>
               </div>
               <p className="performance-description">
-                Evaluates interpersonal skills, emotional intelligence, and situational judgment. This score 
-                indicates how well the candidate handles workplace scenarios, demonstrates leadership, manages 
+                Evaluates interpersonal skills, emotional intelligence, and situational judgment. This score
+                indicates how well the candidate handles workplace scenarios, demonstrates leadership, manages
                 conflicts, and adapts to changing situations.
               </p>
             </div>
@@ -803,8 +803,8 @@ function PsychometricReport() {
                 <span className="performance-score">{report.domainScore?.toFixed(1) || '0.0'}%</span>
               </div>
               <p className="performance-description">
-                Assesses specialized knowledge and technical proficiency in the candidate's field of expertise. 
-                This score demonstrates the depth of understanding in domain-specific concepts, tools, and 
+                Assesses specialized knowledge and technical proficiency in the candidate's field of expertise.
+                This score demonstrates the depth of understanding in domain-specific concepts, tools, and
                 best practices relevant to their career path.
               </p>
             </div>
@@ -814,8 +814,8 @@ function PsychometricReport() {
                 <span className="performance-score overall-score-highlight">{report.overallScore?.toFixed(1) || '0.0'}%</span>
               </div>
               <p className="performance-description">
-                Represents the comprehensive evaluation combining all assessment components. This composite score 
-                provides a holistic measure of the candidate's readiness and suitability for their chosen career 
+                Represents the comprehensive evaluation combining all assessment components. This composite score
+                provides a holistic measure of the candidate's readiness and suitability for their chosen career
                 path, taking into account cognitive abilities, behavioral competencies, and domain expertise.
               </p>
             </div>
@@ -874,7 +874,7 @@ function PsychometricReport() {
                           <div className="profile-item-info">
                             <div className="profile-item-name">{profile.name || 'Unnamed Profile'}</div>
                             <div className="profile-item-details">
-                              {profile.currentDegree || profile.degree || 'No education info'} 
+                              {profile.currentDegree || profile.degree || 'No education info'}
                               {profile.institute && ` • ${profile.institute}`}
                             </div>
                           </div>
@@ -891,8 +891,8 @@ function PsychometricReport() {
               {/* Show Enhance Button when saved profile is selected */}
               {selectedProfile && (
                 <div className="enhance-selected-profile">
-                  <button 
-                    onClick={handleEnhanceSavedProfile} 
+                  <button
+                    onClick={handleEnhanceSavedProfile}
                     className="btn-enhance-selected"
                     disabled={isEnhancing}
                   >

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { login as loginApi, register as registerApi } from '../api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/profiling-api';
 
 const LoginPage = ({ initialError }) => {
   const { login } = useAuth();
@@ -38,7 +38,7 @@ const LoginPage = ({ initialError }) => {
         await login(token, { id: userId, email: userEmail, name: userName, role });
         // Don't reload - let React handle the state update
         // The App.jsx useEffect will detect authentication and switch to 'start'
-        window.location.href = '/';
+        window.location.href = '/profiling/';
       } else {
         setError(response.error || 'Authentication failed');
       }

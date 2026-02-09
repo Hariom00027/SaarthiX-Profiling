@@ -1,92 +1,85 @@
 package com.profiling.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "users")
 public class User {
-
     @Id
     private String id;
-
+    
+    @Indexed(unique = false, sparse = true)
+    private String googleId;
+    
     @Indexed(unique = true)
     private String email;
-
-    private String password; // Hashed password
-
+    
     private String name;
-
-    private String googleId; // For Google OAuth users
-
-    private String provider; // "local" or "google"
-    private String role;
-
-    public User() {
-    }
-
-    public User(String email, String password, String name, String provider) {
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.provider = provider;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getGoogleId() {
-        return googleId;
-    }
-
-    public void setGoogleId(String googleId) {
-        this.googleId = googleId;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    private String picture;
+    private String firstName;
+    private String lastName;
+    
+    // Admin authentication fields
+    @Indexed(unique = true, sparse = true)
+    private String username; // For admin login
+    private String password; // Hashed password
+    
+    private String provider; // Profiling specific: "local", "google", "somethingx"
+    private Set<String> roles;
+    private String role; // Profiling specific
+    private String userType; // STUDENT, INSTITUTE, INDUSTRY
+    
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLoginAt;
+    private boolean active;
+    
+    // Additional profile fields
+    private String phone;
+    private String location;
+    private String bio;
+    private String linkedinUrl;
+    private String githubUrl;
+    
+    // Institute specific fields
+    private String instituteName;
+    private String instituteType;
+    private String instituteLocation;
+    
+    // Industry specific fields
+    private String companyName;
+    private String companyType;
+    private String industry;
+    private String position;
+    
+    // Student specific fields
+    private String course;
+    private String stream;
+    private String specialization;
+    private String year;
+    private String semester;
+    private String studentId;
+    private String batch;
+    private String cgpa;
+    private String expectedGraduationYear;
+    private String expectedGraduationMonth;
+    private String skills;
+    private String interests;
+    private String achievements;
+    private String projects;
+    private String certifications;
+    private String languages;
+    private String resumeUrl;
+    private String portfolioUrl;
 
     public boolean isAdmin() {
         return role != null && role.equalsIgnoreCase(UserRole.ADMIN);

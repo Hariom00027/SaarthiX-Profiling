@@ -19,6 +19,13 @@ RUN npm ci --prefer-offline --no-audit || \
 # Copy source code
 COPY . .
 
+# Initialize dummy git repo to satisfy potential git-hooks/plugins
+RUN git init && \
+    git config user.email "build@example.com" && \
+    git config user.name "Build User" && \
+    git add . && \
+    git commit -m "Dummy commit for build"
+
 # Build the application
 RUN npm run build
 
@@ -28,8 +35,9 @@ FROM nginx:alpine
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Copy built files from builder stage to nginx html directory
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built files from builder stage to nginx html directory (nested for subpath)
+RUN mkdir -p /usr/share/nginx/html/profiling
+COPY --from=builder /app/dist /usr/share/nginx/html/profiling
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

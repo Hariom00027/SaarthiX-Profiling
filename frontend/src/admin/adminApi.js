@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { notifyError, notifySuccess } from '../utils/notifications';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/profiling-api';
 const ADMIN_TOKEN_KEY = 'adminToken';
 
 const adminApi = axios.create({

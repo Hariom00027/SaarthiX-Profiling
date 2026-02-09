@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   FaChevronDown,
@@ -12,6 +13,7 @@ import {
   FaUsers,
   FaBolt,
 } from 'react-icons/fa';
+import LogoImage from '../assets/logo_png.png';
 
 // Constants
 const featureCards = [
@@ -132,16 +134,9 @@ const faqItems = [
     answer: 'Yes. You can retake the assessment if your interests, goals, or preferences change over time.',
   },
   {
-    question: "What's the difference between basic and advanced profiling?",
-    answer: 'Basic profiling gives general insights, while advanced profiling provides deeper analysis, detailed reports, and clearer career direction.',
+    question: "What's the difference between basic and AI-based profiling?",
+    answer: 'Basic profiling provides fundamental insights into personality and interests. AI-based profiling offers more detailed analysis, predictive insights, and personalized recommendations using advanced algorithms.',
   },
-];
-
-const stats = [
-  { value: '50K+', label: 'Students Profiled' },
-  { value: '95%', label: 'Satisfaction Rate' },
-  { value: '200+', label: 'Partner Institutes' },
-  { value: '24/7', label: 'AI Support' },
 ];
 
 const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSavedReports }) => {
@@ -167,8 +162,8 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
+    <div style={{
+      minHeight: '100vh',
       backgroundColor: '#0a0a0a',
       color: 'white',
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -439,6 +434,8 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
           position: relative;
           z-index: 2;
           width: 100%;
+          padding-left: clamp(16px, 3vw, 48px);
+          padding-right: clamp(16px, 3vw, 48px);
         }
         
         .dashboard-hero-content {
@@ -892,16 +889,19 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
       <section style={{
         position: 'relative',
         overflow: 'hidden',
+        padding: 'clamp(40px, 8vw, 80px) 0 clamp(60px, 10vw, 100px)',
         minHeight: '90vh',
         borderRadius: '24px',
         display: 'flex',
         alignItems: 'center',
+        width: '100%',
+        maxWidth: '100%',
       }}>
         {/* Background gradient blobs */}
         <div className="hero-glow" style={{ top: '-200px', left: '-100px', background: '#115FD5' }} />
         <div className="hero-glow" style={{ top: '50%', right: '-200px', background: '#8b5cf6' }} />
         <div className="hero-glow" style={{ bottom: '-100px', left: '30%', background: '#0ea5e9' }} />
-        
+
         {/* Grid pattern overlay */}
         <div style={{
           position: 'absolute',
@@ -962,24 +962,14 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 🚀 Start Profiling
                 <FaArrowRight style={{ fontSize: '14px' }} />
               </button>
-            </div>
 
-            {/* Stats */}
-            <div className="dashboard-hero-stats">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="dashboard-hero-stat-value" style={{ color: '#115FD5' }}>
-                    {stat.value}
-                  </div>
-                  <div style={{
-                    fontSize: '0.85rem',
-                    color: 'rgba(255, 255, 255, 0.5)',
-                    fontWeight: '500',
-                  }}>
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
+              <button
+                type="button"
+                onClick={() => scrollToSection('how-it-works')}
+                className="btn-3d btn-3d-dark"
+              >
+                See How It Works
+              </button>
             </div>
           </div>
 
@@ -987,19 +977,19 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
           <div className="dashboard-robot-container">
             {/* Glowing circle behind robot */}
             <div className="dashboard-robot-glow" />
-            
-            <img 
-              src="/saarthix-robot.png" 
+
+            <img
+              src={`${import.meta.env.BASE_URL}saarthix-robot.png`.replace(/\/+/g, '/')}
               alt="SaarthiX AI Robot"
               className="dashboard-robot-image"
             />
-            
+
             {/* Floating elements */}
             <div className="dashboard-floating-badge dashboard-floating-badge-left">
               <FaCheck style={{ fontSize: '14px' }} />
               <span>AI Analysis</span>
             </div>
-            
+
             <div className="dashboard-floating-badge dashboard-floating-badge-right">
               <FaUsers style={{ fontSize: '14px' }} />
               <span>50K+ Users</span>
@@ -1024,7 +1014,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
           >
             🚀 Start Profiling
           </button>
-          
+
           {isAuthenticated() && onViewSaved && (
             <button
               type="button"
@@ -1117,7 +1107,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                   opacity: hoveredCard === index ? 1 : 0.3,
                   transition: 'opacity 0.3s ease',
                 }} />
-                
+
                 <div className="feature-card-icon" style={{
                   width: 'clamp(48px, 10vw, 64px)',
                   height: 'clamp(48px, 10vw, 64px)',
@@ -1132,7 +1122,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 }}>
                   {card.icon}
                 </div>
-                
+
                 <h3 style={{
                   fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
                   fontWeight: '600',
@@ -1141,7 +1131,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 }}>
                   {card.title}
                 </h3>
-                
+
                 <p style={{
                   fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
                   color: '#6b7280',
@@ -1150,7 +1140,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 }}>
                   {card.description}
                 </p>
-                
+
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   {card.items.map((item) => (
                     <li
@@ -1224,7 +1214,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 }}>
                   {step.step}
                 </div>
-                
+
                 <h3 style={{
                   fontSize: 'clamp(1rem, 2.5vw, 1.15rem)',
                   fontWeight: '600',
@@ -1233,7 +1223,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 }}>
                   {step.title}
                 </h3>
-                
+
                 <p style={{
                   fontSize: 'clamp(0.8rem, 2vw, 0.85rem)',
                   color: '#6b7280',
@@ -1256,7 +1246,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 'clamp(36px, 6vw, 60px)' }}>
             <h2 className="dashboard-section-title">
-              Why Choose Profiling?
+              Why Choose Hire me Profile?
             </h2>
             <p style={{
               fontSize: '1rem',
@@ -1427,7 +1417,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
             inset: 0,
             backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)`,
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <h2 className="dashboard-cta-title">
               Ready to Get Clear Insights?
@@ -1458,45 +1448,289 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
 
       {/* Footer */}
       <footer style={{
-        padding: 'clamp(24px, 4vw, 32px) clamp(12px, 3vw, 24px)',
-        background: '#1f2937',
-        color: 'white',
+        background: '#0a0a0a',
+        color: '#FFFFFF',
+        padding: 'clamp(3rem, 4vw, 4rem) clamp(1rem, 2vw, 2rem) clamp(2rem, 3vw, 2rem)',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        position: 'relative'
       }}>
-        <div className="dashboard-footer-content">
+        {/* Background gradient blobs */}
+        <div style={{
+          position: 'absolute',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: '#115FD5',
+          top: '-200px',
+          left: '-100px',
+          filter: 'blur(120px)',
+          opacity: 0.3,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
+        <div style={{
+          position: 'absolute',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: '#8b5cf6',
+          top: '50%',
+          right: '-200px',
+          transform: 'translateY(-50%)',
+          filter: 'blur(120px)',
+          opacity: 0.3,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
+        <div style={{
+          position: 'absolute',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: '#0ea5e9',
+          bottom: '-100px',
+          left: '30%',
+          filter: 'blur(120px)',
+          opacity: 0.3,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
+
+        {/* Grid pattern overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+          zIndex: 0,
+        }} />
+
+        <div style={{
+          position: 'relative',
+          zIndex: 1
+        }}>
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
+            maxWidth: '1200px',
+            margin: '0 auto',
+            width: '100%',
+            boxSizing: 'border-box',
+            padding: '0 1rem'
           }}>
-            <div style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              background: '#115FD5',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '700',
-              fontSize: '14px',
-            }}>
-              S
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: 'clamp(2rem, 3vw, 3rem)',
+                marginBottom: 'clamp(2rem, 3vw, 3rem)',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}
+            >
+              {/* Brand / About */}
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  marginBottom: '1rem'
+                }}>
+                  <img
+                    src={LogoImage}
+                    alt="SaarthiX Logo"
+                    style={{
+                      height: 'clamp(32px, 4vw, 40px)',
+                      width: 'auto',
+                      objectFit: 'contain'
+                    }}
+                  />
+                  <span style={{
+                    fontFamily: "'Times New Roman', serif",
+                    fontWeight: 'bold',
+                    fontStyle: 'italic',
+                    fontSize: '24px',
+                    lineHeight: '140%',
+                    letterSpacing: '-0.01em',
+                    color: '#FFFFFF'
+                  }}>SaarthiX</span>
+                </div>
+                <p
+                  style={{
+                    fontSize: 'clamp(0.85rem, 1vw, 0.95rem)',
+                    color: '#E0E7FF',
+                    lineHeight: '1.7',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Connecting students, institutes, and industry in one smart space. Learn, grow, and create opportunities together.
+                </p>
+                <p
+                  style={{
+                    fontSize: 'clamp(0.75rem, 0.9vw, 0.85rem)',
+                    color: '#C7D2FE',
+                    fontStyle: 'italic',
+                    marginBottom: '1.5rem',
+                  }}
+                >
+                  Empowering Dreams, Building Futures!
+                </p>
+              </div>
+
+              {/* Navigation Links Column 1 */}
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <h3
+                  style={{
+                    fontSize: 'clamp(1rem, 1.2vw, 1.1rem)',
+                    fontWeight: '700',
+                    color: '#FFFFFF',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Navigation
+                </h3>
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  fontSize: 'clamp(0.85rem, 1vw, 0.95rem)'
+                }}>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <Link to="/" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Home</Link>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/institutes" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Institute</a>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/students" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Students</a>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/industry" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Industry</a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Navigation Links Column 2 */}
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <h3
+                  style={{
+                    fontSize: 'clamp(1rem, 1.2vw, 1.1rem)',
+                    fontWeight: '700',
+                    color: '#FFFFFF',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Resources
+                </h3>
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  fontSize: 'clamp(0.85rem, 1vw, 0.95rem)'
+                }}>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/partnership" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Partnership</a>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/resources" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Resource</a>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/success-stories" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Success Stories</a>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem' }}>
+                    <a href="https://somethingx.saarthix.com/blog" style={{ color: '#E0E7FF', textDecoration: 'none' }}>Blog</a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Contact Information */}
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <h3
+                  style={{
+                    fontSize: 'clamp(1rem, 1.2vw, 1.1rem)',
+                    fontWeight: '700',
+                    color: '#FFFFFF',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Contact
+                </h3>
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  fontSize: 'clamp(0.85rem, 1vw, 0.95rem)'
+                }}>
+                  <li style={{ marginBottom: '0.75rem', color: '#E0E7FF', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <span>📍</span>
+                    <span>1705, 19th Main Road, Sector 2 HSR Layout, Bengaluru, 560102, India</span>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem', color: '#E0E7FF', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>📞</span>
+                    <span>+91 779 550 0937</span>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem', color: '#E0E7FF', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>✉️</span>
+                    <span>support@nattlabs.com</span>
+                  </li>
+                  <li style={{ marginBottom: '0.75rem', color: '#E0E7FF', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <span>🕐</span>
+                    <span>Mon - Fri: 9:00 AM - 6:00 PM<br />Sat: 10:00 AM - 4:00 PM</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <span style={{ fontWeight: '600', fontSize: '1.1rem' }}>SaarthiX</span>
-          </div>
 
-          <div className="dashboard-footer-links">
-            <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy</a>
-            <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</a>
-            <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact</a>
+            {/* Footer bottom bar */}
+            <div
+              style={{
+                borderTop: '1px solid rgba(255,255,255,0.2)',
+                paddingTop: 'clamp(1rem, 1.5vw, 1.5rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 'clamp(0.75rem, 1vw, 1rem)',
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.85rem)',
+                color: '#C7D2FE',
+                textAlign: 'center',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <img
+                  src={LogoImage}
+                  alt="SaarthiX Logo"
+                  style={{
+                    height: '24px',
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+                <span style={{
+                  fontFamily: "'Times New Roman', serif",
+                  fontWeight: 'bold',
+                  fontStyle: 'italic'
+                }}>SaarthiX</span>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <a href="https://somethingx.saarthix.com/privacy" style={{ color: '#C7D2FE', textDecoration: 'none' }}>Privacy</a>
+                <a href="https://somethingx.saarthix.com/terms" style={{ color: '#C7D2FE', textDecoration: 'none' }}>Terms</a>
+                <a href="https://somethingx.saarthix.com/contact" style={{ color: '#C7D2FE', textDecoration: 'none' }}>Contact</a>
+              </div>
+              <span>@2026.saarthix.all right reserveds.</span>
+            </div>
           </div>
-
-          <p style={{
-            fontSize: '0.85rem',
-            color: '#9ca3af',
-            margin: 0,
-          }}>
-            ©2026 saarthix all right reserved.
-          </p>
         </div>
       </footer>
     </div>

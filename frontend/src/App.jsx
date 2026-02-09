@@ -10,7 +10,7 @@ import ProfileDisplay from './components/ProfileDisplay';
 import EnhanceProfilePage from './components/EnhanceProfilePage';
 import SaarthiChatbot from './components/SaarthiChatbot';
 import ReportView from './components/ReportView';
-import Header from './components/Header';
+import Navbar from './components/Navbar';
 import SavedProfiles from './pages/SavedProfiles';
 import { submitProfile, getMyProfile, regenerateProfile, getAllMyProfiles, getProfileById, exchangeSomethingXToken } from './api';
 
@@ -68,7 +68,7 @@ function clearTemplateDraftFromStorage() {
 const handleGoogleCallback = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const path = window.location.pathname;
-  
+
   // If coming from Google OAuth, extract token from response
   if (path.includes('/oauth2/code/google') || path.includes('/api/auth/google')) {
     // The backend will redirect here with token in response
@@ -90,7 +90,7 @@ function AppContent() {
     const savedView = localStorage.getItem('currentView');
     return savedView || 'login';
   };
-  
+
   const [currentView, setCurrentView] = useState(getInitialView()); // 'login', 'start', 'form', 'template', 'cover', 'image-upload', 'display', 'enhance', 'chatbot', 'report', 'saved-profiles'
   // Restore form data from storage when user refreshes on template/cover/image-upload
   const getInitialFormState = () => {
@@ -119,9 +119,9 @@ function AppContent() {
   const navigateToView = (view, replace = false) => {
     setCurrentView(view);
     if (!replace) {
-      window.history.pushState({ view }, '', `/${view}`);
+      window.history.pushState({ view }, '', `/profiling/${view}`);
     } else {
-      window.history.replaceState({ view }, '', `/${view}`);
+      window.history.replaceState({ view }, '', `/profiling/${view}`);
     }
   };
 
@@ -133,19 +133,19 @@ function AppContent() {
       const token = urlParams.get('token');
       const email = urlParams.get('email');
       const isSomethingXRedirect = email && token;
-      
+
       // If it's a SomethingX redirect, don't set initial view yet - wait for token exchange
       if (!isSomethingXRedirect) {
-        const path = window.location.pathname.replace('/', '') || 'login';
+        let path = window.location.pathname.replace('/profiling/', '').replace('/profiling', '').replace('/', '') || 'login';
         const savedView = localStorage.getItem('currentView');
-        
+
         // Use URL path if it's a valid view, otherwise use saved view, otherwise default to login
         const validViews = ['login', 'start', 'form', 'template', 'cover', 'image-upload', 'display', 'enhance', 'chatbot', 'report'];
         const urlView = validViews.includes(path) ? path : null;
         const initialView = urlView || savedView || 'login';
-        
+
         setCurrentView(initialView);
-        window.history.replaceState({ view: initialView }, '', `/${initialView}`);
+        window.history.replaceState({ view: initialView }, '', `/profiling/${initialView}`);
       } else {
         // Set to null initially, will be set after token exchange
         setCurrentView(null);
@@ -189,7 +189,7 @@ function AppContent() {
   useEffect(() => {
     // Wait for loading to complete before processing
     if (loading) return;
-    
+
     // Check for token or error in URL (from Google OAuth redirect or SomethingX)
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -197,16 +197,16 @@ function AppContent() {
     const email = urlParams.get('email');
     const name = urlParams.get('name');
     const userType = urlParams.get('userType');
-    
+
     // Check if this is a SomethingX redirect (has email param along with token)
     const isSomethingXRedirect = email && token;
-    
+
     // Check if we should process SomethingX redirect (not authenticated OR different user)
     const shouldProcessSomethingXRedirect = isSomethingXRedirect && !isProcessingTokenExchange && (
-      !isAuthenticated() || 
+      !isAuthenticated() ||
       (user && user.email && user.email !== email)
     );
-    
+
     // Handle SomethingX token exchange FIRST, before cleaning URL
     if (shouldProcessSomethingXRedirect) {
       setIsProcessingTokenExchange(true);
@@ -218,7 +218,7 @@ function AppContent() {
       } else {
         console.log('Detected SomethingX redirect, exchanging token...', { email, name, userType });
       }
-      
+
       exchangeSomethingXToken(token, email, name, userType)
         .then((result) => {
           console.log('Token exchange result:', result);
@@ -232,10 +232,10 @@ function AppContent() {
         .then(() => {
           console.log('Login successful, navigating to start');
           // Clean URL after successful login
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           // Set view directly to ensure it updates immediately
           setCurrentView('start');
-          window.history.replaceState({ view: 'start' }, '', '/start');
+          window.history.replaceState({ view: 'start' }, '', '/profiling/start');
           // Clear processing flag after a short delay to allow view to render
           setTimeout(() => {
             setIsProcessingTokenExchange(false);
@@ -246,18 +246,18 @@ function AppContent() {
           console.error('SomethingX token exchange failed:', err);
           setError('Failed to complete login from SomethingX: ' + (err.message || 'Please try again.'));
           // Clean URL even on error
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           setCurrentView('login');
           setIsProcessingTokenExchange(false);
         });
       return; // Don't check authentication state until login completes
     }
-    
+
     // Clean URL for other cases (OAuth, etc.)
     if (token || errorParam) {
-      window.history.replaceState({}, '', '/');
+      window.history.replaceState({}, '', '/profiling/');
     }
-    
+
     // Handle token from OAuth callback (standard Profiling token)
     if (token && !isAuthenticated() && !isSomethingXRedirect) {
       login(token, null)
@@ -272,14 +272,14 @@ function AppContent() {
         });
       return; // Don't check authentication state until login completes
     }
-    
+
     // Handle OAuth error
     if (errorParam === 'oauth_failed') {
       navigateToView('login', true);
       setError('Google login failed. Please try again.');
       return;
     }
-    
+
     // After loading completes, check authentication state (but skip if processing token exchange)
     if (!loading && !isProcessingTokenExchange) {
       if (isAuthenticated()) {
@@ -308,7 +308,7 @@ function AppContent() {
         setHasReportData(false);
       }
     };
-    
+
     checkReportData();
     // Also check when view changes to chatbot
     if (currentView === 'chatbot') {
@@ -320,24 +320,24 @@ function AppContent() {
   useEffect(() => {
     const restoreDisplayView = async () => {
       // Check if we're on display/enhance/chatbot/report view and need to restore profile
-      const needsRestore = (currentView === 'display' || currentView === 'enhance' || currentView === 'chatbot' || currentView === 'report') && 
-                          !profileData && 
-                          !loading && 
-                          isAuthenticated();
-      
+      const needsRestore = (currentView === 'display' || currentView === 'enhance' || currentView === 'chatbot' || currentView === 'report') &&
+        !profileData &&
+        !loading &&
+        isAuthenticated();
+
       if (needsRestore) {
         try {
           setError(null);
-          
+
           // Check if there's a specific profile ID to load (from enhanced profile flow)
           const viewProfileId = localStorage.getItem('viewProfileId');
           if (viewProfileId) {
             console.log('Loading specific profile with ID:', viewProfileId);
             const result = await getProfileById(viewProfileId);
-            
+
             // Clear the localStorage flag after loading
             localStorage.removeItem('viewProfileId');
-            
+
             if (result.success && result.data) {
               setProfileData(result.data);
               setIsNewProfile(false);
@@ -346,10 +346,10 @@ function AppContent() {
               console.warn('Failed to load specific profile, falling back to most recent');
             }
           }
-          
+
           // Fall back to loading the most recent profile
           const result = await getMyProfile();
-          
+
           if (result.success && result.data) {
             setProfileData(result.data);
           } else {
@@ -372,18 +372,18 @@ function AppContent() {
   useEffect(() => {
     const restoreSavedProfilesView = async () => {
       // Check if we're on saved-profiles view and need to restore profiles
-      const needsRestore = currentView === 'saved-profiles' && 
-                          allProfiles.length === 0 && 
-                          !loading && 
-                          isAuthenticated();
-      
+      const needsRestore = currentView === 'saved-profiles' &&
+        allProfiles.length === 0 &&
+        !loading &&
+        isAuthenticated();
+
       if (needsRestore) {
         try {
           setError(null);
           console.log('Restoring saved profiles after page refresh...');
-          
+
           const result = await getAllMyProfiles();
-          
+
           if (result.success && result.data && result.data.length > 0) {
             setAllProfiles(result.data);
             console.log('Saved profiles restored successfully');
@@ -451,7 +451,7 @@ function AppContent() {
 
     // Submit to backend with selected template type
     const result = await submitProfile(formData, templateType);
-    
+
     if (result.success) {
       setProfileData(result.data);
       setIsNewProfile(true); // Mark as newly created profile
@@ -603,7 +603,7 @@ function AppContent() {
     try {
       setError(null);
       const result = await getAllMyProfiles();
-      
+
       if (result.success && result.data && result.data.length > 0) {
         setAllProfiles(result.data);
         navigateToView('saved-profiles');
@@ -629,7 +629,7 @@ function AppContent() {
       navigateToView('login');
       return;
     }
-    window.location.href = '/psychometric/saved-reports';
+    window.location.href = '/profiling/psychometric/saved-reports';
   };
 
 
@@ -675,7 +675,7 @@ function AppContent() {
     // Check if SomethingX might be authenticating
     const somethingxToken = localStorage.getItem('somethingx_auth_token');
     const somethingxUserStr = localStorage.getItem('somethingx_auth_user');
-    
+
     // If SomethingX is authenticated, auto-login (AuthContext should handle this, but show loading while waiting)
     if (somethingxToken && somethingxToken !== '' && somethingxUserStr && currentView === 'login') {
       // Wait a moment for AuthContext to sync, then show loading
@@ -685,7 +685,7 @@ function AppContent() {
         </div>
       );
     }
-    
+
     // Pass error if exists (e.g., from OAuth failure)
     return <LoginPage initialError={error} />;
   }
@@ -693,9 +693,9 @@ function AppContent() {
   // Only show other views if authenticated
   return (
     <div className="relative min-h-screen bg-gray-50">
-      {/* Show header on all pages except login */}
+      {/* Show navbar on all pages except login */}
       {currentView !== 'login' && (
-        <Header onNavigateToStart={handleBackToStart} />
+        <Navbar />
       )}
       {currentView === 'start' && (
         <div>
@@ -704,14 +704,14 @@ function AppContent() {
               {error}
             </div>
           )}
-          <StartButton onStart={handleStart} onViewSaved={handleViewSaved} onNavigateToStart={handleBackToStart} onPsychometricTest={() => window.location.href = '/psychometric/start'} onViewSavedReports={handleViewSavedReports} />
+          <StartButton onStart={handleStart} onViewSaved={handleViewSaved} onNavigateToStart={handleBackToStart} onPsychometricTest={() => window.location.href = '/profiling/psychometric/start'} onViewSavedReports={handleViewSavedReports} />
         </div>
       )}
-      
+
       {currentView === 'dashboard' && (
         <StartButton onStart={handleStart} onViewSaved={handleViewSaved} onNavigateToStart={handleBackToStart} onViewSavedReports={handleViewSavedReports} />
       )}
-      
+
       {currentView === 'form' && (
         <div>
           {error && (
@@ -722,7 +722,7 @@ function AppContent() {
           <ProfileForm onSuccess={handleFormSuccess} onBack={handleBackToStart} initialData={formData} />
         </div>
       )}
-      
+
       {currentView === 'template' && (
         <div>
           {error && (
@@ -756,24 +756,24 @@ function AppContent() {
               Error: {error}
             </div>
           )}
-          <ImageUploadForm 
-            onSubmit={handleImageUpload} 
+          <ImageUploadForm
+            onSubmit={handleImageUpload}
             onBack={handleBackToTemplates}
             profileData={formData}
             templateLabel={PHOTO_TEMPLATE_LABELS[pendingPhotoTemplate] || 'selected template'}
           />
         </div>
       )}
-      
+
       {currentView === 'saved-profiles' && (
-        <SavedProfiles 
+        <SavedProfiles
           profiles={allProfiles}
           onSelectProfile={handleSelectProfile}
           onBackToHome={handleBackToStart}
           onCreateNewProfile={handleStart}
         />
       )}
-      
+
       {currentView === 'display' && profileData && (
         <ProfileDisplay
           profileData={profileData}
@@ -862,25 +862,25 @@ function AppContent() {
             profileData={profileData}
             onBack={() => navigateToView('chatbot')}
             onEnhanceProfile={profileData ? async (answers, reportData) => {
-            const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
-            const profile = profileData?.profile || profileData || {};
+              const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
+              const profile = profileData?.profile || profileData || {};
 
-            const payload = {
-              templateId: templateType,
-              formData: profile,
-              chatAnswers: answers,
-              reportData: reportData || {}
-            };
+              const payload = {
+                templateId: templateType,
+                formData: profile,
+                chatAnswers: answers,
+                reportData: reportData || {}
+              };
 
-            const result = await regenerateProfile(payload);
+              const result = await regenerateProfile(payload);
 
-            if (result.success && result.data) {
-              setProfileData(result.data);
-              navigateToView('enhance');
-              return { success: true };
-            }
-            return { success: false, error: result.error || 'Failed to enhance profile' };
-          } : undefined}
+              if (result.success && result.data) {
+                setProfileData(result.data);
+                navigateToView('enhance');
+                return { success: true };
+              }
+              return { success: false, error: result.error || 'Failed to enhance profile' };
+            } : undefined}
           />
         </div>
       )}
