@@ -21,6 +21,49 @@ const PHOTO_TEMPLATE_LABELS = {
 
 const templateRequiresPhoto = (templateType) => Boolean(PHOTO_TEMPLATE_LABELS[templateType]);
 
+// Persist form data for template/cover/image-upload so it survives page refresh
+const PROFILING_TEMPLATE_DRAFT_KEY = 'profiling_template_draft';
+
+function getTemplateDraftFromStorage() {
+  try {
+    const raw = localStorage.getItem(PROFILING_TEMPLATE_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.formData && typeof parsed.formData === 'object') {
+      return {
+        formData: parsed.formData,
+        pendingPhotoTemplate: parsed.pendingPhotoTemplate ?? null,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveTemplateDraftToStorage(formData, pendingPhotoTemplate) {
+  try {
+    if (!formData) {
+      localStorage.removeItem(PROFILING_TEMPLATE_DRAFT_KEY);
+      return;
+    }
+    localStorage.setItem(
+      PROFILING_TEMPLATE_DRAFT_KEY,
+      JSON.stringify({ formData, pendingPhotoTemplate: pendingPhotoTemplate ?? null })
+    );
+  } catch {
+    // ignore quota or private mode errors
+  }
+}
+
+function clearTemplateDraftFromStorage() {
+  try {
+    localStorage.removeItem(PROFILING_TEMPLATE_DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 // Handle Google OAuth callback
 const handleGoogleCallback = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -49,10 +92,22 @@ function AppContent() {
   };
   
   const [currentView, setCurrentView] = useState(getInitialView()); // 'login', 'start', 'form', 'template', 'cover', 'image-upload', 'display', 'enhance', 'chatbot', 'report', 'saved-profiles'
-  const [formData, setFormData] = useState(null);
+  // Restore form data from storage when user refreshes on template/cover/image-upload
+  const getInitialFormState = () => {
+    const savedView = localStorage.getItem('currentView');
+    if (['template', 'cover', 'image-upload'].includes(savedView)) {
+      const draft = getTemplateDraftFromStorage();
+      if (draft) {
+        return { formData: draft.formData, pendingPhotoTemplate: draft.pendingPhotoTemplate };
+      }
+    }
+    return { formData: null, pendingPhotoTemplate: null };
+  };
+  const initialFormState = getInitialFormState();
+  const [formData, setFormData] = useState(initialFormState.formData);
   const [profileData, setProfileData] = useState(null);
   const [allProfiles, setAllProfiles] = useState([]); // Store all saved profiles for card view
-  const [pendingPhotoTemplate, setPendingPhotoTemplate] = useState(null);
+  const [pendingPhotoTemplate, setPendingPhotoTemplate] = useState(initialFormState.pendingPhotoTemplate);
   const [error, setError] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [forceEditFromEnhance, setForceEditFromEnhance] = useState(false);
@@ -360,6 +415,7 @@ function AppContent() {
     } catch (e) {
       console.warn('Failed to clear chatbot state:', e);
     }
+    clearTemplateDraftFromStorage();
     navigateToView('form');
     setError(null);
     setFormData(null);
@@ -369,6 +425,7 @@ function AppContent() {
 
   const handleFormSuccess = (data) => {
     setFormData(data);
+    saveTemplateDraftToStorage(data, null);
     navigateToView('template');
     setError(null);
   };
@@ -387,6 +444,7 @@ function AppContent() {
 
     if (templateRequiresPhoto(templateType)) {
       setPendingPhotoTemplate(templateType);
+      saveTemplateDraftToStorage(formData, templateType);
       navigateToView('image-upload');
       return;
     }
@@ -397,6 +455,7 @@ function AppContent() {
     if (result.success) {
       setProfileData(result.data);
       setIsNewProfile(true); // Mark as newly created profile
+      clearTemplateDraftFromStorage();
       navigateToView('display');
       setError(null);
     } else {
@@ -422,6 +481,7 @@ function AppContent() {
     if (result.success) {
       setProfileData(result.data);
       setIsNewProfile(true); // Mark as newly created profile
+      clearTemplateDraftFromStorage();
       navigateToView('display');
       setError(null);
     } else {
@@ -447,6 +507,7 @@ function AppContent() {
     if (result.success) {
       setProfileData(result.data);
       setIsNewProfile(true); // Mark as newly created profile
+      clearTemplateDraftFromStorage();
       navigateToView('display');
       setError(null);
       setPendingPhotoTemplate(null);
@@ -467,6 +528,7 @@ function AppContent() {
       navigateToView('login');
       return;
     }
+    clearTemplateDraftFromStorage();
     setError(null);
     setFormData(null);
     setProfileData(null);

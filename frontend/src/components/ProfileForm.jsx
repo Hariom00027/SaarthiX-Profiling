@@ -2,38 +2,84 @@ import React, { useState, useEffect, useRef } from 'react';
 import { parseResume } from '../api';
 import { notifyError, notifySuccess } from '../utils/notifications';
 
+const PROFILING_FORM_DRAFT_KEY = 'saarthix_profiling_form_draft';
+
+const defaultFormData = {
+  name: '',
+  email: '',
+  phone: '',
+  dob: '',
+  linkedin: '',
+  institute: '',
+  currentDegree: '',
+  branch: '',
+  yearOfStudy: '',
+  certifications: '',
+  achievements: '',
+  technicalSkills: '',
+  softSkills: '',
+  interests: '',
+  hobbies: '',
+  hasInternship: false,
+  internshipDetails: '',
+  hasExperience: false,
+  experienceDetails: '',
+  workExperience: '',
+  schoolType: '',
+  experienceLevel: '',
+  studentStatus: '',
+  companyName: '',
+  designation: '',
+  yearsOfExperience: '',
+  yearOfJoining: '',
+};
+
+function getDraftFromStorage() {
+  try {
+    const raw = localStorage.getItem(PROFILING_FORM_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed.formData === 'object' && typeof parsed.currentStep === 'number') {
+      return {
+        formData: { ...defaultFormData, ...parsed.formData },
+        currentStep: Math.max(0, Math.min(parsed.currentStep, 4)),
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraftToStorage(formData, currentStep) {
+  try {
+    localStorage.setItem(
+      PROFILING_FORM_DRAFT_KEY,
+      JSON.stringify({ formData, currentStep })
+    );
+  } catch {
+    // ignore quota or private mode errors
+  }
+}
+
+function clearDraftFromStorage() {
+  try {
+    localStorage.removeItem(PROFILING_FORM_DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 const ProfileForm = ({ onSuccess, onBack, initialData }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    dob: '',
-    linkedin: '',
-    institute: '',
-    currentDegree: '',
-    branch: '',
-    yearOfStudy: '',
-    certifications: '',
-    achievements: '',
-    technicalSkills: '',
-    softSkills: '',
-    interests: '',
-    hobbies: '',
-    hasInternship: false,
-    internshipDetails: '',
-    hasExperience: false,
-    experienceDetails: '',
-    workExperience: '',
-    schoolType: '',
-    experienceLevel: '',
-    studentStatus: '',
-    companyName: '',
-    designation: '',
-    yearsOfExperience: '',
-    yearOfJoining: '',
+  const [formData, setFormData] = useState(() => {
+    const draft = getDraftFromStorage();
+    return draft ? draft.formData : defaultFormData;
   });
 
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(() => {
+    const draft = getDraftFromStorage();
+    return draft ? draft.currentStep : 0;
+  });
   const [stepError, setStepError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isParsingResume, setIsParsingResume] = useState(false);
@@ -73,6 +119,11 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       }));
     }
   }, [initialData]);
+
+  // Persist form draft to localStorage so it survives refresh
+  useEffect(() => {
+    saveDraftToStorage(formData, currentStep);
+  }, [formData, currentStep]);
 
   const steps = [
     {
@@ -315,6 +366,7 @@ const ProfileForm = ({ onSuccess, onBack, initialData }) => {
       if (!cleanedData.achievements || !cleanedData.achievements.trim()) {
         cleanedData.achievements = '';
       }
+      clearDraftFromStorage();
       onSuccess(cleanedData);
     } finally {
       setIsSubmitting(false);

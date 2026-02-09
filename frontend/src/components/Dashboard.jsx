@@ -20,25 +20,25 @@ const featureCards = [
     gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
     title: 'Comprehensive Profiling',
     description:
-      'Create detailed professional profiles with AI assistance. Build your complete career portfolio including skills, experience, and achievements.',
+      'Build a detailed professional profile that reflects your skills, education, experience, and achievements helping you understand where you stand and where you can grow.',
     items: [
-      'AI-powered profile builder',
-      'Multiple template options',
-      'Cover letter generation',
-      'Instant profile creation',
+      'Guided profile creation',
+      'Structured profile sections',
+      'Cover letter support',
+      'Quick and easy setup',
     ],
   },
   {
     icon: '💬',
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    title: 'Interest Evaluation with Chatbot',
+    title: 'Interest Evaluation',
     description:
-      'Engage with our intelligent chatbot to discover your genuine interests and passions through interactive conversations.',
+      'Discover what truly motivates you. Answer guided questions to identify your interests and preferences, and explore career paths that align naturally with them.',
     items: [
-      'Interactive AI chatbot',
-      'Career interest discovery',
-      'Personalized recommendations',
-      'Real-time guidance',
+      'Guided interest questions',
+      'Career discovery insights',
+      'Personalized suggestions',
+      'Clear next steps',
     ],
   },
   {
@@ -46,42 +46,42 @@ const featureCards = [
     gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
     title: 'Psychometric Assessment',
     description:
-      'Take a comprehensive 120-question psychometric test that evaluates your aptitude, personality traits, and domain knowledge.',
+      'Gain deeper insight into your aptitude and working style. This assessment helps you understand your strengths, behaviour, and approach to learning and work.',
     items: [
-      '3-section comprehensive test',
-      'Aptitude & behavioral analysis',
-      'AI-generated detailed report',
-      'Career path recommendations',
+      'Structured assessment questions',
+      'Aptitude and behavioural insights',
+      'Detailed evaluation report',
+      'Career path suggestions',
     ],
   },
 ];
 
 const processSteps = [
   {
-    step: '01',
+    step: '1',
     title: 'Register',
-    description: 'Create your free account and provide basic information about your educational background.',
+    description: 'Create your free account and share basic details about your education and background.',
     icon: '👤',
     color: '#115FD5',
   },
   {
-    step: '02',
+    step: '2',
     title: 'Assessment',
-    description: 'Complete our comprehensive questionnaire covering personality, interests, and preferences.',
+    description: 'Complete a structured questionnaire covering your interests, personality, and preferences.',
     icon: '📝',
     color: '#f59e0b',
   },
   {
-    step: '03',
+    step: '3',
     title: 'Analysis',
-    description: 'Our AI analyzes your responses using proven psychological frameworks and career models.',
+    description: 'Your responses are carefully reviewed using proven assessment methods and career models.',
     icon: '⚡',
     color: '#8b5cf6',
   },
   {
-    step: '04',
+    step: '4',
     title: 'Report',
-    description: 'Receive your detailed profile report with career recommendations and development suggestions.',
+    description: 'Receive a detailed profile report with clear insights, career suggestions, and next steps.',
     icon: '📊',
     color: '#10b981',
   },
@@ -92,48 +92,48 @@ const benefits = [
     icon: FaGift,
     color: '#ec4899',
     title: 'Completely Free',
-    description: 'No hidden costs. Get comprehensive profiling insights at no cost to start your career journey.',
+    description: 'No hidden charges. Access detailed profiling insights at no cost to help you begin your career journey.',
   },
   {
     icon: FaBolt,
     color: '#f59e0b',
     title: 'Quick & Easy',
-    description: 'Complete the assessment in just 30-45 minutes and get instant results with detailed explanations.',
+    description: 'Complete the assessment in 30–45 minutes and receive clear results with simple explanations.',
   },
   {
     icon: FaShieldAlt,
     color: '#8b5cf6',
     title: 'Scientifically Backed',
-    description: 'Based on established psychological theories and validated assessment frameworks.',
+    description: 'Built on established assessment frameworks used by professionals to ensure accuracy and reliability.',
   },
   {
     icon: FaRocket,
     color: '#10b981',
     title: 'Actionable Insights',
-    description: 'Get specific recommendations for career paths, skill development, and next steps.',
+    description: 'Get practical recommendations for career paths, skill development, and future planning.',
   },
 ];
 
 const faqItems = [
   {
     question: 'How long does the profiling assessment take?',
-    answer: 'The profiling assessment typically takes 30-45 minutes to complete. You can save your progress and return to finish it later if needed.',
+    answer: 'The assessment usually takes 30–45 minutes, depending on how thoughtfully you answer the questions.',
   },
   {
     question: 'Is the profiling really free?',
-    answer: "Yes, our profiling service is completely free with no hidden charges. You'll receive a comprehensive report at no cost.",
+    answer: 'Yes. The profiling assessment is completely free, with no hidden charges or payment required.',
   },
   {
     question: 'How accurate are the career recommendations?',
-    answer: 'Our recommendations are based on scientifically validated assessment tools and extensive career data. While highly accurate, they should be considered as guidance alongside your own research.',
+    answer: 'The recommendations are based on your responses and proven assessment methods, making them reliable, practical, and relevant for career planning.',
   },
   {
     question: 'Can I retake the assessment?',
-    answer: 'Yes, you can retake the assessment after 30 days. This allows you to see how your interests and preferences may evolve over time.',
+    answer: 'Yes. You can retake the assessment if your interests, goals, or preferences change over time.',
   },
   {
-    question: "What's the difference between basic and AI-based profiling?",
-    answer: 'Basic profiling provides fundamental insights into personality and interests. AI-based profiling offers more detailed analysis, predictive insights, and personalized recommendations using advanced algorithms.',
+    question: "What's the difference between basic and advanced profiling?",
+    answer: 'Basic profiling gives general insights, while advanced profiling provides deeper analysis, detailed reports, and clearer career direction.',
   },
 ];
 
@@ -892,8 +892,8 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
       <section style={{
         position: 'relative',
         overflow: 'hidden',
-        padding: 'clamp(40px, 8vw, 80px) clamp(16px, 4vw, 24px) clamp(60px, 10vw, 100px)',
         minHeight: '90vh',
+        borderRadius: '24px',
         display: 'flex',
         alignItems: 'center',
       }}>
@@ -917,11 +917,12 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
         <div className="dashboard-hero-container">
           {/* Left content */}
           <div className="dashboard-hero-content">
-            {/* Badge */}
+            {/* Feature highlights */}
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '8px',
+              flexWrap: 'wrap',
               background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.1) 100%)',
               border: '1px solid rgba(251, 191, 36, 0.3)',
               padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 16px)',
@@ -930,7 +931,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
             }}>
               <FaStar style={{ color: '#fbbf24', fontSize: 'clamp(10px, 2vw, 14px)' }} />
               <span style={{ color: '#fbbf24', fontSize: 'clamp(0.7rem, 2vw, 0.85rem)', fontWeight: '600' }}>
-                AI-Powered Career Profiling
+                Profile Assessment · Interest Analysis · Psychometric Test
               </span>
             </div>
 
@@ -941,23 +942,14 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
-              Discover Your
-              <br />
-              <span style={{
-                background: 'linear-gradient(135deg, #115FD5 0%, #0ea5e9 50%, #06b6d4 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                Career Potential
-              </span>
+              Profiling
             </h1>
 
             {/* Description */}
             <p className="dashboard-hero-description" style={{
               color: 'rgba(255, 255, 255, 0.7)',
             }}>
-              Unlock your true potential with our comprehensive AI-powered profiling assessment. Get personalized insights into your strengths, interests, and ideal career paths.
+              Get clear insights into your personality, preferences, and direction—all designed to support better career decisions.
             </p>
 
             {/* CTA Buttons */}
@@ -967,16 +959,8 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
                 onClick={handleStart}
                 className="btn-3d btn-3d-blue"
               >
-                🚀 Start Free Profiling
+                🚀 Start Profiling
                 <FaArrowRight style={{ fontSize: '14px' }} />
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => scrollToSection('how-it-works')}
-                className="btn-3d btn-3d-dark"
-              >
-                See How It Works
               </button>
             </div>
 
@@ -1068,9 +1052,18 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
               className="btn-3d btn-3d-green"
               style={{ padding: '14px 28px', fontSize: '0.95rem' }}
             >
-              📊 View Reports
+              📊 View Saved Reports
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={() => scrollToSection('how-it-works')}
+            className="btn-3d btn-3d-dark"
+            style={{ padding: '14px 28px', fontSize: '0.95rem' }}
+          >
+            How It Works
+          </button>
         </div>
       </section>
 
@@ -1092,7 +1085,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
               margin: '0 auto',
               padding: '0 16px',
             }}>
-              Complete suite of tools to discover and develop your career potential
+              A complete set of tools to help you understand your profile and plan your next steps with clarity.
             </p>
           </div>
 
@@ -1437,7 +1430,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
           
           <div style={{ position: 'relative', zIndex: 1 }}>
             <h2 className="dashboard-cta-title">
-              Ready to Discover Your Potential?
+              Ready to Get Clear Insights?
             </h2>
             <p style={{
               fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
@@ -1448,7 +1441,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
               marginRight: 'auto',
               padding: '0 8px',
             }}>
-              Join 50,000+ students who have already discovered their ideal career path with SaarthiX.
+              Complete your profiling and receive clear insights, career suggestions, and next steps—all designed to support better career decisions.
             </p>
             <button
               type="button"
@@ -1456,7 +1449,7 @@ const Dashboard = ({ onStartProfiling, onViewSaved, onPsychometricTest, onViewSa
               className="btn-3d btn-3d-white"
               style={{ padding: 'clamp(14px, 2vw, 18px) clamp(28px, 4vw, 44px)', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)' }}
             >
-              Get Started Free
+              Start Profiling
               <FaArrowRight style={{ fontSize: '16px' }} />
             </button>
           </div>
