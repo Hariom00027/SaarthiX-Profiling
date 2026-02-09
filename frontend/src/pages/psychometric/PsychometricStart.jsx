@@ -36,7 +36,7 @@ function PsychometricStart() {
   const [loadingProfiles, setLoadingProfiles] = useState(false)
   const hasAutoSubmittedRef = useRef(false)
 
-  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090', [])
+  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || '/profiling-api', [])
 
   // Check if user is coming from profiling chatbot with data
   useEffect(() => {
@@ -46,47 +46,47 @@ function PsychometricStart() {
         console.log('Auto-submit already attempted, skipping duplicate execution...')
         return
       }
-      
+
       try {
         const fromProfile = sessionStorage.getItem('psychometric_from_profile')
         const profileDataStr = sessionStorage.getItem('psychometric_profile_data')
-        
+
         console.log('Checking for profile data:', { fromProfile, hasData: !!profileDataStr })
-        
+
         if (fromProfile === 'true' && profileDataStr) {
           // Mark as executed IMMEDIATELY to prevent double-execution
           hasAutoSubmittedRef.current = true
-          
+
           const profileData = JSON.parse(profileDataStr)
           console.log('✅ Detected profile data, auto-creating session:', profileData)
-          
+
           // Clear flags IMMEDIATELY after reading to prevent re-execution
           sessionStorage.removeItem('psychometric_from_profile')
           sessionStorage.removeItem('psychometric_profile_data')
           console.log('🧹 Cleared sessionStorage flags')
-          
+
           setIsSubmitting(true)
           setSubmitError('Creating your psychometric test session from profile data...')
-          
+
           // Import the createPsychometricSession function
           const { createPsychometricSession } = await import('../../api/psychometric')
-          
+
           // Create session and redirect
           const result = await createPsychometricSession(profileData)
-          
+
           console.log('🎯 Auto-session creation result:', result)
-          
+
           if (result && result.sessionId) {
             setSubmitError('✅ Session created successfully! Redirecting...')
             console.log(`🚀 Redirecting to /psychometric/instructions/${result.sessionId}`)
-            
+
             // Navigate to instructions page
             setTimeout(() => {
               navigate(`/psychometric/instructions/${result.sessionId}`, { replace: true })
             }, 500)
           } else {
             console.error('❌ No session ID in result:', result)
-            
+
             // If creation fails, populate the form with the data
             setForm({
               name: profileData.name || '',
@@ -98,7 +98,7 @@ function PsychometricStart() {
               specialization: profileData.specialization || '',
               careerInterest: profileData.careerInterest || '',
             })
-            
+
             // Also store skills data
             sessionStorage.setItem('psychometric_skills_data', JSON.stringify({
               certifications: profileData.certifications || '',
@@ -108,7 +108,7 @@ function PsychometricStart() {
               interests: profileData.interests || '',
               hobbies: profileData.hobbies || '',
             }))
-            
+
             setSubmitError('⚠️ Auto-session creation failed. Form pre-filled with your data. Please click Continue.')
             setIsSubmitting(false)
           }
@@ -123,7 +123,7 @@ function PsychometricStart() {
         setIsSubmitting(false)
       }
     }
-    
+
     checkProfileData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -187,7 +187,7 @@ function PsychometricStart() {
   // Fill form from selected profile
   const fillFormFromProfile = (profileResponse) => {
     const profile = profileResponse.profile || profileResponse
-    
+
     setForm({
       name: profile.name || '',
       email: profile.email || '',
@@ -198,7 +198,7 @@ function PsychometricStart() {
       specialization: profile.branch || profile.specialization || '',
       careerInterest: profile.interests || profile.careerInterest || '',
     })
-    
+
     // Store skills data in location state for skills page
     if (profile.technicalSkills || profile.softSkills || profile.interests || profile.hobbies || profile.certifications || profile.achievements) {
       // Store in a way that can be accessed on skills page
@@ -211,7 +211,7 @@ function PsychometricStart() {
         hobbies: profile.hobbies || '',
       }))
     }
-    
+
     setShowProfileDropdown(false)
     setSubmitError(null)
   }
@@ -388,7 +388,7 @@ function PsychometricStart() {
             <p className="text-sm uppercase tracking-wide text-blue-600 font-semibold">Psychometric assessment</p>
             <h1 className="text-3xl font-bold text-slate-900">Start your guided evaluation</h1>
             <p className="max-w-3xl text-slate-600">
-              Share a few details to begin your tailored assessment. This comprehensive 3-section test evaluates your aptitude, 
+              Share a few details to begin your tailored assessment. This comprehensive 3-section test evaluates your aptitude,
               behavioral traits, and domain knowledge, followed by a detailed AI-powered report with personalized insights.
             </p>
           </div>
@@ -468,12 +468,12 @@ function PsychometricStart() {
                     </div>
                     {savedProfiles.map((profileResponse, index) => {
                       const profile = profileResponse.profile || profileResponse
-                      const profileDate = profile.createdAt 
-                        ? new Date(profile.createdAt).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric' 
-                          })
+                      const profileDate = profile.createdAt
+                        ? new Date(profile.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })
                         : `Entry ${index + 1}`
                       return (
                         <button
@@ -508,7 +508,7 @@ function PsychometricStart() {
               <p className="text-sm uppercase tracking-widest text-slate-400">What you get</p>
               <h4 className="mt-2 text-2xl font-semibold">Comprehensive Assessment</h4>
               <p className="mt-3 text-sm text-slate-300">
-                Take a thorough psychometric evaluation that analyzes your aptitude, personality traits, and domain expertise. 
+                Take a thorough psychometric evaluation that analyzes your aptitude, personality traits, and domain expertise.
                 Receive a detailed AI-generated report with personalized insights and career recommendations.
               </p>
             </div>

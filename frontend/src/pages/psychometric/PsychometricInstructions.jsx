@@ -17,12 +17,12 @@ function PsychometricInstructions() {
   const [questionsReady, setQuestionsReady] = useState(false)
   const [error, setError] = useState(null)
   const [statusMessage, setStatusMessage] = useState('Preparing your assessment in the background...')
-  
+
   // New state for card-based instructions
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [checkedCards, setCheckedCards] = useState([false, false, false, false, false, false, false])
   const [timeElapsed, setTimeElapsed] = useState(0)
-  
+
   // Camera permission state
   const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false)
   const [cameraPermissionError, setCameraPermissionError] = useState(null)
@@ -33,7 +33,7 @@ function PsychometricInstructions() {
   const timerRef = useRef(null)
   const startTimeRef = useRef(null)
 
-  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090', [])
+  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || '/profiling-api', [])
 
   const clearPoll = () => {
     if (pollRef.current) {
@@ -54,16 +54,16 @@ function PsychometricInstructions() {
     // Start timer immediately on mount
     const startTime = Date.now()
     startTimeRef.current = startTime
-    
+
     // Update immediately
     setTimeElapsed(0)
-    
+
     // Set up interval to update every 100ms
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current
       setTimeElapsed(elapsed)
     }, 100)
-    
+
     // Cleanup on unmount only
     return () => {
       if (timerRef.current) {
@@ -82,15 +82,15 @@ function PsychometricInstructions() {
   }
 
   const remainingTime = Math.max(0, MIN_READING_TIME_MS - timeElapsed)
-  const canProceed = checkedCards.every(checked => checked) && 
-                     timeElapsed >= MIN_READING_TIME_MS && 
-                     cameraPermissionGranted
-  
+  const canProceed = checkedCards.every(checked => checked) &&
+    timeElapsed >= MIN_READING_TIME_MS &&
+    cameraPermissionGranted
+
   // Request camera permission
   const requestCameraPermission = useCallback(async () => {
     setIsCheckingCamera(true)
     setCameraPermissionError(null)
-    
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -100,12 +100,12 @@ function PsychometricInstructions() {
         },
         audio: false,
       })
-      
+
       // Store stream to stop it later
       testStreamRef.current = stream
       setCameraPermissionGranted(true)
       setIsCheckingCamera(false)
-      
+
       // Stop the test stream - we'll start it again in the test
       setTimeout(() => {
         if (testStreamRef.current) {
@@ -116,7 +116,7 @@ function PsychometricInstructions() {
     } catch (error) {
       console.error('Camera permission error:', error)
       let errorMessage = 'Failed to access camera. '
-      
+
       if (error.name === 'NotAllowedError') {
         errorMessage += 'Camera permission was denied. Please allow camera access to proceed with the test.'
       } else if (error.name === 'NotFoundError') {
@@ -126,13 +126,13 @@ function PsychometricInstructions() {
       } else {
         errorMessage += 'Please check your camera and try again.'
       }
-      
+
       setCameraPermissionError(errorMessage)
       setCameraPermissionGranted(false)
       setIsCheckingCamera(false)
     }
   }, [])
-  
+
   // Cleanup camera stream on unmount
   useEffect(() => {
     return () => {
@@ -147,7 +147,7 @@ function PsychometricInstructions() {
   const handleCheckboxChange = (index) => {
     // Only allow checking the current card
     if (index !== currentCardIndex) return
-    
+
     const newCheckedCards = [...checkedCards]
     newCheckedCards[index] = !newCheckedCards[index]
     setCheckedCards(newCheckedCards)
@@ -191,7 +191,7 @@ function PsychometricInstructions() {
       const section3Count = (questions || []).filter((q) => q.sectionNumber === 3).length
 
       // Check if all three sections are complete
-      const allSectionsReady = 
+      const allSectionsReady =
         section1Count >= EXPECTED_SECTION1_QUESTION_COUNT &&
         section2Count >= EXPECTED_SECTION2_QUESTION_COUNT &&
         section3Count >= EXPECTED_SECTION3_QUESTION_COUNT
@@ -211,13 +211,13 @@ function PsychometricInstructions() {
       } else {
         statusParts.push(`Aptitude: ✓`)
       }
-      
+
       if (section2Count < EXPECTED_SECTION2_QUESTION_COUNT) {
         statusParts.push(`Behavioral: ${section2Count}/${EXPECTED_SECTION2_QUESTION_COUNT}`)
       } else {
         statusParts.push(`Behavioral: ✓`)
       }
-      
+
       if (section3Count < EXPECTED_SECTION3_QUESTION_COUNT) {
         statusParts.push(`Domain: ${section3Count}/${EXPECTED_SECTION3_QUESTION_COUNT}`)
       } else {
@@ -322,7 +322,7 @@ function PsychometricInstructions() {
           <ul style={{ marginTop: '8px' }}>
             <li><strong>Total Time:</strong> 60 minutes (1 hour) for all 120 questions</li>
             <li><strong>Timer Display:</strong> A countdown timer is always visible at the top of the screen showing remaining time</li>
-            <li><strong>Time Warnings:</strong> 
+            <li><strong>Time Warnings:</strong>
               <ul style={{ marginTop: '6px', marginLeft: '20px' }}>
                 <li>Timer turns orange when 10 minutes remain</li>
                 <li>Timer turns red when 5 minutes remain</li>
@@ -479,7 +479,7 @@ function PsychometricInstructions() {
           <div className="instructions-page-header">
             {/* Left: Psychometric Test Heading */}
             <h1 className="instructions-page-title">Psychometric Test</h1>
-            
+
             {/* Right: Timer Display */}
             <div className="instructions-timer">
               <div className="timer-display">
@@ -560,8 +560,8 @@ function PsychometricInstructions() {
           {/* Progress Indicator */}
           <div className="instructions-progress">
             <div className="progress-bar">
-              <div 
-                className="progress-fill" 
+              <div
+                className="progress-fill"
                 style={{ width: `${((currentCardIndex + 1) / instructionCards.length) * 100}%` }}
               />
             </div>
@@ -581,7 +581,7 @@ function PsychometricInstructions() {
                   {cameraPermissionGranted ? 'Camera Access Granted' : 'Camera Access Required'}
                 </h4>
                 <p>
-                  {cameraPermissionGranted 
+                  {cameraPermissionGranted
                     ? 'Your camera is ready for proctoring. You may now proceed with the test.'
                     : 'This test requires camera access for proctoring. Please grant permission to continue.'}
                 </p>
@@ -610,14 +610,14 @@ function PsychometricInstructions() {
               disabled={!questionsReady || !canProceed}
               title={!cameraPermissionGranted ? 'Camera permission required' : ''}
             >
-              {!questionsReady 
-                ? 'Preparing questions…' 
+              {!questionsReady
+                ? 'Preparing questions…'
                 : !cameraPermissionGranted
                   ? 'Camera Access Required'
-                  : !canProceed 
+                  : !canProceed
                     ? (timeElapsed < MIN_READING_TIME_MS
-                        ? `Wait ${formatTime(remainingTime)}` 
-                        : 'Please check all boxes')
+                      ? `Wait ${formatTime(remainingTime)}`
+                      : 'Please check all boxes')
                     : 'Begin Test'}
             </button>
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { login as loginApi, register as registerApi } from '../api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/profiling-api';
 
 const LoginPage = ({ initialError }) => {
   const { login } = useAuth();

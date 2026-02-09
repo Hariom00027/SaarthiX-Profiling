@@ -22,6 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                     frontendUrl,
+                    "http://saarthix.com",
+                    "https://saarthix.com",
                     "http://localhost:4001",  // Direct frontend access
                     "http://localhost:8090",  // Gateway access
                     "http://localhost:3000"    // SomethingX frontend (for SSO)

@@ -6,7 +6,7 @@ services:
     ports:
       - "${MONGO_PORT:-57017}:27017"
     environment:
-      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-profiling_db}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-saarthix}
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
@@ -32,15 +32,15 @@ services:
     env_file:
       - .env
     environment:
-      MONGODB_URI: ${MONGODB_URI:-mongodb://profiling-mongodb:27017/profiling_db}
-      MONGODB_DATABASE: ${MONGODB_DATABASE:-profiling_db}
-      FRONTEND_URL: ${FRONTEND_URL:-http://saarthix.com:8090/i5h0t1r1a2a2s.com/profiling/}
+      MONGODB_URI: ${MONGODB_URI:-mongodb://profiling-mongodb:27017/saarthix}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-saarthix}
+      FRONTEND_URL: ${FRONTEND_URL:-http://saarthix.com/profiling/}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       JWT_SECRET: ${JWT_SECRET}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://saarthix.com:8090/profiling-api/login/oauth2/code/google}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://saarthix.com/profiling-api/login/oauth2/code/google}
       LOG_PATH: ${LOG_PATH:-/app/logs}
     volumes:
       - backend_uploads:/app/uploads

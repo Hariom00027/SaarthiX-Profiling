@@ -19,7 +19,7 @@ export function useProctoring(sessionId, onMaxWarnings) {
   })
   const [violations, setViolations] = useState([])
   const [modelsLoaded, setModelsLoaded] = useState(false)
-  
+
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   const detectionIntervalRef = useRef(null)
@@ -32,7 +32,7 @@ export function useProctoring(sessionId, onMaxWarnings) {
   useEffect(() => {
     const loadModels = async () => {
       try {
-        const MODEL_URL = '/models'
+        const MODEL_URL = `${import.meta.env.BASE_URL}models`.replace(/\/+/g, '/')
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
@@ -85,18 +85,18 @@ export function useProctoring(sessionId, onMaxWarnings) {
   const addWarning = useCallback((reason) => {
     const timestamp = new Date().toISOString()
     const violation = { reason, timestamp }
-    
+
     setWarnings((prev) => {
       const newWarnings = prev + 1
       setLastWarning({ reason, count: newWarnings, timestamp })
-      
+
       // Add to violations list
       violationsRef.current = [...violationsRef.current, violation]
       setViolations(violationsRef.current)
-      
+
       // Log to backend
       logCheatEvent(sessionId, reason, newWarnings)
-      
+
       return newWarnings
     })
   }, [sessionId])
@@ -104,7 +104,7 @@ export function useProctoring(sessionId, onMaxWarnings) {
   // Log cheat event to backend
   const logCheatEvent = useCallback(async (sessionId, reason, warningCount) => {
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090'
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '/profiling-api'
       await fetch(`${baseUrl}/api/test/log-cheat-event`, {
         method: 'POST',
         headers: {
@@ -174,13 +174,13 @@ export function useProctoring(sessionId, onMaxWarnings) {
       canvas.height = video.videoHeight
       const ctx = canvas.getContext('2d')
       ctx.drawImage(video, 0, 0)
-      
+
       // Check for covered camera (very dark screen)
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       const data = imageData.data
       let totalBrightness = 0
       let pixelCount = 0
-      
+
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i]
         const g = data[i + 1]
@@ -189,10 +189,10 @@ export function useProctoring(sessionId, onMaxWarnings) {
         totalBrightness += brightness
         pixelCount++
       }
-      
+
       const avgBrightness = totalBrightness / pixelCount
       const coveredCamera = avgBrightness < COVERED_CAMERA_THRESHOLD
-      
+
       if (coveredCamera) {
         return { faceDetected: false, multipleFaces: false, coveredCamera: true, faceCount: 0 }
       }
@@ -204,11 +204,11 @@ export function useProctoring(sessionId, onMaxWarnings) {
             inputSize: 224,
             scoreThreshold: 0.5
           }))
-        
+
         const faceCount = detections.length
         const faceDetected = faceCount === 1
         const multipleFaces = faceCount > 1
-        
+
         return { faceDetected, multipleFaces, coveredCamera: false, faceCount }
       } else {
         // Fallback to simple detection if models not loaded
@@ -224,7 +224,7 @@ export function useProctoring(sessionId, onMaxWarnings) {
             sampleCount++
           }
         }
-        
+
         const faceDetected = hasContent && sampleCount > 100
         return { faceDetected, multipleFaces: false, coveredCamera: false, faceCount: faceDetected ? 1 : 0 }
       }
@@ -262,10 +262,10 @@ export function useProctoring(sessionId, onMaxWarnings) {
       detectionIntervalRef.current = setInterval(async () => {
         const detection = await detectFace()
         const now = Date.now()
-        
+
         // Update detection status for UI
         setDetectionStatus(detection)
-        
+
         // Check for covered camera
         if (detection.coveredCamera) {
           addWarning('Camera covered or blocked')

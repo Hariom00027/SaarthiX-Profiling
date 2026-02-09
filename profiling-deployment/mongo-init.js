@@ -1,7 +1,7 @@
-// MongoDB initialization script for profiling database
+// MongoDB initialization script for saarthix database
 
-// Switch to the profiling_db database
-db = db.getSiblingDB('profiling_db');
+// Switch to the saarthix database
+db = db.getSiblingDB('saarthix');
 
 // Create collections if they don't exist
 db.createCollection('profiles');
@@ -10,5 +10,5 @@ db.createCollection('profiles');
 db.profiles.createIndex({ "name": 1 });
 db.profiles.createIndex({ "email": 1 });
 
-print("MongoDB initialization completed successfully!");
-print("Database 'profiling_db' created with profiles collection and indexes.");
+print("SaarthiX MongoDB initialization completed successfully!");
+print("Database 'saarthix' initialized with profiles collection and indexes.");

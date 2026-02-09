@@ -10,7 +10,7 @@ import ProfileDisplay from './components/ProfileDisplay';
 import EnhanceProfilePage from './components/EnhanceProfilePage';
 import SaarthiChatbot from './components/SaarthiChatbot';
 import ReportView from './components/ReportView';
-import Header from './components/Header';
+import Navbar from './components/Navbar';
 import SavedProfiles from './pages/SavedProfiles';
 import { submitProfile, getMyProfile, regenerateProfile, getAllMyProfiles, getProfileById, exchangeSomethingXToken } from './api';
 
@@ -177,10 +177,10 @@ function AppContent() {
         .then(() => {
           console.log('Login successful, navigating to start');
           // Clean URL after successful login
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           // Set view directly to ensure it updates immediately
           setCurrentView('start');
-          window.history.replaceState({ view: 'start' }, '', '/start');
+          window.history.replaceState({ view: 'start' }, '', '/profiling/start');
           // Clear processing flag after a short delay to allow view to render
           setTimeout(() => {
             setIsProcessingTokenExchange(false);
@@ -191,7 +191,7 @@ function AppContent() {
           console.error('SomethingX token exchange failed:', err);
           setError('Failed to complete login from SomethingX: ' + (err.message || 'Please try again.'));
           // Clean URL even on error
-          window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/profiling/');
           setCurrentView('login');
           setIsProcessingTokenExchange(false);
         });
@@ -200,7 +200,7 @@ function AppContent() {
 
     // Clean URL for other cases (OAuth, etc.)
     if (token || errorParam) {
-      window.history.replaceState({}, '', '/');
+      window.history.replaceState({}, '', '/profiling/');
     }
 
     // Handle token from OAuth callback (standard Profiling token)
@@ -317,18 +317,18 @@ function AppContent() {
   useEffect(() => {
     const restoreSavedProfilesView = async () => {
       // Check if we're on saved-profiles view and need to restore profiles
-      const needsRestore = currentView === 'saved-profiles' && 
-                          allProfiles.length === 0 && 
-                          !loading && 
-                          isAuthenticated();
-      
+      const needsRestore = currentView === 'saved-profiles' &&
+        allProfiles.length === 0 &&
+        !loading &&
+        isAuthenticated();
+
       if (needsRestore) {
         try {
           setError(null);
           console.log('Restoring saved profiles after page refresh...');
-          
+
           const result = await getAllMyProfiles();
-          
+
           if (result.success && result.data && result.data.length > 0) {
             setAllProfiles(result.data);
             console.log('Saved profiles restored successfully');
@@ -631,9 +631,9 @@ function AppContent() {
   // Only show other views if authenticated
   return (
     <div className="relative min-h-screen bg-gray-50">
-      {/* Show header on all pages except login */}
+      {/* Show navbar on all pages except login */}
       {currentView !== 'login' && (
-        <Header onNavigateToStart={handleBackToStart} />
+        <Navbar />
       )}
       {currentView === 'start' && (
         <div>
@@ -782,7 +782,7 @@ function AppContent() {
                 hobbies: profileData?.profile?.hobbies || profileData?.hobbies || '',
                 goals: profileData?.profile?.goals || profileData?.goals || ''
               }}
-              onRegenerateProfile={async (answers, reportData) =https://github.com/Hariom00027/SaarthiX-Profiling/pull/3/conflict?name=frontend%252Fsrc%252FApp.jsx&ancestor_oid=d9c7fa724818dde007a8a2ce09c9defb2e11efc0&base_oid=6d459edb4ee978dd29332b89e38bbd7d3adad708&head_oid=73e022bb4e55c2ca178eb3435491635bdace5d76> {
+              onRegenerateProfile={async (answers, reportData) => {
                 // Store report data for report view
                 sessionStorage.setItem('chatbot_report_data', JSON.stringify({ answers, reportData }));
                 setHasReportData(true);
@@ -800,25 +800,25 @@ function AppContent() {
             profileData={profileData}
             onBack={() => navigateToView('chatbot')}
             onEnhanceProfile={profileData ? async (answers, reportData) => {
-            const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
-            const profile = profileData?.profile || profileData || {};
+              const templateType = profileData?.profile?.templateType || profileData?.templateType || 'professional';
+              const profile = profileData?.profile || profileData || {};
 
-            const payload = {
-              templateId: templateType,
-              formData: profile,
-              chatAnswers: answers,
-              reportData: reportData || {}
-            };
+              const payload = {
+                templateId: templateType,
+                formData: profile,
+                chatAnswers: answers,
+                reportData: reportData || {}
+              };
 
-            const result = await regenerateProfile(payload);
+              const result = await regenerateProfile(payload);
 
-            if (result.success && result.data) {
-              setProfileData(result.data);
-              navigateToView('enhance');
-              return { success: true };
-            }
-            return { success: false, error: result.error || 'Failed to enhance profile' };
-          } : undefined}
+              if (result.success && result.data) {
+                setProfileData(result.data);
+                navigateToView('enhance');
+                return { success: true };
+              }
+              return { success: false, error: result.error || 'Failed to enhance profile' };
+            } : undefined}
           />
         </div>
       )}

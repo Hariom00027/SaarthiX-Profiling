@@ -7,8 +7,8 @@ public class SecurityUtils {
 
     public static String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof String) {
-            return (String) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof String principal && !"anonymousUser".equals(principal)) {
+            return principal;
         }
         return null;
     }

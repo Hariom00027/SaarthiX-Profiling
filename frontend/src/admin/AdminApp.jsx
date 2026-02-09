@@ -344,7 +344,7 @@ const AdminApp = () => {
         {adminToken && (
           <>
             <section className="bg-white/80 backdrop-blur-md border border-indigo-200/50 rounded-2xl p-6 space-y-5 shadow-xl hover:shadow-2xl transition-all duration-300">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="space-y-1">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {isEditing ? '✏️ Edit template' : '✨ Create new template'}
@@ -492,9 +492,9 @@ const AdminApp = () => {
                       <div className="space-y-3">
                         {selectedTemplate?.previewImageUrl && (
                           <div className="relative">
-                            <img 
-                              src={selectedTemplate.previewImageUrl} 
-                              alt="Preview" 
+                            <img
+                              src={selectedTemplate.previewImageUrl}
+                              alt="Preview"
                               className="w-full max-w-md h-48 object-cover rounded-xl border-2 border-gray-200"
                               onError={(e) => {
                                 e.target.style.display = 'none';
@@ -638,7 +638,7 @@ const AdminApp = () => {
                       >
                         {/* Gradient overlay on hover */}
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-purple-50/0 group-hover:from-indigo-50/50 group-hover:to-purple-50/50 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-                        
+
                         <header className="flex items-start justify-between gap-3 mb-4 relative z-10">
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-indigo-600 uppercase tracking-wide font-bold mb-2 truncate">
@@ -651,18 +651,17 @@ const AdminApp = () => {
                               </h3>
                             </div>
                             <span
-                              className={`inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 ${
-                                isEnabled
+                              className={`inline-flex items-center gap-1.5 text-[0.65rem] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 ${isEnabled
                                   ? 'bg-green-100 text-green-700 border border-green-300'
                                   : 'bg-amber-100 text-amber-700 border border-amber-300'
-                              }`}
+                                }`}
                             >
                               <span className={`w-1.5 h-1.5 rounded-full ${isEnabled ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`}></span>
                               {isEnabled ? 'Active' : 'Inactive'}
                             </span>
                           </div>
                         </header>
-                        
+
                         {/* Description */}
                         {template.description && (
                           <p className="text-sm text-gray-600 mb-4 overflow-hidden relative z-10" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', maxHeight: '2.5rem' }}>
@@ -705,11 +704,10 @@ const AdminApp = () => {
                               type="button"
                               onClick={() => handleToggleTemplateStatus(template, !isEnabled)}
                               disabled={processingForm}
-                              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 ${
-                                isEnabled 
-                                  ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-50' 
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 ${isEnabled
+                                  ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-50'
                                   : 'text-green-600 hover:text-green-700 hover:bg-green-50'
-                              }`}
+                                }`}
                               title={isEnabled ? 'Disable template' : 'Enable template'}
                             >
                               {isEnabled ? '⏸️ Disable' : '▶️ Enable'}
@@ -740,11 +738,11 @@ const AdminApp = () => {
 
             {/* Preview Image Modal */}
             {viewingPreview && (
-              <div 
+              <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in"
                 onClick={() => setViewingPreview(null)}
               >
-                <div 
+                <div
                   className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border-2 border-indigo-300 animate-scale-in"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -775,10 +773,10 @@ const AdminApp = () => {
                   <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)] flex items-center justify-center bg-gray-50">
                     {viewingPreview.previewImageUrl ? (() => {
                       // Resolve image URL - handle both absolute and relative paths
-                      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+                      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/profiling-api';
                       let imageUrl = viewingPreview.previewImageUrl;
                       let finalImageUrl = imageUrl;
-                      
+
                       // If it's already a full URL, use it as-is
                       if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
                         finalImageUrl = imageUrl;
@@ -794,12 +792,12 @@ const AdminApp = () => {
                         // Try relative path first (goes through nginx proxy in Docker, or direct in dev)
                         finalImageUrl = imageUrl;
                       }
-                      
+
                       console.log('Preview image URL:', finalImageUrl);
-                      
+
                       const handleImageError = (e) => {
                         console.error('Failed to load preview image:', finalImageUrl);
-                        
+
                         // If we tried relative path, try backend URL directly
                         if (!finalImageUrl.startsWith('http://') && !finalImageUrl.startsWith('https://')) {
                           const backendUrl = apiBaseUrl + finalImageUrl;
@@ -809,7 +807,7 @@ const AdminApp = () => {
                           // Prevent showing error until we've tried both
                           return;
                         }
-                        
+
                         // Both attempts failed - show error
                         e.target.style.display = 'none';
                         // Check if error message already exists
@@ -830,9 +828,9 @@ const AdminApp = () => {
                           e.target.parentNode.appendChild(errorDiv);
                         }
                       };
-                      
+
                       return (
-                        <img 
+                        <img
                           src={finalImageUrl}
                           alt={`${viewingPreview.name} preview`}
                           className="max-w-full max-h-[calc(90vh-200px)] object-contain rounded-xl shadow-2xl border-2 border-gray-200"
@@ -855,11 +853,11 @@ const AdminApp = () => {
 
             {/* Enhanced Modal with animations */}
             {hoveredTemplate && (
-              <div 
+              <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
                 onClick={() => setHoveredTemplate(null)}
               >
-                <div 
+                <div
                   className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border-2 border-indigo-300 animate-scale-in"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -933,7 +931,7 @@ const AdminApp = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <p className="text-sm text-gray-600 font-medium">
-                          {hoveredTemplate.createdAt 
+                          {hoveredTemplate.createdAt
                             ? `Created: ${new Date(hoveredTemplate.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
                             : 'No creation date available'}
                         </p>
